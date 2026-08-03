@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | مروان الأنجدي</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E14; --bg-elevated:#10151F; --bg-elevated-2:#161C29;
+  --border:rgba(232,236,241,0.09); --border-strong:rgba(232,236,241,0.16);
+  --text:#E8ECF1; --text-muted:#8B95A5; --text-faint:#5B6472;
+  --accent:#3ECF8E; --accent-strong:#2FB57B; --accent-soft:rgba(62,207,142,0.12);
+  --gold:#D4A857; --gold-soft:rgba(212,168,87,0.14);
+  --danger:#E4667A; --danger-soft:rgba(228,102,122,0.12);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.35);
+  --font-display:'Tajawal','Manrope','Inter',sans-serif;
+  --font-body:'Tajawal','Inter',sans-serif;
+  --font-mono:'JetBrains Mono','Tajawal',monospace;
+  --radius-sm:8px; --radius-md:14px; --radius-lg:20px;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body);
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--font-display); margin:0;}
+p{margin:0;}
+button{font:inherit; cursor:pointer;}
+input,textarea,select{font:inherit; color:var(--text);}
+a{color:inherit; text-decoration:none;}
+::placeholder{color:var(--text-faint);}
+
+.hidden{display:none !important;}
+
+/* ---------- Login ---------- */
+.login-screen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% 0%, var(--accent-soft), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 20%, var(--gold-soft), transparent 60%);
+}
+.login-card{
+  width:100%; max-width:380px; background:var(--bg-elevated); border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg); padding:36px 32px; box-shadow:var(--shadow-md);
+}
+.login-brand{display:flex; align-items:center; gap:10px; margin-bottom:28px;}
+.login-brand-mark{
+  width:38px; height:38px; border-radius:10px;
+  background:linear-gradient(155deg, var(--accent), var(--gold)); color:#06140D;
+  font-family:var(--font-mono); font-size:13px; display:flex; align-items:center; justify-content:center;
+}
+.login-brand-text{font-weight:700; font-size:15px;}
+.login-title{font-size:22px; font-weight:800; margin-bottom:6px;}
+.login-sub{color:var(--text-muted); font-size:14px; margin-bottom:26px;}
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;}
+.field input, .field textarea, .field select{
+  width:100%; padding:12px 14px; background:var(--bg-elevated-2); border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm); color:var(--text); transition:border-color .2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus{outline:none; border-color:var(--accent);}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 22px; border-radius:100px; font-weight:600; font-size:14.5px;
+  border:1px solid transparent; transition:transform .2s var(--ease), box-shadow .2s, background .2s, border-color .2s, color .2s;
+}
+.btn--primary{background:var(--accent); color:#052014; box-shadow:0 8px 20px -6px rgba(62,207,142,.5);}
+.btn--primary:hover{background:var(--accent-strong); transform:translateY(-1px);}
+.btn--ghost{background:transparent; color:var(--text); border-color:var(--border-strong);}
+.btn--ghost:hover{border-color:var(--accent); color:var(--accent);}
+.btn--danger{background:var(--danger-soft); color:var(--danger); border-color:rgba(228,102,122,.3);}
+.btn--danger:hover{background:var(--danger); color:#2b0a10;}
+.btn--sm{padding:8px 16px; font-size:13px;}
+.btn--block{width:100%;}
+.btn:disabled{opacity:.5; cursor:not-allowed; transform:none !important;}
+.msg{font-size:13.5px; margin-top:14px; min-height:1em;}
+.msg--error{color:var(--danger);}
+.msg--ok{color:var(--accent);}
+
+/* ---------- App shell ---------- */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:250px; flex-shrink:0; background:var(--bg-elevated); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; padding:22px 16px; position:sticky; top:0; height:100vh;
+}
+.sidebar-brand{display:flex; align-items:center; gap:10px; padding:6px 10px 22px; border-bottom:1px solid var(--border); margin-bottom:18px;}
+.sidebar-nav{display:flex; flex-direction:column; gap:4px; flex:1;}
+.sidebar-nav button{
+  display:flex; align-items:center; gap:10px; text-align:right; width:100%; padding:11px 14px;
+  border-radius:var(--radius-sm); background:transparent; border:1px solid transparent; color:var(--text-muted); font-size:14.5px;
+}
+.sidebar-nav button:hover{background:var(--bg-elevated-2); color:var(--text);}
+.sidebar-nav button.is-active{background:var(--accent-soft); color:var(--accent); border-color:rgba(62,207,142,.25);}
+.sidebar-foot{border-top:1px solid var(--border); padding-top:14px; margin-top:14px;}
+.sidebar-user{font-size:12.5px; color:var(--text-faint); padding:0 10px 10px; word-break:break-all;}
+
+.main{flex:1; padding:32px 36px; max-width:980px; min-width:0;}
+.main-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; flex-wrap:wrap; gap:12px;}
+.main-title{font-size:24px; font-weight:800;}
+.main-sub{color:var(--text-muted); font-size:14px; margin-top:4px;}
+
+.card{background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-md); padding:22px;}
+.card + .card{margin-top:16px;}
+
+/* table */
+.table{width:100%; border-collapse:collapse;}
+.table th{text-align:right; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); font-weight:600; padding:10px 12px; border-bottom:1px solid var(--border);}
+.table td{padding:14px 12px; border-bottom:1px solid var(--border); font-size:14.5px; vertical-align:middle;}
+.table tr:last-child td{border-bottom:none;}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:4px 10px; border-radius:100px; font-family:var(--font-mono);}
+.pill--published{background:var(--accent-soft); color:var(--accent);}
+.pill--draft{background:var(--gold-soft); color:var(--gold);}
+.pill--owner{background:var(--accent-soft); color:var(--accent);}
+.pill--editor{background:var(--bg-elevated-2); color:var(--text-muted); border:1px solid var(--border-strong);}
+.row-actions{display:flex; gap:8px; justify-content:flex-end;}
+.empty-state{color:var(--text-faint); font-size:14px; padding:26px 4px; text-align:center;}
+
+/* article editor */
+.editor-grid{display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start;}
+@media (max-width:800px){.editor-grid{grid-template-columns:1fr;}}
+.toolbar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;}
+.toolbar button{
+  width:34px; height:34px; border-radius:8px; background:var(--bg-elevated-2); border:1px solid var(--border-strong);
+  color:var(--text); font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center;
+}
+.toolbar button:hover{border-color:var(--accent); color:var(--accent);}
+.content-textarea{min-height:340px; font-family:var(--font-mono); font-size:13.5px; line-height:1.7; direction:ltr; text-align:left;}
+.cover-preview{width:100%; aspect-ratio:16/9; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; margin-bottom:12px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13px;}
+.cover-preview img{width:100%; height:100%; object-fit:cover;}
+
+.top-actions{display:flex; gap:10px; flex-wrap:wrap;}
+.invite-form{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
+.invite-form .field{margin-bottom:0; flex:1; min-width:180px;}
+
+/* mobile menu toggle */
+.mobile-topbar{display:none;}
+@media (max-width:860px){
+  .app{flex-direction:column;}
+  .sidebar{
+    width:100%; height:auto; position:relative; flex-direction:row; align-items:center; justify-content:space-between;
+    padding:14px 16px; border-left:none; border-bottom:1px solid var(--border);
+  }
+  .sidebar-brand{border-bottom:none; margin-bottom:0; padding:0;}
+  .sidebar-nav{position:fixed; top:64px; right:0; left:0; background:var(--bg-elevated); flex-direction:column; padding:14px; border-bottom:1px solid var(--border); display:none; z-index:50;}
+  .sidebar-nav.is-open{display:flex;}
+  .sidebar-foot{display:none;}
+  .mobile-topbar{display:block;}
+  .main{padding:22px 18px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="login-brand-mark">م.أ</span>
+      <span class="login-brand-text">مروان الأنجدي</span>
+    </div>
+    <h1 class="login-title">تسجيل الدخول</h1>
+    <p class="login-sub">لوحة تحكم الموقع — للأعضاء المصرح لهم فقط</p>
+    <form id="login-form">
+      <div class="field">
+        <label for="login-email">البريد الإلكتروني</label>
+        <input type="email" id="login-email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="login-password">كلمة المرور</label>
+        <input type="password" id="login-password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn--primary btn--block" id="login-btn">دخول</button>
+      <p class="msg" id="login-msg"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div class="app hidden" id="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="login-brand-mark">م.أ</span>
+      <span class="login-brand-text">لوحة التحكم</span>
+      <button class="btn btn--ghost btn--sm mobile-topbar" id="mobile-menu-btn" style="margin-inline-start:auto;">☰</button>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <button data-view="articles" class="is-active">📝 المقالات</button>
+      <button data-view="team">👥 الفريق</button>
+      <button data-view="content">🧩 محتوى الموقع</button>
+      <a href="blog.html" target="_blank" style="display:flex; align-items:center; gap:10px; padding:11px 14px; color:var(--text-muted); font-size:14.5px;">🔗 عرض المدونة</a>
+    </nav>
+    <div class="sidebar-foot">
+      <p class="sidebar-user" id="current-user-email"></p>
+      <button class="btn btn--ghost btn--sm btn--block" id="logout-btn">تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ===== ARTICLES VIEW ===== -->
+    <section id="view-articles">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title">المقالات</h2>
+          <p class="main-sub">اكتب، عدّل، وانشر مقالات المدونة</p>
+        </div>
+        <button class="btn btn--primary" id="new-article-btn">+ مقال جديد</button>
+      </div>
+      <div class="card">
+        <div id="articles-table-wrap">
+          <p class="empty-state">جارِ التحميل...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ARTICLE EDITOR VIEW ===== -->
+    <section id="view-editor" class="hidden">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title" id="editor-title">مقال جديد</h2>
+          <p class="main-sub">أي تغيير محفوظ كمسودة لحد ما تنشره</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn btn--ghost" id="back-to-articles-btn">رجوع</button>
+          <button class="btn btn--danger hidden" id="delete-article-btn">حذف</button>
+          <button class="btn btn--ghost" id="save-draft-btn">حفظ كمسودة</button>
+          <button class="btn btn--primary" id="publish-btn">نشر</button>
+        </div>
+      </div>
+      <div class="editor-grid">
+        <div class="card">
+          <div class="field">
+            <label for="article-title">عنوان المقال</label>
+            <input type="text" id="article-title" placeholder="مثال: 5 استراتيجيات SEO لمتاجر Salla">
+          </div>
+          <div class="field">
+            <label for="article-excerpt">مقتطف قصير (يظهر في صفحة المدونة)</label>
+            <textarea id="article-excerpt" rows="2" placeholder="جملة أو اتنين تلخص المقال"></textarea>
+          </div>
+          <div class="field">
+            <label>محتوى المقال</label>
+            <div class="toolbar">
+              <button type="button" data-wrap="<h2>|</h2>" title="عنوان">H2</button>
+              <button type="button" data-wrap="<strong>|</strong>" title="غامق"><b>B</b></button>
+              <button type="button" data-wrap="<em>|</em>" title="مائل"><i>I</i></button>
+              <button type="button" data-wrap="<p>|</p>" title="فقرة">¶</button>
+              <button type="button" data-wrap='<a href="URL">|</a>' title="رابط">🔗</button>
+              <button type="button" data-wrap="<ul>&#10;<li>|</li>&#10;</ul>" title="قائمة">•</button>
+            </div>
+            <textarea id="article-content" class="content-textarea" placeholder="اكتب محتوى المقال هنا (يدعم HTML بسيط: h2, p, strong, em, a, ul/li)"></textarea>
+          </div>
+        </div>
+        <div class="card">
+          <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">صورة الغلاف</label>
+          <div class="cover-preview" id="cover-preview">بدون صورة</div>
+          <input type="file" id="cover-file" accept="image/*" style="margin-bottom:10px;">
+          <div class="field">
+            <label for="article-slug">الرابط (slug)</label>
+            <input type="text" id="article-slug" placeholder="5-seo-strategies-salla" style="direction:ltr; text-align:left; font-family:var(--font-mono); font-size:13px;">
+          </div>
+          <p class="msg" id="editor-msg"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TEAM VIEW ===== -->
+    <section id="view-team" class="hidden">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title">الفريق</h2>
+          <p class="main-sub">ادعُ أشخاص معاك عشان يقدروا يديروا الموقع</p>
+        </div>
+      </div>
+      <div class="card">
+        <form class="invite-form" id="invite-form">
+          <div class="field">
+            <label for="invite-email">البريد الإلكتروني</label>
+            <input type="email" id="invite-email" required placeholder="name@example.com">
+          </div>
+          <div class="field">
+            <label for="invite-name">الاسم (اختياري)</label>
+            <input type="text" id="invite-name" placeholder="الاسم">
+          </div>
+          <button type="submit" class="btn btn--primary" id="invite-btn">دعوة</button>
+        </form>
+        <p class="msg" id="invite-msg"></p>
+      </div>
+      <div class="card">
+        <div id="team-table-wrap">
+          <p class="empty-state">جارِ التحميل...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SITE CONTENT VIEW ===== -->
+    <section id="view-content" class="hidden">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title">محتوى الموقع</h2>
+          <p class="main-sub">عدّل نصوص الصفحة الرئيسية مباشرة</p>
+        </div>
+      </div>
+      <div class="card" id="content-fields-wrap">
+        <p class="empty-state">جارِ التحميل...</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

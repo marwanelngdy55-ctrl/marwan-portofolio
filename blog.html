@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المدونة | مروان الأنجدي</title>
+<meta name="description" content="مقالات عن تحسين محركات البحث (SEO) للمتاجر الإلكترونية في السعودية ومصر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .blog-hero{ padding: calc(var(--nav-h) + 64px) 0 40px; }
+  .blog-hero__inner{ max-width: var(--container); margin:0 auto; padding:0 32px; }
+  .blog-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:26px; }
+  .post-card{
+    background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-lg);
+    overflow:hidden; display:flex; flex-direction:column; transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s;
+  }
+  .post-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--border-strong); }
+  .post-card__cover{ aspect-ratio:16/9; background:var(--bg-elevated-2); display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13px; overflow:hidden; }
+  .post-card__cover img{ width:100%; height:100%; object-fit:cover; }
+  .post-card__body{ padding:22px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .post-card__date{ font-family:var(--font-mono); font-size:12px; color:var(--text-faint); }
+  .post-card__title{ font-size:19px; font-weight:800; }
+  .post-card__excerpt{ color:var(--text-muted); font-size:14.5px; flex:1; }
+  .post-card__link{ font-size:14px; color:var(--accent); font-weight:600; margin-top:6px; }
+  .empty-state{ color:var(--text-faint); text-align:center; padding:60px 20px; }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__brand">
+      <span class="nav__brand-mark">م.أ</span>
+      <span class="nav__brand-text">مروان الأنجدي</span>
+    </a>
+    <ul class="nav__links">
+      <li><a class="nav__link" href="index.html#about">نبذة عني</a></li>
+      <li><a class="nav__link" href="index.html#services">الخدمات</a></li>
+      <li><a class="nav__link" href="index.html#projects">المشاريع</a></li>
+      <li><a class="nav__link is-active" href="blog.html">المدونة</a></li>
+      <li><a class="nav__link" href="index.html#contact">تواصل معي</a></li>
+    </ul>
+    <div class="nav__actions">
+      <a href="index.html#contact" class="btn btn--primary btn--sm">ابدأ مشروعك</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي/النهاري">
+        <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      </button>
+      <button class="nav__burger" id="nav-burger" aria-label="فتح القائمة" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="blog-hero">
+    <div class="blog-hero__inner">
+      <span class="eyebrow"><span class="eyebrow__dot"></span> المدونة</span>
+      <h1 class="section__title" style="margin-top:14px;">مقالات عن SEO والتجارة الإلكترونية</h1>
+      <p class="section__subtitle">أفكار وتجارب عملية من شغلي مع متاجر إلكترونية في السعودية ومصر.</p>
+    </div>
+  </header>
+
+  <section class="section" style="padding-top:0;">
+    <div class="section__inner">
+      <div id="blog-grid" class="blog-grid">
+        <p class="empty-state">جارِ تحميل المقالات...</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <span class="footer__name">Marwan El-Ngdy</span>
+      <span class="footer__title">SEO Specialist | E-commerce SEO Expert</span>
+      <p class="footer__statement">أساعد المتاجر الإلكترونية في السعودية ومصر على النمو من خلال SEO مبني على البيانات.</p>
+    </div>
+    <div class="footer__links">
+      <a href="index.html#about">نبذة عني</a>
+      <a href="index.html#services">الخدمات</a>
+      <a href="index.html#projects">المشاريع</a>
+      <a href="blog.html">المدونة</a>
+      <a href="index.html#contact">تواصل معي</a>
+    </div>
+    <div class="footer__meta">
+      <span>© <span id="year"></span> Marwan El-Ngdy. جميع الحقوق محفوظة.</span>
+      <div style="display:flex; gap:12px;">
+        <a href="https://www.facebook.com/marwan.elngdy.308" target="_blank" rel="noopener">Facebook</a>
+        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="script.js"></script>
+<script>
+(async () => {
+  const sb = window.getSupabaseClient();
+  const grid = document.getElementById('blog-grid');
+  const { data, error } = await sb
+    .from('articles')
+    .select('title, slug, excerpt, cover_image_url, published_at')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    grid.innerHTML = '<p class="empty-state">تعذر تحميل المقالات حاليًا.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    grid.innerHTML = '<p class="empty-state">مفيش مقالات منشورة لسه — تابعنا قريبًا 👋</p>';
+    return;
+  }
+
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  grid.innerHTML = data.map(a => `
+    <a class="post-card" href="article.html?slug=${encodeURIComponent(a.slug)}">
+      <div class="post-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="">` : 'بدون صورة'}</div>
+      <div class="post-card__body">
+        <span class="post-card__date">${a.published_at ? new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : ''}</span>
+        <h3 class="post-card__title">${esc(a.title)}</h3>
+        <p class="post-card__excerpt">${esc(a.excerpt || '')}</p>
+        <span class="post-card__link">اقرأ المقال ←</span>
+      </div>
+    </a>
+  `).join('');
+})();
+</script>
+</body>
+</html>
