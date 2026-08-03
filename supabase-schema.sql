@@ -38,6 +38,7 @@ create table if not exists public.articles (
   slug text not null unique,
   excerpt text,
   cover_image_url text,
+  cover_image_alt text,
   content text not null default '',
   status text not null default 'draft' check (status in ('draft','published')),
   author_id uuid references public.profiles(id),
@@ -45,6 +46,9 @@ create table if not exists public.articles (
   updated_at timestamptz not null default now(),
   published_at timestamptz
 );
+
+-- لو الجدول كان موجود من قبل، ضيف عمود alt text لصورة الغلاف
+alter table public.articles add column if not exists cover_image_alt text;
 
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
@@ -125,6 +129,33 @@ drop policy if exists "admins can delete article images" on storage.objects;
 create policy "admins can delete article images"
   on storage.objects for delete
   using (bucket_id = 'article-images' and auth.role() = 'authenticated');
+
+-- ==========================================================================
+-- Storage bucket لصور الموقع العامة (صورة نبذة عني، وأي صور تانية في محتوى الموقع)
+-- ==========================================================================
+insert into storage.buckets (id, name, public)
+values ('site-images', 'site-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "public can view site images" on storage.objects;
+create policy "public can view site images"
+  on storage.objects for select
+  using (bucket_id = 'site-images');
+
+drop policy if exists "admins can upload site images" on storage.objects;
+create policy "admins can upload site images"
+  on storage.objects for insert
+  with check (bucket_id = 'site-images' and auth.role() = 'authenticated');
+
+drop policy if exists "admins can update site images" on storage.objects;
+create policy "admins can update site images"
+  on storage.objects for update
+  using (bucket_id = 'site-images' and auth.role() = 'authenticated');
+
+drop policy if exists "admins can delete site images" on storage.objects;
+create policy "admins can delete site images"
+  on storage.objects for delete
+  using (bucket_id = 'site-images' and auth.role() = 'authenticated');
 
 -- ==========================================================================
 -- تحديث updated_at تلقائيًا

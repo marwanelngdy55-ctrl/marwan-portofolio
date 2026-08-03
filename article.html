@@ -133,6 +133,7 @@
     : '';
   if (data.cover_image_url) {
     coverImg.src = data.cover_image_url;
+    coverImg.alt = data.cover_image_alt || data.title || '';
     coverWrap.classList.remove('hidden');
   }
   // المحتوى مكتوب من لوحة التحكم بمعرفة الأدمن فقط (HTML بسيط: h2, p, strong, em, a, ul/li)

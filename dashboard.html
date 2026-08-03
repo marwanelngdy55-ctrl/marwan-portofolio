@@ -124,15 +124,43 @@ a{color:inherit; text-decoration:none;}
 /* article editor */
 .editor-grid{display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start;}
 @media (max-width:800px){.editor-grid{grid-template-columns:1fr;}}
-.toolbar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;}
+.toolbar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; align-items:center;}
 .toolbar button{
-  width:34px; height:34px; border-radius:8px; background:var(--bg-elevated-2); border:1px solid var(--border-strong);
-  color:var(--text); font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  min-width:34px; height:34px; padding:0 8px; border-radius:8px; background:var(--bg-elevated-2); border:1px solid var(--border-strong);
+  color:var(--text); font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center;
 }
 .toolbar button:hover{border-color:var(--accent); color:var(--accent);}
-.content-textarea{min-height:340px; font-family:var(--font-mono); font-size:13.5px; line-height:1.7; direction:ltr; text-align:left;}
+.toolbar button.is-active{background:var(--accent-soft); color:var(--accent); border-color:rgba(62,207,142,.35);}
+.toolbar select{
+  height:34px; padding:0 8px; border-radius:8px; background:var(--bg-elevated-2); border:1px solid var(--border-strong);
+  color:var(--text); font-size:13px;
+}
+.toolbar .toolbar-sep{width:1px; height:22px; background:var(--border-strong); margin:0 2px;}
+.content-editor{
+  min-height:340px; max-height:640px; overflow-y:auto; padding:14px 16px; border-radius:var(--radius-sm);
+  background:var(--bg-elevated-2); border:1px solid var(--border-strong); font-size:14.5px; line-height:1.85;
+}
+.content-editor:focus{outline:none; border-color:var(--accent);}
+.content-editor h2{font-size:22px; font-weight:800; margin:18px 0 8px;}
+.content-editor h3{font-size:19px; font-weight:800; margin:16px 0 7px;}
+.content-editor h4{font-size:17px; font-weight:700; margin:14px 0 6px;}
+.content-editor h5{font-size:15.5px; font-weight:700; margin:12px 0 6px;}
+.content-editor h6{font-size:14px; font-weight:700; margin:10px 0 6px; color:var(--text-muted);}
+.content-editor p{margin:0 0 12px;}
+.content-editor a{color:var(--accent); text-decoration:underline;}
+.content-editor img{max-width:100%; border-radius:8px; margin:10px 0;}
+.content-editor ul, .content-editor ol{padding-inline-start:22px; margin:0 0 12px;}
+.content-editor:empty::before{content:attr(data-placeholder); color:var(--text-faint);}
 .cover-preview{width:100%; aspect-ratio:16/9; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; margin-bottom:12px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13px;}
 .cover-preview img{width:100%; height:100%; object-fit:cover;}
+.help-text{font-size:12.5px; color:var(--text-faint); margin-top:6px;}
+.content-image-field{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-bottom:22px; padding-bottom:22px; border-bottom:1px solid var(--border);}
+.content-image-field:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
+.content-image-preview{width:140px; height:140px; flex-shrink:0; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:12px;}
+.content-image-preview img{width:100%; height:100%; object-fit:cover;}
+.content-image-body{flex:1; min-width:220px;}
+.gen-pw-row{display:flex; gap:8px;}
+.gen-pw-row input{flex:1;}
 
 .top-actions{display:flex; gap:10px; flex-wrap:wrap;}
 .invite-form{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
@@ -193,6 +221,7 @@ a{color:inherit; text-decoration:none;}
       <button data-view="articles" class="is-active">📝 المقالات</button>
       <button data-view="team">👥 الفريق</button>
       <button data-view="content">🧩 محتوى الموقع</button>
+      <button data-view="account">🔑 حسابي</button>
       <a href="blog.html" target="_blank" style="display:flex; align-items:center; gap:10px; padding:11px 14px; color:var(--text-muted); font-size:14.5px;">🔗 عرض المدونة</a>
     </nav>
     <div class="sidebar-foot">
@@ -244,21 +273,38 @@ a{color:inherit; text-decoration:none;}
           </div>
           <div class="field">
             <label>محتوى المقال</label>
-            <div class="toolbar">
-              <button type="button" data-wrap="<h2>|</h2>" title="عنوان">H2</button>
-              <button type="button" data-wrap="<strong>|</strong>" title="غامق"><b>B</b></button>
-              <button type="button" data-wrap="<em>|</em>" title="مائل"><i>I</i></button>
-              <button type="button" data-wrap="<p>|</p>" title="فقرة">¶</button>
-              <button type="button" data-wrap='<a href="URL">|</a>' title="رابط">🔗</button>
-              <button type="button" data-wrap="<ul>&#10;<li>|</li>&#10;</ul>" title="قائمة">•</button>
+            <div class="toolbar" id="editor-toolbar">
+              <select id="block-format" title="نوع النص">
+                <option value="P">فقرة</option>
+                <option value="H2">عنوان H2</option>
+                <option value="H3">عنوان H3</option>
+                <option value="H4">عنوان H4</option>
+                <option value="H5">عنوان H5</option>
+                <option value="H6">عنوان H6</option>
+              </select>
+              <span class="toolbar-sep"></span>
+              <button type="button" data-cmd="bold" title="غامق"><b>B</b></button>
+              <button type="button" data-cmd="italic" title="مائل"><i>I</i></button>
+              <span class="toolbar-sep"></span>
+              <button type="button" data-cmd="insertUnorderedList" title="قائمة نقطية">•</button>
+              <button type="button" data-cmd="insertOrderedList" title="قائمة مرقمة">1.</button>
+              <span class="toolbar-sep"></span>
+              <button type="button" id="link-btn" title="إضافة رابط">🔗</button>
+              <button type="button" id="image-btn" title="إضافة صورة">🖼️</button>
+              <button type="button" data-cmd="removeFormat" title="مسح التنسيق">Tx</button>
             </div>
-            <textarea id="article-content" class="content-textarea" placeholder="اكتب محتوى المقال هنا (يدعم HTML بسيط: h2, p, strong, em, a, ul/li)"></textarea>
+            <div id="article-content" class="content-editor" contenteditable="true" data-placeholder="اكتب محتوى المقال هنا... استخدم الأزرار فوق للعناوين والتنسيق"></div>
+            <p class="help-text">مفيش داعي تكتب كود — اكتب واختار من الأزرار زي أي محرر عادي.</p>
           </div>
         </div>
         <div class="card">
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">صورة الغلاف</label>
           <div class="cover-preview" id="cover-preview">بدون صورة</div>
           <input type="file" id="cover-file" accept="image/*" style="margin-bottom:10px;">
+          <div class="field">
+            <label for="cover-alt">Alt text لصورة الغلاف (وصف الصورة)</label>
+            <input type="text" id="cover-alt" placeholder="مثال: صورة توضح نتائج تحسين السيو">
+          </div>
           <div class="field">
             <label for="article-slug">الرابط (slug)</label>
             <input type="text" id="article-slug" placeholder="5-seo-strategies-salla" style="direction:ltr; text-align:left; font-family:var(--font-mono); font-size:13px;">
@@ -273,7 +319,7 @@ a{color:inherit; text-decoration:none;}
       <div class="main-header">
         <div>
           <h2 class="main-title">الفريق</h2>
-          <p class="main-sub">ادعُ أشخاص معاك عشان يقدروا يديروا الموقع</p>
+          <p class="main-sub">ضيف عضو جديد مباشرة — هتحدد له كلمة مرور ويقدر يدخل على طول (ويقدر يغيّرها بعدين من "حسابي")</p>
         </div>
       </div>
       <div class="card">
@@ -286,8 +332,16 @@ a{color:inherit; text-decoration:none;}
             <label for="invite-name">الاسم (اختياري)</label>
             <input type="text" id="invite-name" placeholder="الاسم">
           </div>
-          <button type="submit" class="btn btn--primary" id="invite-btn">دعوة</button>
+          <div class="field">
+            <label for="invite-password">كلمة المرور المبدئية</label>
+            <div class="gen-pw-row">
+              <input type="text" id="invite-password" required placeholder="كلمة مرور" style="direction:ltr; text-align:left; font-family:var(--font-mono);">
+              <button type="button" class="btn btn--ghost btn--sm" id="gen-pw-btn">توليد</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn--primary" id="invite-btn">إضافة العضو</button>
         </form>
+        <p class="help-text">ابعتله الإيميل وكلمة المرور دي بنفسك (واتساب، إيميل...) عشان يقدر يدخل اللوحة.</p>
         <p class="msg" id="invite-msg"></p>
       </div>
       <div class="card">
@@ -302,11 +356,46 @@ a{color:inherit; text-decoration:none;}
       <div class="main-header">
         <div>
           <h2 class="main-title">محتوى الموقع</h2>
-          <p class="main-sub">عدّل نصوص الصفحة الرئيسية مباشرة</p>
+          <p class="main-sub">عدّل نصوص وصور الصفحة الرئيسية مباشرة</p>
         </div>
       </div>
-      <div class="card" id="content-fields-wrap">
-        <p class="empty-state">جارِ التحميل...</p>
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom:16px;">النصوص</h3>
+        <div id="content-fields-wrap">
+          <p class="empty-state">جارِ التحميل...</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom:16px;">الصور</h3>
+        <div id="content-images-wrap">
+          <p class="empty-state">جارِ التحميل...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ACCOUNT VIEW ===== -->
+    <section id="view-account" class="hidden">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title">حسابي</h2>
+          <p class="main-sub">غيّر كلمة مرور حسابك</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:420px;">
+        <div class="field">
+          <label for="account-email">البريد الإلكتروني</label>
+          <input type="email" id="account-email" disabled>
+        </div>
+        <div class="field">
+          <label for="new-password">كلمة المرور الجديدة</label>
+          <input type="password" id="new-password" placeholder="على الأقل 6 حروف/أرقام" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="new-password-confirm">تأكيد كلمة المرور</label>
+          <input type="password" id="new-password-confirm" placeholder="اكتبها تاني" autocomplete="new-password">
+        </div>
+        <button class="btn btn--primary" id="change-password-btn">تحديث كلمة المرور</button>
+        <p class="msg" id="account-msg"></p>
       </div>
     </section>
   </main>

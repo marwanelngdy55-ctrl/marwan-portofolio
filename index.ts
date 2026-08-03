@@ -1,7 +1,9 @@
 // ==========================================================================
 // Edge Function: invite-admin
 // بتستخدم الـ Service Role Key (سري، متخزن كـ secret في Supabase، مش في الكود)
-// عشان تدعو عضو جديد بالإيميل ينضم للوحة التحكم.
+// عشان المالك (owner) يضيف عضو جديد للوحة التحكم مباشرة بإيميل وكلمة مرور
+// (الحساب بيتفعّل فورًا، من غير ما ننتظر إيميل دعوة).
+// لو اتبعت من غير password، بترجع لسلوكها القديم وتبعت دعوة بالإيميل.
 // ==========================================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -31,7 +33,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, full_name } = await req.json();
+    const { email, full_name, password } = await req.json();
     if (!email) {
       return new Response(JSON.stringify({ error: 'الإيميل مطلوب.' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -44,9 +46,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-      data: { full_name: full_name || email },
-    });
+    let data, error;
+    if (password) {
+      // إضافة مباشرة: بيتعمل الحساب فورًا بكلمة المرور دي، ويقدر يدخل على طول
+      ({ data, error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: full_name || email },
+      }));
+    } else {
+      // السلوك القديم: بعت دعوة بالإيميل يعمل بيها كلمة مرور بنفسه
+      ({ data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+        data: { full_name: full_name || email },
+      }));
+    }
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
