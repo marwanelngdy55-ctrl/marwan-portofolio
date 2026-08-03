@@ -140,10 +140,12 @@
       </tr>
     `).join('');
     articlesTableWrap.innerHTML = `
-      <table class="table">
-        <thead><tr><th>العنوان</th><th>الحالة</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="table">
+          <thead><tr><th>العنوان</th><th>الحالة</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
     `;
     articlesTableWrap.querySelectorAll('[data-edit]').forEach(btn => {
       btn.addEventListener('click', () => openEditor(btn.dataset.edit));
@@ -212,6 +214,41 @@
     document.execCommand('createLink', false, url);
   });
 
+  /* ----- نافذة إدخال Alt text (بديل عن prompt() اللي ممكن ميشتغلش صح على كل المتصفحات/الموبايل) ----- */
+  const altTextModal = document.getElementById('alt-text-modal');
+  const altTextModalInput = document.getElementById('alt-text-modal-input');
+  const altTextModalConfirm = document.getElementById('alt-text-modal-confirm');
+  const altTextModalCancel = document.getElementById('alt-text-modal-cancel');
+
+  function askForAltText() {
+    return new Promise((resolve) => {
+      if (!altTextModal) { resolve(''); return; }
+      altTextModalInput.value = '';
+      altTextModal.classList.remove('hidden');
+      setTimeout(() => altTextModalInput.focus(), 30);
+
+      function cleanup(result) {
+        altTextModal.classList.add('hidden');
+        altTextModalConfirm.removeEventListener('click', onConfirm);
+        altTextModalCancel.removeEventListener('click', onCancel);
+        altTextModal.removeEventListener('click', onOverlayClick);
+        altTextModalInput.removeEventListener('keydown', onKeydown);
+        resolve(result);
+      }
+      function onConfirm() { cleanup(altTextModalInput.value.trim()); }
+      function onCancel() { cleanup(null); }
+      function onOverlayClick(e) { if (e.target === altTextModal) onCancel(); }
+      function onKeydown(e) {
+        if (e.key === 'Enter') { e.preventDefault(); onConfirm(); }
+        if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+      }
+      altTextModalConfirm.addEventListener('click', onConfirm);
+      altTextModalCancel.addEventListener('click', onCancel);
+      altTextModal.addEventListener('click', onOverlayClick);
+      altTextModalInput.addEventListener('keydown', onKeydown);
+    });
+  }
+
   document.getElementById('image-btn')?.addEventListener('click', () => {
     document.getElementById('inline-image-input')?.remove();
     const input = document.createElement('input');
@@ -223,11 +260,13 @@
     input.addEventListener('change', async () => {
       const file = input.files[0];
       if (!file) return;
-      const altText = prompt('اكتب Alt text يوصف الصورة (مهم لمحركات البحث وذوي الإعاقة البصرية):', '') || '';
+      const altText = await askForAltText();
+      if (altText === null) { input.remove(); return; } // المستخدم لغى
       const path = `${Date.now()}-${slugify(file.name)}`;
       const { error: uploadError } = await sb.storage.from('article-images').upload(path, file, { upsert: true });
       if (uploadError) {
         alert('فشل رفع الصورة: ' + uploadError.message);
+        input.remove();
         return;
       }
       const { data } = sb.storage.from('article-images').getPublicUrl(path);
@@ -237,6 +276,28 @@
     });
     input.click();
   });
+
+  /* ----- تكبير/تصغير حجم الخط للنص المحدد ----- */
+  const FONT_SIZE_MIN = 11, FONT_SIZE_MAX = 36;
+
+  function applyFontSizeStep(direction) {
+    focusEditor();
+    // execCommand('fontSize') بيحط <font size="7">، وبعدين بنستبدلها بـ span بحجم px حقيقي
+    // بنحسب الحجم الحالي المعروض عشان الزرار يشتغل صح حتى لو النص متكبر/متصغر قبل كده
+    document.execCommand('fontSize', false, '7');
+    contentEditor.querySelectorAll('font[size="7"]').forEach(fontEl => {
+      const currentPx = parseFloat(window.getComputedStyle(fontEl).fontSize) || 17;
+      let newPx = Math.round(currentPx * (direction > 0 ? 1.15 : 0.87));
+      newPx = Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, newPx));
+      const span = document.createElement('span');
+      span.style.fontSize = newPx + 'px';
+      span.innerHTML = fontEl.innerHTML;
+      fontEl.replaceWith(span);
+    });
+  }
+
+  document.getElementById('font-size-up-btn')?.addEventListener('click', () => applyFontSizeStep(1));
+  document.getElementById('font-size-down-btn')?.addEventListener('click', () => applyFontSizeStep(-1));
 
   coverFileInput.addEventListener('change', async () => {
     const file = coverFileInput.files[0];
@@ -344,10 +405,12 @@
       </tr>
     `).join('');
     teamTableWrap.innerHTML = data && data.length ? `
-      <table class="table">
-        <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>انضم في</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>` : '<p class="empty-state">مفيش أعضاء لسه.</p>';
+      <div class="table-scroll">
+        <table class="table">
+          <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>انضم في</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>` : '<p class="empty-state">مفيش أعضاء لسه.</p>';
   }
 
   inviteForm.addEventListener('submit', async (e) => {
@@ -480,7 +543,7 @@
           <input type="file" accept="image/*" data-upload="${img.key}" style="margin-bottom:10px;">
           <div class="field">
             <label>Alt text (وصف الصورة)</label>
-            <input type="text" data-alt="${img.altKey}" value="${escapeAttr(values[img.altKey] || '')}" placeholder="مثال: صورة شخصية لمروان الأنجدي">
+            <input type="text" data-alt="${img.altKey}" value="${escapeAttr(values[img.altKey] || '')}" placeholder="مثال: صورة شخصية لمروان النجدي">
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <button class="btn btn--primary btn--sm" data-save-img="${img.key}" data-alt-key="${img.altKey}">حفظ</button>

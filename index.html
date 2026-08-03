@@ -733,6 +733,36 @@ p{ margin: 0; }
 .result-metric__label{ font-size: 12.5px; color: var(--text-faint); margin-top: 4px; }
 .result-card__note{ font-size: 14px; color: var(--text-muted); line-height: 1.7; }
 
+/* ---------- Blog Preview ---------- */
+.home-blog-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+  margin-top: 8px;
+}
+.home-blog-card{
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s var(--ease), border-color 0.3s;
+}
+.home-blog-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
+.home-blog-card__cover{ aspect-ratio: 16/9; background: var(--bg-elevated-2); overflow: hidden; }
+.home-blog-card__cover img{ width: 100%; height: 100%; object-fit: cover; }
+.home-blog-card__body{ padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.home-blog-card__date{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+.home-blog-card__title{ font-size: 17px; font-weight: 800; }
+.home-blog-card__excerpt{ color: var(--text-muted); font-size: 14px; }
+.home-blog-cta{ display: flex; justify-content: center; margin-top: 32px; }
+.empty-state{ color: var(--text-faint); text-align: center; padding: 30px 10px; grid-column: 1 / -1; }
+
+@media (max-width: 480px){
+  .home-blog-grid{ grid-template-columns: 1fr; }
+}
+
 .result-card__before-after{ display: flex; align-items: center; gap: 16px; margin: 28px 0 20px; }
 .ba__value{ font-family: var(--font-mono); font-size: 30px; font-weight: 700; color: var(--text-faint); }
 .ba__value--accent{ color: var(--accent); }
@@ -1321,6 +1351,21 @@ p{ margin: 0; }
     </div>
   </section>
 
+  <!-- Blog Preview -->
+  <section class="section" id="blog">
+    <div class="section__inner">
+      <span class="section__eyebrow center reveal">المدونة</span>
+      <h2 class="section__title center reveal">آخر المقالات</h2>
+      <p class="section__subtitle center reveal">أفكار وتجارب عملية من شغلي مع متاجر إلكترونية في السعودية ومصر.</p>
+      <div id="home-blog-grid" class="home-blog-grid">
+        <p class="empty-state">جارِ تحميل المقالات...</p>
+      </div>
+      <div class="home-blog-cta reveal">
+        <a href="blog.html" class="btn btn--ghost">شوف كل المقالات ←</a>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section class="section" id="contact">
     <div class="section__inner contact">
@@ -1380,6 +1425,7 @@ p{ margin: 0; }
       <a href="#skills">المهارات</a>
       <a href="#services">الخدمات</a>
       <a href="#projects">المشاريع</a>
+      <a href="blog.html">المدونة</a>
       <a href="#contact">تواصل معي</a>
     </div>
     <div class="footer__meta">
@@ -1418,6 +1464,41 @@ p{ margin: 0; }
       if (values[altKey]) el.alt = values[altKey];
     });
   } catch (e) { /* الموقع يشتغل عادي حتى لو فشل الاتصال */ }
+})();
+</script>
+<script>
+/* ============ آخر المقالات في الصفحة الرئيسية ============ */
+(async () => {
+  const grid = document.getElementById('home-blog-grid');
+  if (!grid) return;
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  try {
+    const sb = window.getSupabaseClient();
+    const { data, error } = await sb
+      .from('articles')
+      .select('title, slug, excerpt, cover_image_url, cover_image_alt, published_at')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(3);
+
+    if (error || !data || data.length === 0) {
+      grid.innerHTML = '<p class="empty-state">مفيش مقالات منشورة لسه — تابعنا قريبًا 👋</p>';
+      return;
+    }
+
+    grid.innerHTML = data.map(a => `
+      <a class="home-blog-card" href="article.html?slug=${encodeURIComponent(a.slug)}">
+        <div class="home-blog-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}">` : ''}</div>
+        <div class="home-blog-card__body">
+          <span class="home-blog-card__date">${a.published_at ? new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : ''}</span>
+          <h3 class="home-blog-card__title">${esc(a.title)}</h3>
+          <p class="home-blog-card__excerpt">${esc(a.excerpt || '')}</p>
+        </div>
+      </a>
+    `).join('');
+  } catch (e) {
+    grid.innerHTML = '<p class="empty-state">تعذر تحميل المقالات حاليًا.</p>';
+  }
 })();
 </script>
 <script>(() => {

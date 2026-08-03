@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title>المدونة | مروان الأنجدي</title>
+<title>المدونة | مروان النجدي</title>
 <meta name="description" content="مقالات عن تحسين محركات البحث (SEO) للمتاجر الإلكترونية في السعودية ومصر.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -26,6 +26,16 @@
   .post-card__excerpt{ color:var(--text-muted); font-size:14.5px; flex:1; }
   .post-card__link{ font-size:14px; color:var(--accent); font-weight:600; margin-top:6px; }
   .empty-state{ color:var(--text-faint); text-align:center; padding:60px 20px; }
+
+  @media (max-width: 720px){
+    .blog-hero{ padding: calc(var(--nav-h) + 44px) 0 28px; }
+  }
+  @media (max-width: 480px){
+    .blog-hero__inner{ padding:0 20px; }
+    .section__inner{ padding:0 20px; }
+    .blog-grid{ grid-template-columns: 1fr; gap:18px; }
+    .post-card__body{ padding:18px; }
+  }
 </style>
 </head>
 <body>
@@ -36,7 +46,7 @@
   <div class="nav__inner">
     <a href="index.html" class="nav__brand">
       <span class="nav__brand-mark">SEO</span>
-      <span class="nav__brand-text">مروان الأنجدي</span>
+      <span class="nav__brand-text">مروان النجدي</span>
     </a>
     <ul class="nav__links">
       <li><a class="nav__link" href="index.html#about">نبذة عني</a></li>

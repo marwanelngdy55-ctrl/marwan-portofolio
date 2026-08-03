@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title>لوحة التحكم | مروان الأنجدي</title>
+<title>لوحة التحكم | مروان النجدي</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -109,7 +109,8 @@ a{color:inherit; text-decoration:none;}
 .card + .card{margin-top:16px;}
 
 /* table */
-.table{width:100%; border-collapse:collapse;}
+.table-scroll{width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+.table{width:100%; min-width:520px; border-collapse:collapse;}
 .table th{text-align:right; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); font-weight:600; padding:10px 12px; border-bottom:1px solid var(--border);}
 .table td{padding:14px 12px; border-bottom:1px solid var(--border); font-size:14.5px; vertical-align:middle;}
 .table tr:last-child td{border-bottom:none;}
@@ -166,6 +167,19 @@ a{color:inherit; text-decoration:none;}
 .invite-form{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
 .invite-form .field{margin-bottom:0; flex:1; min-width:180px;}
 
+/* alt-text modal (بديل عن prompt() اللي ممكن ميشتغلش صح على بعض المتصفحات/الموبايل) */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(4,6,10,.6); backdrop-filter:blur(2px);
+  display:flex; align-items:center; justify-content:center; padding:20px; z-index:200;
+}
+.modal-card{
+  width:100%; max-width:420px; background:var(--bg-elevated); border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-md);
+}
+.modal-card h3{font-size:17px; font-weight:800; margin-bottom:6px;}
+.modal-card p{color:var(--text-muted); font-size:13.5px; margin-bottom:16px;}
+.modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:18px;}
+
 /* mobile menu toggle */
 .mobile-topbar{display:none;}
 @media (max-width:860px){
@@ -190,7 +204,7 @@ a{color:inherit; text-decoration:none;}
   <div class="login-card">
     <div class="login-brand">
       <span class="login-brand-mark">SEO</span>
-      <span class="login-brand-text">مروان الأنجدي</span>
+      <span class="login-brand-text">مروان النجدي</span>
     </div>
     <h1 class="login-title">تسجيل الدخول</h1>
     <p class="login-sub">لوحة تحكم الموقع — للأعضاء المصرح لهم فقط</p>
@@ -288,6 +302,9 @@ a{color:inherit; text-decoration:none;}
               <span class="toolbar-sep"></span>
               <button type="button" data-cmd="insertUnorderedList" title="قائمة نقطية">•</button>
               <button type="button" data-cmd="insertOrderedList" title="قائمة مرقمة">1.</button>
+              <span class="toolbar-sep"></span>
+              <button type="button" id="font-size-down-btn" title="تصغير حجم الخط للنص المحدد">A-</button>
+              <button type="button" id="font-size-up-btn" title="تكبير حجم الخط للنص المحدد">A+</button>
               <span class="toolbar-sep"></span>
               <button type="button" id="link-btn" title="إضافة رابط">🔗</button>
               <button type="button" id="image-btn" title="إضافة صورة">🖼️</button>
@@ -399,6 +416,22 @@ a{color:inherit; text-decoration:none;}
       </div>
     </section>
   </main>
+</div>
+
+<!-- ============ MODAL: Alt text لصورة داخل المقال ============ -->
+<div class="modal-overlay hidden" id="alt-text-modal">
+  <div class="modal-card">
+    <h3>وصف الصورة (Alt text)</h3>
+    <p>اكتب وصف قصير للصورة — مهم لمحركات البحث وذوي الإعاقة البصرية. من غير الوصف ده، الصورة هتترفع من غير Alt text.</p>
+    <div class="field">
+      <label for="alt-text-modal-input">الوصف</label>
+      <input type="text" id="alt-text-modal-input" placeholder="مثال: رسم بياني يوضح نمو الزيارات العضوية">
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn--ghost btn--sm" id="alt-text-modal-cancel">إلغاء</button>
+      <button type="button" class="btn btn--primary btn--sm" id="alt-text-modal-confirm">إدراج الصورة</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
