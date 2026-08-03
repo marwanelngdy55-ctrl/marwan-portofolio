@@ -9,8 +9,12 @@ create table if not exists public.profiles (
   email text not null,
   full_name text,
   role text not null default 'editor' check (role in ('owner','editor')),
+  is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+-- لو الجدول كان موجود من قبل، ضيف عمود "نشط/موقوف" (المدير يقدر يوقف عضو من غير ما يحذفه)
+alter table public.profiles add column if not exists is_active boolean not null default true;
 
 -- كل ما حد يعمل تسجيل (عن طريق دعوة)، يتضاف تلقائيًا هنا كـ editor
 create or replace function public.handle_new_user()
@@ -53,6 +57,13 @@ alter table public.articles add column if not exists cover_image_alt text;
 -- عمود Title منفصل لصورة الغلاف (يظهر كـ tooltip عند تمرير الماوس، مختلف عن Alt text)
 alter table public.articles add column if not exists cover_image_title text;
 
+-- اسم الكاتب (مخزّن مع المقال وقت الحفظ، عشان الموقع العام يقدر يعرضه من غير ما يحتاج يقرأ جدول profiles)
+alter table public.articles add column if not exists author_name text;
+
+-- التحكم فيما يظهر للجمهور: اسم الكاتب وتاريخ النشر، كل مقال على حدة
+alter table public.articles add column if not exists show_author boolean not null default true;
+alter table public.articles add column if not exists show_date boolean not null default true;
+
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
   key text primary key,
@@ -61,39 +72,115 @@ create table if not exists public.site_content (
 );
 
 -- ==========================================================================
+-- دوال مساعدة للصلاحيات (Roles & Permissions)
+-- ==========================================================================
+-- is_owner(): هل المستخدم الحالي "مدير" ونشط؟ المدير بس اللي يقدر يضيف/يدير أعضاء
+-- ويشوف/يعدّل كل المقالات (مش بس مقالاته)
+create or replace function public.is_owner()
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'owner' and is_active = true
+  );
+$$;
+
+-- is_active_member(): هل المستخدم الحالي عضو مفعّل (مش موقوف)؟
+create or replace function public.is_active_member()
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and is_active = true
+  );
+$$;
+
+-- تمنع إزالة صلاحية "مدير" من آخر مدير نشط في النظام (عشان محد يقفل نفسه برة بالغلط)
+create or replace function public.prevent_last_owner_change()
+returns trigger
+language plpgsql security definer set search_path = public
+as $$
+begin
+  if old.role = 'owner' and (new.role <> 'owner' or new.is_active = false) then
+    if (select count(*) from public.profiles where role = 'owner' and is_active = true and id <> old.id) = 0 then
+      raise exception 'مينفعش تشيل صلاحية آخر مدير نشط في النظام';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists profiles_prevent_last_owner on public.profiles;
+create trigger profiles_prevent_last_owner
+  before update on public.profiles
+  for each row execute procedure public.prevent_last_owner_change();
+
+-- ==========================================================================
 -- Row Level Security
 -- ==========================================================================
 alter table public.profiles enable row level security;
 alter table public.articles enable row level security;
 alter table public.site_content enable row level security;
 
--- profiles: أي عضو مسجل دخول يقدر يشوف كل الأعضاء (لعرضهم في صفحة الفريق)
+-- profiles: كل عضو يشوف بياناته بس، والمدير يشوف كل الأعضاء (لصفحة الفريق)
 drop policy if exists "profiles are viewable by logged-in admins" on public.profiles;
-create policy "profiles are viewable by logged-in admins"
+drop policy if exists "profiles visible to owner or self" on public.profiles;
+create policy "profiles visible to owner or self"
   on public.profiles for select
-  using (auth.role() = 'authenticated');
+  using (auth.role() = 'authenticated' and (id = auth.uid() or public.is_owner()));
 
--- articles: أي حد (حتى الزوار) يقدر يقرأ المقالات المنشورة فقط
+-- profiles: المدير بس اللي يقدر يعدّل بيانات الأعضاء (الدور، التفعيل/الإيقاف...)
+drop policy if exists "owner can update profiles" on public.profiles;
+create policy "owner can update profiles"
+  on public.profiles for update
+  using (public.is_owner())
+  with check (public.is_owner());
+
+-- articles: الزوار يشوفوا المقالات المنشورة بس. الأعضاء المسجلين يشوفوا مقالاتهم هم،
+-- والمدير يشوف كل المقالات (منشورة أو مسودة، لأي عضو)
 drop policy if exists "published articles are public" on public.articles;
-create policy "published articles are public"
+drop policy if exists "read articles" on public.articles;
+create policy "read articles"
   on public.articles for select
-  using (status = 'published' or auth.role() = 'authenticated');
+  using (
+    status = 'published'
+    or (
+      auth.role() = 'authenticated' and public.is_active_member()
+      and (author_id = auth.uid() or public.is_owner())
+    )
+  );
 
--- articles: الأعضاء المسجلين بس يقدروا يضيفوا/يعدلوا/يحذفوا
+-- articles: أي عضو مفعّل يقدر يضيف مقال يكون هو كاتبه، والمدير يقدر يضيف مقال لأي كاتب
 drop policy if exists "admins can insert articles" on public.articles;
-create policy "admins can insert articles"
+drop policy if exists "members can insert own articles" on public.articles;
+create policy "members can insert own articles"
   on public.articles for insert
-  with check (auth.role() = 'authenticated');
+  with check (
+    auth.role() = 'authenticated' and public.is_active_member()
+    and (author_id = auth.uid() or public.is_owner())
+  );
 
+-- articles: كل عضو يعدّل مقالاته هو بس، والمدير يقدر يعدّل أي مقال
 drop policy if exists "admins can update articles" on public.articles;
-create policy "admins can update articles"
+drop policy if exists "members can update own articles" on public.articles;
+create policy "members can update own articles"
   on public.articles for update
-  using (auth.role() = 'authenticated');
+  using (
+    auth.role() = 'authenticated' and public.is_active_member()
+    and (author_id = auth.uid() or public.is_owner())
+  );
 
+-- articles: كل عضو يحذف مقالاته هو بس، والمدير يقدر يحذف أي مقال
 drop policy if exists "admins can delete articles" on public.articles;
-create policy "admins can delete articles"
+drop policy if exists "members can delete own articles" on public.articles;
+create policy "members can delete own articles"
   on public.articles for delete
-  using (auth.role() = 'authenticated');
+  using (
+    auth.role() = 'authenticated' and public.is_active_member()
+    and (author_id = auth.uid() or public.is_owner())
+  );
 
 -- site_content: أي حد يقرأ (عشان يظهر في الموقع العام)، الأعضاء بس يعدلوا
 drop policy if exists "site content is public to read" on public.site_content;

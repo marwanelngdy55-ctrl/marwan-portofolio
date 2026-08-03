@@ -22,6 +22,8 @@
   .post-card__cover img{ width:100%; height:100%; object-fit:cover; }
   .post-card__body{ padding:22px; display:flex; flex-direction:column; gap:10px; flex:1; }
   .post-card__date{ font-family:var(--font-mono); font-size:12px; color:var(--text-faint); }
+  .post-card__meta{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-family:var(--font-mono); font-size:12px; color:var(--text-faint); }
+  .post-card__meta .dot{ opacity:.5; }
   .post-card__title{ font-size:19px; font-weight:800; }
   .post-card__excerpt{ color:var(--text-muted); font-size:14.5px; flex:1; }
   .post-card__link{ font-size:14px; color:var(--accent); font-weight:600; margin-top:6px; }
@@ -121,7 +123,7 @@
   const grid = document.getElementById('blog-grid');
   const { data, error } = await sb
     .from('articles')
-    .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at')
+    .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
 
@@ -136,17 +138,27 @@
 
   function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  grid.innerHTML = data.map(a => `
+  grid.innerHTML = data.map(a => {
+    const showDate = a.show_date !== false && a.published_at;
+    const showAuthor = a.show_author !== false && a.author_name;
+    const metaParts = [];
+    if (showAuthor) metaParts.push(esc(a.author_name));
+    if (showDate) metaParts.push(new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }));
+    const meta = metaParts.length
+      ? `<span class="post-card__meta">${metaParts.join(' <span class="dot">·</span> ')}</span>`
+      : '';
+    return `
     <a class="post-card" href="article.html?slug=${encodeURIComponent(a.slug)}">
       <div class="post-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}"${a.cover_image_title ? ` title="${esc(a.cover_image_title)}"` : ''}>` : 'بدون صورة'}</div>
       <div class="post-card__body">
-        <span class="post-card__date">${a.published_at ? new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : ''}</span>
+        ${meta}
         <h3 class="post-card__title">${esc(a.title)}</h3>
         <p class="post-card__excerpt">${esc(a.excerpt || '')}</p>
         <span class="post-card__link">اقرأ المقال ←</span>
       </div>
     </a>
-  `).join('');
+  `;
+  }).join('');
 })();
 </script>
 </body>

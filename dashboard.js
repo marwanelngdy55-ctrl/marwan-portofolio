@@ -24,8 +24,18 @@
     account: document.getElementById('view-account'),
   };
   const navButtons = document.querySelectorAll('.sidebar-nav button[data-view]');
+  const teamNavBtn = document.querySelector('.sidebar-nav button[data-view="team"]');
+
+  /* ---------------------------------------------------------------------
+     الصلاحيات (Roles & Permissions)
+     currentProfile: صف المستخدم الحالي من جدول profiles (الدور، الاسم، إلخ)
+  --------------------------------------------------------------------- */
+  let currentProfile = null;
+  function isOwner() { return currentProfile?.role === 'owner'; }
 
   function showView(name) {
+    // "الفريق" للمدير بس — أي محاولة وصول من عضو عادي بترجع لصفحة المقالات
+    if (name === 'team' && !isOwner()) name = 'articles';
     Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== name));
     navButtons.forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
     sidebarNav.classList.remove('is-open');
@@ -44,13 +54,32 @@
   async function checkSession() {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
+      const { data: profile, error: profileErr } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      // لو الحساب موقوف (is_active = false)، منعه من الدخول حتى لو الجلسة صالحة
+      if (profileErr || !profile || profile.is_active === false) {
+        await sb.auth.signOut();
+        loginScreen.classList.remove('hidden');
+        app.classList.add('hidden');
+        loginMsg.textContent = 'حسابك موقوف حاليًا. تواصل مع المدير.';
+        loginMsg.classList.add('msg--error');
+        return;
+      }
+
+      currentProfile = profile;
       loginScreen.classList.add('hidden');
       app.classList.remove('hidden');
       currentUserEmailEl.textContent = session.user.email;
+      teamNavBtn?.classList.toggle('hidden', !isOwner());
       const accountEmailEl = document.getElementById('account-email');
       if (accountEmailEl) accountEmailEl.value = session.user.email;
       showView('articles');
     } else {
+      currentProfile = null;
       loginScreen.classList.remove('hidden');
       app.classList.add('hidden');
     }
@@ -100,7 +129,12 @@
 
   let currentArticleId = null;
   let currentCoverUrl = null;
+  let currentAuthorId = null;
+  let currentAuthorName = '';
   let slugManuallyEdited = false;
+  const showAuthorCheck = document.getElementById('show-author-check');
+  const showDateCheck = document.getElementById('show-date-check');
+  const editorAuthorNameEl = document.getElementById('editor-author-name');
 
   function slugify(text) {
     return text
@@ -131,6 +165,7 @@
     const rows = data.map(a => `
       <tr>
         <td>${escapeHtml(a.title)}</td>
+        <td style="color:var(--text-muted); font-size:13.5px;">${escapeHtml(a.author_name || '—')}</td>
         <td><span class="pill ${a.status === 'published' ? 'pill--published' : 'pill--draft'}">${a.status === 'published' ? 'منشور' : 'مسودة'}</span></td>
         <td style="color:var(--text-faint); font-size:13px;">${new Date(a.created_at).toLocaleDateString('ar-EG')}</td>
         <td>
@@ -143,7 +178,7 @@
     articlesTableWrap.innerHTML = `
       <div class="table-scroll">
         <table class="table">
-          <thead><tr><th>العنوان</th><th>الحالة</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
+          <thead><tr><th>العنوان</th><th>الكاتب</th><th>الحالة</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
@@ -159,6 +194,8 @@
   async function openEditor(articleId) {
     currentArticleId = articleId;
     currentCoverUrl = null;
+    currentAuthorId = null;
+    currentAuthorName = '';
     slugManuallyEdited = false;
     editorMsg.textContent = '';
     titleInput.value = '';
@@ -168,6 +205,9 @@
     coverAltInput.value = '';
     coverTitleInput.value = '';
     coverPreview.innerHTML = 'بدون صورة';
+    if (showAuthorCheck) showAuthorCheck.checked = true;
+    if (showDateCheck) showDateCheck.checked = true;
+    if (editorAuthorNameEl) editorAuthorNameEl.textContent = '';
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
     if (articleId) {
@@ -184,11 +224,18 @@
         coverAltInput.value = data.cover_image_alt || '';
         coverTitleInput.value = data.cover_image_title || '';
         currentCoverUrl = data.cover_image_url || null;
+        currentAuthorId = data.author_id || null;
+        currentAuthorName = data.author_name || '';
+        if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
+        if (showDateCheck) showDateCheck.checked = data.show_date !== false;
+        if (editorAuthorNameEl) editorAuthorNameEl.textContent = currentAuthorName ? `الكاتب: ${currentAuthorName}` : '';
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
       }
     } else {
       editorTitleEl.textContent = 'مقال جديد';
+      currentAuthorName = currentProfile?.full_name || currentProfile?.email || '';
+      if (editorAuthorNameEl) editorAuthorNameEl.textContent = currentAuthorName ? `الكاتب: ${currentAuthorName}` : '';
     }
     showView('editor');
   }
@@ -357,6 +404,12 @@
       return;
     }
     const { data: { session } } = await sb.auth.getSession();
+    // مقال جديد: الكاتب هو المستخدم الحالي. مقال موجود: نحافظ على الكاتب الأصلي
+    // (عشان لو المدير فتح مقال عضو تاني للتعديل، ميتغيرش الكاتب المسجل)
+    const authorId = currentArticleId ? currentAuthorId : (session?.user?.id || null);
+    const authorName = currentArticleId
+      ? (currentAuthorName || '')
+      : (currentProfile?.full_name || currentProfile?.email || session?.user?.email || '');
     const payload = {
       title,
       slug,
@@ -366,7 +419,10 @@
       cover_image_alt: coverAltInput.value.trim(),
       cover_image_title: coverTitleInput.value.trim(),
       status,
-      author_id: session?.user?.id || null,
+      author_id: authorId,
+      author_name: authorName,
+      show_author: showAuthorCheck ? showAuthorCheck.checked : true,
+      show_date: showDateCheck ? showDateCheck.checked : true,
     };
     if (status === 'published') payload.published_at = new Date().toISOString();
 
@@ -423,36 +479,92 @@
   });
 
   async function loadTeam() {
+    if (!isOwner()) {
+      teamTableWrap.innerHTML = '<p class="empty-state">الصفحة دي للمدير فقط.</p>';
+      return;
+    }
     teamTableWrap.innerHTML = '<p class="empty-state">جارِ التحميل...</p>';
     const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: true });
     if (error) {
       teamTableWrap.innerHTML = `<p class="empty-state">حصل خطأ: ${escapeHtml(error.message)}</p>`;
       return;
     }
-    const rows = (data || []).map(p => `
+    const { data: { session } } = await sb.auth.getSession();
+    const myId = session?.user?.id;
+
+    const rows = (data || []).map(p => {
+      const isSelf = p.id === myId;
+      const roleControl = isSelf
+        ? `<span class="pill ${p.role === 'owner' ? 'pill--owner' : 'pill--editor'}">${p.role === 'owner' ? 'مدير' : 'عضو'}</span>`
+        : `<select class="role-select" data-role-for="${p.id}">
+             <option value="editor" ${p.role !== 'owner' ? 'selected' : ''}>عضو</option>
+             <option value="owner" ${p.role === 'owner' ? 'selected' : ''}>مدير</option>
+           </select>`;
+      const statusControl = isSelf
+        ? `<span class="status-dot status-dot--active"></span>نشط (أنت)`
+        : `<button class="btn btn--ghost btn--sm" data-toggle-active="${p.id}" data-current-active="${p.is_active !== false}">
+             <span class="status-dot ${p.is_active !== false ? 'status-dot--active' : 'status-dot--inactive'}"></span>
+             ${p.is_active !== false ? 'نشط — إيقاف' : 'موقوف — تفعيل'}
+           </button>`;
+      return `
       <tr>
         <td>${escapeHtml(p.full_name || p.email)}</td>
         <td style="color:var(--text-muted); font-size:13.5px;">${escapeHtml(p.email)}</td>
-        <td><span class="pill ${p.role === 'owner' ? 'pill--owner' : 'pill--editor'}">${p.role === 'owner' ? 'مالك' : 'عضو'}</span></td>
+        <td>${roleControl}</td>
+        <td>${statusControl}</td>
         <td style="color:var(--text-faint); font-size:13px;">${new Date(p.created_at).toLocaleDateString('ar-EG')}</td>
-      </tr>
-    `).join('');
+      </tr>`;
+    }).join('');
     teamTableWrap.innerHTML = data && data.length ? `
       <div class="table-scroll">
         <table class="table">
-          <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>انضم في</th></tr></thead>
+          <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الصلاحية</th><th>الحالة</th><th>انضم في</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
-      </div>` : '<p class="empty-state">مفيش أعضاء لسه.</p>';
+      </div>
+      <p class="help-text" style="margin-top:12px;">غيّر الصلاحية أو الحالة فورًا بيتحفظ. مينفعش توقف أو تشيل صلاحية آخر مدير نشط في النظام.</p>`
+      : '<p class="empty-state">مفيش أعضاء لسه.</p>';
+
+    teamTableWrap.querySelectorAll('[data-role-for]').forEach(select => {
+      select.addEventListener('change', async () => {
+        const id = select.dataset.roleFor;
+        const { error: updateError } = await sb.from('profiles').update({ role: select.value }).eq('id', id);
+        if (updateError) {
+          alert('تعذر تغيير الصلاحية: ' + updateError.message);
+          loadTeam();
+          return;
+        }
+        loadTeam();
+      });
+    });
+
+    teamTableWrap.querySelectorAll('[data-toggle-active]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.toggleActive;
+        const currentlyActive = btn.dataset.currentActive === 'true';
+        const { error: updateError } = await sb.from('profiles').update({ is_active: !currentlyActive }).eq('id', id);
+        if (updateError) {
+          alert('تعذر تحديث الحالة: ' + updateError.message);
+          return;
+        }
+        loadTeam();
+      });
+    });
   }
 
   inviteForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!isOwner()) {
+      inviteMsg.textContent = 'إضافة الأعضاء وتحديد صلاحياتهم للمدير فقط.';
+      inviteMsg.classList.add('msg--error');
+      return;
+    }
     inviteBtn.disabled = true;
     inviteMsg.textContent = '';
     inviteMsg.className = 'msg';
     const email = document.getElementById('invite-email').value.trim();
     const full_name = document.getElementById('invite-name').value.trim();
+    const role = document.getElementById('invite-role')?.value === 'owner' ? 'owner' : 'editor';
     const password = invitePasswordInput.value;
     if (!password || password.length < 6) {
       inviteMsg.textContent = 'كلمة المرور لازم تكون 6 حروف/أرقام على الأقل.';
@@ -460,7 +572,7 @@
       inviteBtn.disabled = false;
       return;
     }
-    const { data, error } = await sb.functions.invoke('invite-admin', { body: { email, full_name, password } });
+    const { data, error } = await sb.functions.invoke('invite-admin', { body: { email, full_name, password, role } });
     inviteBtn.disabled = false;
     if (error || data?.error) {
       inviteMsg.textContent = 'تعذر إضافة العضو: ' + (data?.error || error.message);
