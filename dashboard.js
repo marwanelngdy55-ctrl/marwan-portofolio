@@ -153,7 +153,10 @@
 
   async function loadArticles() {
     articlesTableWrap.innerHTML = '<p class="empty-state">جارِ التحميل...</p>';
-    const { data, error } = await sb.from('articles').select('*').order('created_at', { ascending: false });
+    // العضو "العادي" يشوف مقالاته هو بس في اللوحة. المدير بس اللي يشوف مقالات الكل.
+    let articlesQuery = sb.from('articles').select('*').order('created_at', { ascending: false });
+    if (!isOwner() && currentProfile?.id) articlesQuery = articlesQuery.eq('author_id', currentProfile.id);
+    const { data, error } = await articlesQuery;
     if (error) {
       articlesTableWrap.innerHTML = `<p class="empty-state">حصل خطأ: ${escapeHtml(error.message)}</p>`;
       return;
@@ -216,6 +219,11 @@
       if (error || !data) {
         editorMsg.textContent = 'تعذر تحميل المقال.';
         editorMsg.classList.add('msg--error');
+      } else if (!isOwner() && data.author_id !== currentProfile?.id) {
+        // حماية إضافية في الواجهة: عضو عادي مينفعش يفتح مقال عضو تاني حتى لو كان منشور
+        alert('مينفعش تفتح أو تعدّل مقال عضو تاني.');
+        showView('articles');
+        return;
       } else {
         titleInput.value = data.title || '';
         slugInput.value = data.slug || '';
