@@ -475,6 +475,9 @@ p{ margin: 0; }
   align-items: start;
 }
 .about__media{position: sticky;  top: calc(var(--nav-h) + 40px); z-index: 10;}
+.about__media{ position: relative;}
+
+.about__badge--top{z-index: 9999;}
 .about__photo{
   width: 100%;
   aspect-ratio: 4/5;
