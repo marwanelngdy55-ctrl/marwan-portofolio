@@ -474,7 +474,7 @@ p{ margin: 0; }
   gap: 72px;
   align-items: start;
 }
-.about__media{ position: sticky; top: calc(var(--nav-h) + 40px); }
+.about__media{position: sticky;  top: calc(var(--nav-h) + 40px); z-index: 10;}
 .about__photo{
   width: 100%;
   aspect-ratio: 4/5;
