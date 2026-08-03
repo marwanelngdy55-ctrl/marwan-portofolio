@@ -714,25 +714,6 @@ p{ margin: 0; }
 .lang-row__level{ color: var(--text-muted); }
 
 /* ---------- Services ---------- */
-
-.result-card__mini-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 12px 0;
-}
-
-.mini-item {
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.06);
-}
-/* ---------- Services ---------- */
 .services-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
