@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="dark">
+<script>(function(){try{var t=localStorage.getItem('marwan-portfolio-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -493,8 +494,38 @@ p{ margin: 0; }
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   position: relative;
+  animation: photoFloat 6s ease-in-out infinite;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
 }
-.about__photo img{ width: 100%; height: 100%; object-fit: cover; }
+.about__photo::before{
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from 0deg, var(--accent), var(--gold), var(--accent-soft), var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  animation: glowSpin 8s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+.about__photo::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.16) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.9s var(--ease);
+  pointer-events: none;
+  z-index: 3;
+}
+.about__photo:hover{ box-shadow: var(--shadow-lg); }
+.about__photo:hover::after{ transform: translateX(120%); }
+.about__photo img{ width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+.about__photo:hover img{ transform: scale(1.04); }
 .about__photo--empty{
   display: flex; align-items: center; justify-content: center;
 }
@@ -505,9 +536,15 @@ p{ margin: 0; }
   font-weight: 800;
   color: var(--border-strong);
 }
+@keyframes photoFloat{
+  0%, 100%{ transform: translateY(0); }
+  50%{ transform: translateY(-10px); }
+}
+@keyframes glowSpin{
+  to{ transform: rotate(360deg); }
+}
 .about__badge{
   position: absolute;
-  bottom: -22px; right: -22px;
   background: var(--accent);
   color: #052014;
   border-radius: var(--radius-md);
@@ -515,9 +552,27 @@ p{ margin: 0; }
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
+  z-index: 4;
+  animation: badgePulse 3.2s ease-in-out infinite;
+  transition: transform 0.3s var(--ease);
+}
+.about__badge:hover{ transform: scale(1.06); }
+.about__badge--bottom{ bottom: -22px; left: -22px; animation-delay: 0s; }
+.about__badge--top{
+  top: -22px; right: -22px;
+  background: var(--gold);
+  color: #2b1f05;
+  animation-delay: 1.6s;
 }
 .about__badge-num{ font-family: var(--font-mono); font-size: 26px; font-weight: 700; line-height: 1; }
 .about__badge-label{ font-size: 11.5px; margin-top: 4px; }
+@keyframes badgePulse{
+  0%, 100%{ transform: translateY(0) scale(1); box-shadow: var(--shadow-lg); }
+  50%{ transform: translateY(-6px) scale(1.03); box-shadow: 0 28px 70px rgba(0,0,0,0.5); }
+}
+@media (prefers-reduced-motion: reduce){
+  .about__photo, .about__photo::before, .about__badge{ animation: none; }
+}
 
 .about__lead{ font-size: 19px; margin-bottom: 20px; }
 .about__text{ color: var(--text-muted); font-size: 15.5px; margin-bottom: 18px; }
@@ -1005,12 +1060,12 @@ p{ margin: 0; }
         </div>
         <div class="hero__stats">
           <div class="hero__stat">
-            <span class="hero__stat-num" data-count="5" data-suffix="+">0</span>
-            <span class="hero__stat-label">سنوات خبرة</span>
-          </div>
-          <div class="hero__stat">
             <span class="hero__stat-num" data-count="50" data-suffix="+">0</span>
             <span class="hero__stat-label">عملاء سعداء</span>
+          </div>
+          <div class="hero__stat">
+            <span class="hero__stat-num" data-count="5" data-suffix="+">0</span>
+            <span class="hero__stat-label">سنوات خبرة</span>
           </div>
           <div class="hero__stat">
             <span class="hero__stat-num" data-count="142" data-suffix="%">0</span>
@@ -1535,18 +1590,19 @@ p{ margin: 0; }
     root.setAttribute('data-theme', theme);
   }
 
-  // Default theme is dark. We keep the preference in memory for this session only.
+  // Default theme is dark. The saved preference persists across pages via localStorage.
   let currentTheme = 'dark';
   try {
-    const stored = window.__portfolioTheme;
+    const stored = localStorage.getItem(THEME_KEY);
     if (stored) currentTheme = stored;
+    else currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   } catch (e) { /* no-op */ }
   applyTheme(currentTheme);
 
   themeToggle.addEventListener('click', () => {
     currentTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     applyTheme(currentTheme);
-    window.__portfolioTheme = currentTheme;
+    try { localStorage.setItem(THEME_KEY, currentTheme); } catch (e) { /* no-op */ }
   });
 
   /* ============ STICKY NAV BACKGROUND ============ */
