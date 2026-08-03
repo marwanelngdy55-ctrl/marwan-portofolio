@@ -1,51 +1,61 @@
 (() => {
   'use strict';
 
-  /* ============ THEME TOGGLE ============ */
+  /* ============ THEME TOGGLE (يتحفظ ويفضل ثابت بين الصفحات) ============ */
   const root = document.body;
   const themeToggle = document.getElementById('theme-toggle');
   const THEME_KEY = 'marwan-portfolio-theme';
 
   function applyTheme(theme){
     root.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }
 
-  // Default theme is dark. We keep the preference in memory for this session only.
+  // الوضع الافتراضي Dark، لكن لو فيه اختيار محفوظ في localStorage بيتقرا ويتطبق
+  // (نفس المفتاح THEME_KEY المستخدم في كل صفحات الموقع، عشان الاختيار يفضل ثابت
+  // لما تنتقل من صفحة لصفحة).
   let currentTheme = 'dark';
   try {
-    const stored = window.__portfolioTheme;
-    if (stored) currentTheme = stored;
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === 'light' || stored === 'dark') currentTheme = stored;
+    else currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   } catch (e) { /* no-op */ }
   applyTheme(currentTheme);
 
-  themeToggle.addEventListener('click', () => {
-    currentTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    applyTheme(currentTheme);
-    window.__portfolioTheme = currentTheme;
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      currentTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(currentTheme);
+      try { localStorage.setItem(THEME_KEY, currentTheme); } catch (e) { /* no-op */ }
+    });
+  }
 
   /* ============ STICKY NAV BACKGROUND ============ */
   const nav = document.getElementById('nav');
   const onScrollNav = () => {
-    nav.classList.toggle('is-scrolled', window.scrollY > 12);
+    if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 12);
   };
   onScrollNav();
   window.addEventListener('scroll', onScrollNav, { passive: true });
 
   /* ============ MOBILE MENU ============ */
   const burger = document.getElementById('nav-burger');
-  burger.addEventListener('click', () => {
-    const isOpen = nav.classList.toggle('is-open');
-    burger.classList.toggle('is-open', isOpen);
-    burger.setAttribute('aria-expanded', String(isOpen));
-    burger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
-  });
+  if (burger && nav) {
+    burger.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('is-open');
+      burger.classList.toggle('is-open', isOpen);
+      burger.setAttribute('aria-expanded', String(isOpen));
+      burger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    });
+  }
 
   document.querySelectorAll('[data-nav]').forEach(link => {
     link.addEventListener('click', () => {
-      nav.classList.remove('is-open');
-      burger.classList.remove('is-open');
-      burger.setAttribute('aria-expanded', 'false');
+      if (nav) nav.classList.remove('is-open');
+      if (burger) {
+        burger.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
     });
   });
 
@@ -90,12 +100,20 @@
     const duration = 1400;
     const start = performance.now();
 
+    el.classList.add('is-counting');
+
     function tick(now){
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       const value = Math.round(target * eased);
       el.textContent = value.toLocaleString('en-US') + suffix;
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.classList.remove('is-counting');
+        el.classList.add('count-pop');
+        el.addEventListener('animationend', () => el.classList.remove('count-pop'), { once: true });
+      }
     }
     requestAnimationFrame(tick);
   }
@@ -142,14 +160,17 @@
     typeObserver.observe(heroVisual);
   }
 
-  /* ============ CONTACT FORM (no backend) ============ */
+  /* ============ CONTACT FORM (يبعت إيميل فعلي عن طريق Formspree) ============ */
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xnjeezqa';
+
   const form = document.getElementById('contact-form');
   const status = document.getElementById('form-status');
 
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = form.querySelector('#name').value.trim();
+      const submitBtn = form.querySelector('button[type="submit"]');
 
       if (!form.checkValidity()) {
         status.textContent = 'من فضلك املأ كل الحقول قبل الإرسال.';
@@ -157,9 +178,31 @@
         return;
       }
 
-      status.style.color = 'var(--accent)';
-      status.textContent = `شكرًا${name ? ' ' + name.split(' ')[0] : ''} — تم تجهيز رسالتك. اربط الفورم بخدمة إرسال بريد لإتمام الإرسال فعليًا.`;
-      form.reset();
+      submitBtn.disabled = true;
+      status.style.color = 'var(--text-muted)';
+      status.textContent = 'جارِ الإرسال...';
+
+      try {
+        const response = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form),
+        });
+
+        if (response.ok) {
+          status.style.color = 'var(--accent)';
+          status.textContent = `شكرًا${name ? ' ' + name.split(' ')[0] : ''} — وصلتني رسالتك وهرد عليك قريب.`;
+          form.reset();
+        } else {
+          status.style.color = 'var(--danger)';
+          status.textContent = 'حصل خطأ أثناء الإرسال، جرب تاني كمان شوية.';
+        }
+      } catch (err) {
+        status.style.color = 'var(--danger)';
+        status.textContent = 'تعذر الاتصال بالخدمة، تأكد من اتصالك بالإنترنت وحاول تاني.';
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
   }
 
