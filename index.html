@@ -556,9 +556,10 @@ p{ margin: 0; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 28px 22px;
-  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  will-change: transform;
 }
-.process__step:hover{ transform: translateY(-4px); border-color: var(--border-strong); }
+.process__step:hover{ transform: translateY(-6px) scale(1.015); border-color: var(--border-strong); box-shadow: var(--shadow-md); }
 .process__num{
   font-family: var(--font-mono);
   font-size: 13px;
@@ -580,9 +581,10 @@ p{ margin: 0; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 28px;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+  will-change: transform;
 }
-.skill-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.skill-card:hover{ transform: translateY(-6px) scale(1.015); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
 .skill-card__title{ font-size: 17px; margin-bottom: 16px; color: var(--accent); }
 .skill-card__title--spaced{ margin-top: 22px; }
 .skill-card__list{ display: flex; flex-direction: column; gap: 10px; }
@@ -608,9 +610,10 @@ p{ margin: 0; }
   padding: 28px;
   display: flex;
   flex-direction: column;
-  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+  will-change: transform;
 }
-.project-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.project-card:hover{ transform: translateY(-8px) scale(1.012); box-shadow: var(--shadow-lg); border-color: var(--border-strong); }
 .project-card__head{
   display: flex;
   justify-content: space-between;
@@ -704,9 +707,10 @@ p{ margin: 0; }
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--bg);
-  transition: transform 0.3s var(--ease), border-color 0.3s;
+  transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  will-change: transform;
 }
-.service-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
+.service-card:hover{ transform: translateY(-6px) scale(1.015); border-color: var(--accent); box-shadow: var(--shadow-md); }
 .service-card__num{ font-family: var(--font-mono); color: var(--gold); font-size: 13px; }
 .service-card__title{ font-size: 18px; margin: 14px 0 10px; }
 .service-card__desc{ font-size: 14px; color: var(--text-muted); }
@@ -723,7 +727,10 @@ p{ margin: 0; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 36px;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+  will-change: transform;
 }
+.result-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
 .result-card--feature{ background: linear-gradient(155deg, var(--bg-elevated), var(--bg-elevated-2)); border-color: var(--border-strong); }
 .result-card__title{ font-size: 22px; margin-bottom: 6px; }
 .result-card__context{ font-size: 13.5px; color: var(--text-faint); font-family: var(--font-mono); margin-bottom: 28px; }
@@ -835,6 +842,19 @@ p{ margin: 0; }
 .footer__meta{ display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-faint); }
 .footer__meta a{ color: var(--text-faint); transition: color 0.2s; }
 .footer__meta a:hover{ color: var(--accent); }
+
+/* ---------- Animated Counters ---------- */
+[data-count]{
+  display: inline-block;
+  transition: color 0.3s var(--ease);
+}
+[data-count].is-counting{ color: var(--accent); }
+[data-count].count-pop{ animation: counterPop 0.5s var(--ease); }
+@keyframes counterPop{
+  0%{ transform: scale(1); }
+  45%{ transform: scale(1.14); }
+  100%{ transform: scale(1); }
+}
 
 /* ---------- Scroll Reveal ---------- */
 .reveal{
@@ -1101,27 +1121,27 @@ p{ margin: 0; }
       <h2 class="section__title center reveal" data-editable="process_title">كيف أشتغل على متجرك</h2>
       <p class="section__subtitle center reveal" data-editable="process_subtitle">خطوات واضحة من أول تدقيق لآخر تقرير نتائج.</p>
       <div class="process">
-        <div class="process__step reveal">
+        <div class="process__step reveal" data-tilt-card>
           <span class="process__num">01</span>
           <h3 class="process__title">تدقيق واكتشاف</h3>
           <p class="process__desc">فحص شامل للمتجر تقنيًا ومحتوى ومنافسين لتحديد نقاط الفرصة.</p>
         </div>
-        <div class="process__step reveal">
+        <div class="process__step reveal" data-tilt-card>
           <span class="process__num">02</span>
           <h3 class="process__title">بحث كلمات مفتاحية</h3>
           <p class="process__desc">تحديد الكلمات التي يبحث بها عملاؤك فعليًا ومطابقة نية البحث.</p>
         </div>
-        <div class="process__step reveal">
+        <div class="process__step reveal" data-tilt-card>
           <span class="process__num">03</span>
           <h3 class="process__title">التنفيذ التقني</h3>
           <p class="process__desc">إصلاح الأرشفة، سرعة التحميل، البيانات المنظمة، وبنية الموقع.</p>
         </div>
-        <div class="process__step reveal">
+        <div class="process__step reveal" data-tilt-card>
           <span class="process__num">04</span>
           <h3 class="process__title">تحسين المحتوى</h3>
           <p class="process__desc">صياغة عناوين ووصف منتجات تجذب الزوار ومحركات البحث معًا.</p>
         </div>
-        <div class="process__step reveal">
+        <div class="process__step reveal" data-tilt-card>
           <span class="process__num">05</span>
           <h3 class="process__title">قياس وتطوير</h3>
           <p class="process__desc">متابعة الأداء شهريًا وتطوير الاستراتيجية بناءً على النتائج.</p>
@@ -1137,7 +1157,7 @@ p{ margin: 0; }
       <h2 class="section__title center reveal" data-editable="skills_title">أدوات ومهارات أعتمد عليها</h2>
       <p class="section__subtitle center reveal" data-editable="skills_subtitle">مزيج بين الجانب التقني وجانب المحتوى والتحليل.</p>
       <div class="skills-grid">
-        <div class="skill-card reveal">
+        <div class="skill-card reveal" data-tilt-card>
           <h3 class="skill-card__title">السيو التقني</h3>
           <ul class="skill-card__list">
             <li>أرشفة الموقع (Indexing)</li>
@@ -1147,7 +1167,7 @@ p{ margin: 0; }
             <li>تحسين البنية وخريطة الموقع</li>
           </ul>
         </div>
-        <div class="skill-card reveal">
+        <div class="skill-card reveal" data-tilt-card>
           <h3 class="skill-card__title">تحسين المحتوى</h3>
           <ul class="skill-card__list">
             <li>بحث كلمات مفتاحية</li>
@@ -1157,7 +1177,7 @@ p{ margin: 0; }
             <li>محتوى الفئات والمدونة</li>
           </ul>
         </div>
-        <div class="skill-card reveal">
+        <div class="skill-card reveal" data-tilt-card>
           <h3 class="skill-card__title">الأداء والتحليل</h3>
           <ul class="skill-card__list">
             <li>بناء الروابط الخارجية</li>
@@ -1178,17 +1198,17 @@ p{ margin: 0; }
       <h2 class="section__title center reveal" data-editable="services_title">إيه اللي بقدمه لمتجرك</h2>
       <p class="section__subtitle center reveal" data-editable="services_subtitle">خدمات مرنة حسب حجم المتجر واحتياجه الفعلي.</p>
       <div class="services-grid">
-        <div class="service-card reveal">
+        <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">01</span>
           <h3 class="service-card__title">تدقيق SEO شامل</h3>
           <p class="service-card__desc">تقرير مفصل بكل مشاكل الأرشفة، السرعة، والمحتوى مع خطة تنفيذ واضحة.</p>
         </div>
-        <div class="service-card reveal">
+        <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">02</span>
           <h3 class="service-card__title">استراتيجية كلمات مفتاحية</h3>
           <p class="service-card__desc">خريطة كلمات مفتاحية لكل صفحة منتج وفئة، مبنية على سلوك بحث عملائك الفعلي.</p>
         </div>
-        <div class="service-card reveal">
+        <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">03</span>
           <h3 class="service-card__title">إدارة SEO شهرية</h3>
           <p class="service-card__desc">متابعة مستمرة، تحسين محتوى دوري، وتقارير أداء شهرية بالأرقام.</p>
@@ -1318,7 +1338,7 @@ p{ margin: 0; }
       <h2 class="section__title center reveal" data-editable="results_title">نتائج بالأرقام</h2>
       <p class="section__subtitle center reveal" data-editable="results_subtitle">متوسط النتائج التي تحققت في مشاريع سابقة على مدار سنوات العمل.</p>
       <div class="results-grid">
-        <div class="result-card result-card--feature reveal">
+        <div class="result-card result-card--feature reveal" data-tilt-card>
           <h3 class="result-card__title">أداء عام للمتاجر التي عملت عليها</h3>
           <span class="result-card__context">متوسط خلال 6-12 شهر من العمل</span>
           <div class="result-card__metrics">
@@ -1337,7 +1357,7 @@ p{ margin: 0; }
           </div>
           <p class="result-card__note">النتائج تختلف حسب طبيعة كل متجر ومنافسيه، لكن المنهجية واحدة: تدقيق، تنفيذ، وقياس مستمر.</p>
         </div>
-        <div class="result-card reveal">
+        <div class="result-card reveal" data-tilt-card>
           <h3 class="result-card__title">قبل وبعد الظهور العضوي</h3>
           <span class="result-card__context">مثال تقريبي لمتجر تجاري</span>
           <div class="result-card__before-after">
@@ -1387,7 +1407,7 @@ p{ margin: 0; }
           <a href="https://www.facebook.com/marwan.elngdy.308" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1280px-Facebook_f_logo_%282019%29.svg.png" alt="Facebook" style="width:18px;height:18px;object-fit:contain;">
           </a>
-          <a href="https://www.linkedin.com/in/marwan-elngdy/" target="_blank" rel="noopener" class="social-btn" aria-label="LinkedIn">
+          <a href="#" target="_blank" rel="noopener" class="social-btn" aria-label="LinkedIn">
             <img src="https://static.vecteezy.com/system/resources/previews/018/930/480/non_2x/linkedin-logo-linkedin-icon-transparent-free-png.png" alt="LinkedIn" style="width:20px;height:20px;object-fit:contain;">
           </a>
         </div>
@@ -1432,7 +1452,7 @@ p{ margin: 0; }
       <span>© <span id="year"></span> Marwan El-Ngdy. جميع الحقوق محفوظة.</span>
       <div style="display:flex; gap:12px;">
         <a href="https://www.facebook.com/marwan.elngdy.308" target="_blank" rel="noopener">Facebook</a>
-        <a href="https://www.linkedin.com/in/marwan-elngdy/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
       </div>
     </div>
   </div>
@@ -1462,6 +1482,8 @@ p{ margin: 0; }
       if (values[key]) el.src = values[key];
       const altKey = `${key}_alt`;
       if (values[altKey]) el.alt = values[altKey];
+      const titleKey = `${key}_title`;
+      if (values[titleKey]) el.title = values[titleKey];
     });
   } catch (e) { /* الموقع يشتغل عادي حتى لو فشل الاتصال */ }
 })();
@@ -1476,7 +1498,7 @@ p{ margin: 0; }
     const sb = window.getSupabaseClient();
     const { data, error } = await sb
       .from('articles')
-      .select('title, slug, excerpt, cover_image_url, cover_image_alt, published_at')
+      .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(3);
@@ -1488,7 +1510,7 @@ p{ margin: 0; }
 
     grid.innerHTML = data.map(a => `
       <a class="home-blog-card" href="article.html?slug=${encodeURIComponent(a.slug)}">
-        <div class="home-blog-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}">` : ''}</div>
+        <div class="home-blog-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}"${a.cover_image_title ? ` title="${esc(a.cover_image_title)}"` : ''}>` : ''}</div>
         <div class="home-blog-card__body">
           <span class="home-blog-card__date">${a.published_at ? new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : ''}</span>
           <h3 class="home-blog-card__title">${esc(a.title)}</h3>
@@ -1593,12 +1615,20 @@ p{ margin: 0; }
     const duration = 1400;
     const start = performance.now();
 
+    el.classList.add('is-counting');
+
     function tick(now){
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       const value = Math.round(target * eased);
       el.textContent = value.toLocaleString('en-US') + suffix;
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.classList.remove('is-counting');
+        el.classList.add('count-pop');
+        el.addEventListener('animationend', () => el.classList.remove('count-pop'), { once: true });
+      }
     }
     requestAnimationFrame(tick);
   }

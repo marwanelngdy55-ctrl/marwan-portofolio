@@ -303,6 +303,18 @@ a{color:inherit; text-decoration:none;}
               <button type="button" data-cmd="insertUnorderedList" title="قائمة نقطية">•</button>
               <button type="button" data-cmd="insertOrderedList" title="قائمة مرقمة">1.</button>
               <span class="toolbar-sep"></span>
+              <select id="font-size-select" title="حجم الخط">
+                <option value="">حجم الخط</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+                <option value="36">36</option>
+              </select>
               <button type="button" id="font-size-down-btn" title="تصغير حجم الخط للنص المحدد">A-</button>
               <button type="button" id="font-size-up-btn" title="تكبير حجم الخط للنص المحدد">A+</button>
               <span class="toolbar-sep"></span>
@@ -319,8 +331,12 @@ a{color:inherit; text-decoration:none;}
           <div class="cover-preview" id="cover-preview">بدون صورة</div>
           <input type="file" id="cover-file" accept="image/*" style="margin-bottom:10px;">
           <div class="field">
-            <label for="cover-alt">Alt text لصورة الغلاف (وصف الصورة)</label>
+            <label for="cover-alt">Alt text لصورة الغلاف (وصف الصورة لمحركات البحث وذوي الإعاقة البصرية)</label>
             <input type="text" id="cover-alt" placeholder="مثال: صورة توضح نتائج تحسين السيو">
+          </div>
+          <div class="field">
+            <label for="cover-title">Title لصورة الغلاف (يظهر كتلميح عند تمرير الماوس، اختياري)</label>
+            <input type="text" id="cover-title" placeholder="مثال: نتائج تحسين السيو خلال 6 أشهر">
           </div>
           <div class="field">
             <label for="article-slug">الرابط (slug)</label>
@@ -418,14 +434,18 @@ a{color:inherit; text-decoration:none;}
   </main>
 </div>
 
-<!-- ============ MODAL: Alt text لصورة داخل المقال ============ -->
+<!-- ============ MODAL: Alt text و Title لصورة داخل المقال ============ -->
 <div class="modal-overlay hidden" id="alt-text-modal">
   <div class="modal-card">
-    <h3>وصف الصورة (Alt text)</h3>
+    <h3>بيانات الصورة</h3>
     <p>اكتب وصف قصير للصورة — مهم لمحركات البحث وذوي الإعاقة البصرية. من غير الوصف ده، الصورة هتترفع من غير Alt text.</p>
     <div class="field">
-      <label for="alt-text-modal-input">الوصف</label>
+      <label for="alt-text-modal-input">Alt text (الوصف)</label>
       <input type="text" id="alt-text-modal-input" placeholder="مثال: رسم بياني يوضح نمو الزيارات العضوية">
+    </div>
+    <div class="field">
+      <label for="title-text-modal-input">Title (يظهر كتلميح عند تمرير الماوس، اختياري)</label>
+      <input type="text" id="title-text-modal-input" placeholder="مثال: نمو الزيارات العضوية خلال 6 أشهر">
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn--ghost btn--sm" id="alt-text-modal-cancel">إلغاء</button>

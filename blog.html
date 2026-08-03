@@ -106,7 +106,7 @@
       <span>© <span id="year"></span> Marwan El-Ngdy. جميع الحقوق محفوظة.</span>
       <div style="display:flex; gap:12px;">
         <a href="https://www.facebook.com/marwan.elngdy.308" target="_blank" rel="noopener">Facebook</a>
-        <a href="https://www.linkedin.com/in/marwan-elngdy/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
       </div>
     </div>
   </div>
@@ -121,7 +121,7 @@
   const grid = document.getElementById('blog-grid');
   const { data, error } = await sb
     .from('articles')
-    .select('title, slug, excerpt, cover_image_url, cover_image_alt, published_at')
+    .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
 
@@ -138,7 +138,7 @@
 
   grid.innerHTML = data.map(a => `
     <a class="post-card" href="article.html?slug=${encodeURIComponent(a.slug)}">
-      <div class="post-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}">` : 'بدون صورة'}</div>
+      <div class="post-card__cover">${a.cover_image_url ? `<img src="${esc(a.cover_image_url)}" alt="${esc(a.cover_image_alt || a.title || '')}"${a.cover_image_title ? ` title="${esc(a.cover_image_title)}"` : ''}>` : 'بدون صورة'}</div>
       <div class="post-card__body">
         <span class="post-card__date">${a.published_at ? new Date(a.published_at).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' }) : ''}</span>
         <h3 class="post-card__title">${esc(a.title)}</h3>

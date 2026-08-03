@@ -92,6 +92,7 @@
   const coverFileInput = document.getElementById('cover-file');
   const coverPreview = document.getElementById('cover-preview');
   const coverAltInput = document.getElementById('cover-alt');
+  const coverTitleInput = document.getElementById('cover-title');
   const editorMsg = document.getElementById('editor-msg');
   const saveDraftBtn = document.getElementById('save-draft-btn');
   const publishBtn = document.getElementById('publish-btn');
@@ -165,6 +166,7 @@
     excerptInput.value = '';
     contentEditor.innerHTML = '';
     coverAltInput.value = '';
+    coverTitleInput.value = '';
     coverPreview.innerHTML = 'بدون صورة';
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
@@ -180,8 +182,9 @@
         excerptInput.value = data.excerpt || '';
         contentEditor.innerHTML = data.content || '';
         coverAltInput.value = data.cover_image_alt || '';
+        coverTitleInput.value = data.cover_image_title || '';
         currentCoverUrl = data.cover_image_url || null;
-        if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}">`;
+        if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
       }
     } else {
@@ -214,16 +217,18 @@
     document.execCommand('createLink', false, url);
   });
 
-  /* ----- نافذة إدخال Alt text (بديل عن prompt() اللي ممكن ميشتغلش صح على كل المتصفحات/الموبايل) ----- */
+  /* ----- نافذة إدخال Alt text و Title (بديل عن prompt() اللي ممكن ميشتغلش صح على كل المتصفحات/الموبايل) ----- */
   const altTextModal = document.getElementById('alt-text-modal');
   const altTextModalInput = document.getElementById('alt-text-modal-input');
+  const titleTextModalInput = document.getElementById('title-text-modal-input');
   const altTextModalConfirm = document.getElementById('alt-text-modal-confirm');
   const altTextModalCancel = document.getElementById('alt-text-modal-cancel');
 
-  function askForAltText() {
+  function askForImageMeta() {
     return new Promise((resolve) => {
-      if (!altTextModal) { resolve(''); return; }
+      if (!altTextModal) { resolve(null); return; }
       altTextModalInput.value = '';
+      if (titleTextModalInput) titleTextModalInput.value = '';
       altTextModal.classList.remove('hidden');
       setTimeout(() => altTextModalInput.focus(), 30);
 
@@ -233,9 +238,15 @@
         altTextModalCancel.removeEventListener('click', onCancel);
         altTextModal.removeEventListener('click', onOverlayClick);
         altTextModalInput.removeEventListener('keydown', onKeydown);
+        titleTextModalInput?.removeEventListener('keydown', onKeydown);
         resolve(result);
       }
-      function onConfirm() { cleanup(altTextModalInput.value.trim()); }
+      function onConfirm() {
+        cleanup({
+          alt: altTextModalInput.value.trim(),
+          title: titleTextModalInput ? titleTextModalInput.value.trim() : '',
+        });
+      }
       function onCancel() { cleanup(null); }
       function onOverlayClick(e) { if (e.target === altTextModal) onCancel(); }
       function onKeydown(e) {
@@ -246,6 +257,7 @@
       altTextModalCancel.addEventListener('click', onCancel);
       altTextModal.addEventListener('click', onOverlayClick);
       altTextModalInput.addEventListener('keydown', onKeydown);
+      titleTextModalInput?.addEventListener('keydown', onKeydown);
     });
   }
 
@@ -260,8 +272,8 @@
     input.addEventListener('change', async () => {
       const file = input.files[0];
       if (!file) return;
-      const altText = await askForAltText();
-      if (altText === null) { input.remove(); return; } // المستخدم لغى
+      const meta = await askForImageMeta();
+      if (meta === null) { input.remove(); return; } // المستخدم لغى
       const path = `${Date.now()}-${slugify(file.name)}`;
       const { error: uploadError } = await sb.storage.from('article-images').upload(path, file, { upsert: true });
       if (uploadError) {
@@ -271,7 +283,8 @@
       }
       const { data } = sb.storage.from('article-images').getPublicUrl(path);
       focusEditor();
-      document.execCommand('insertHTML', false, `<img src="${escapeAttr(data.publicUrl)}" alt="${escapeAttr(altText)}">`);
+      const titleAttr = meta.title ? ` title="${escapeAttr(meta.title)}"` : '';
+      document.execCommand('insertHTML', false, `<img src="${escapeAttr(data.publicUrl)}" alt="${escapeAttr(meta.alt)}"${titleAttr}>`);
       input.remove();
     });
     input.click();
@@ -299,6 +312,25 @@
   document.getElementById('font-size-up-btn')?.addEventListener('click', () => applyFontSizeStep(1));
   document.getElementById('font-size-down-btn')?.addEventListener('click', () => applyFontSizeStep(-1));
 
+  /* ----- اختيار حجم خط محدد من القائمة (12، 14، 16...) ----- */
+  function applyFontSizeExact(px) {
+    focusEditor();
+    document.execCommand('fontSize', false, '7');
+    contentEditor.querySelectorAll('font[size="7"]').forEach(fontEl => {
+      const span = document.createElement('span');
+      span.style.fontSize = px + 'px';
+      span.innerHTML = fontEl.innerHTML;
+      fontEl.replaceWith(span);
+    });
+  }
+
+  const fontSizeSelect = document.getElementById('font-size-select');
+  fontSizeSelect?.addEventListener('change', () => {
+    const px = parseInt(fontSizeSelect.value, 10);
+    if (px) applyFontSizeExact(px);
+    fontSizeSelect.value = ''; // يرجع للقيمة الافتراضية عشان يقدر يختار نفس الحجم تاني لنص تاني
+  });
+
   coverFileInput.addEventListener('change', async () => {
     const file = coverFileInput.files[0];
     if (!file) return;
@@ -311,7 +343,7 @@
     }
     const { data } = sb.storage.from('article-images').getPublicUrl(path);
     currentCoverUrl = data.publicUrl;
-    coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(coverAltInput.value || '')}">`;
+    coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(coverAltInput.value || '')}" title="${escapeAttr(coverTitleInput.value || '')}">`;
   });
 
   async function saveArticle(status) {
@@ -332,6 +364,7 @@
       content: contentEditor.innerHTML,
       cover_image_url: currentCoverUrl,
       cover_image_alt: coverAltInput.value.trim(),
+      cover_image_title: coverTitleInput.value.trim(),
       status,
       author_id: session?.user?.id || null,
     };
@@ -518,7 +551,7 @@
      صور الموقع (زي صورة نبذة عني) — رفع وتعديل مباشر من اللوحة
   --------------------------------------------------------------------- */
   const CONTENT_IMAGES = [
-    { key: 'about_photo', label: 'صورة قسم "نبذة عني"', altKey: 'about_photo_alt' },
+    { key: 'about_photo', label: 'صورة قسم "نبذة عني"', altKey: 'about_photo_alt', titleKey: 'about_photo_title' },
   ];
   const contentImagesWrap = document.getElementById('content-images-wrap');
 
@@ -545,8 +578,12 @@
             <label>Alt text (وصف الصورة)</label>
             <input type="text" data-alt="${img.altKey}" value="${escapeAttr(values[img.altKey] || '')}" placeholder="مثال: صورة شخصية لمروان النجدي">
           </div>
+          <div class="field">
+            <label>Title (يظهر كتلميح عند تمرير الماوس، اختياري)</label>
+            <input type="text" data-title="${img.titleKey}" value="${escapeAttr(values[img.titleKey] || '')}" placeholder="مثال: مروان النجدي - متخصص SEO">
+          </div>
           <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn btn--primary btn--sm" data-save-img="${img.key}" data-alt-key="${img.altKey}">حفظ</button>
+            <button class="btn btn--primary btn--sm" data-save-img="${img.key}" data-alt-key="${img.altKey}" data-title-key="${img.titleKey}">حفظ</button>
             <span class="msg" data-img-status="${img.key}"></span>
           </div>
         </div>
@@ -577,11 +614,14 @@
       btn.addEventListener('click', async () => {
         const key = btn.dataset.saveImg;
         const altKey = btn.dataset.altKey;
+        const titleKey = btn.dataset.titleKey;
         const statusEl = contentImagesWrap.querySelector(`[data-img-status="${key}"]`);
         const altInput = contentImagesWrap.querySelector(`[data-alt="${altKey}"]`);
+        const titleInputEl = titleKey ? contentImagesWrap.querySelector(`[data-title="${titleKey}"]`) : null;
         statusEl.textContent = '';
         statusEl.className = 'msg';
         const rows = [{ key: altKey, value: altInput.value }];
+        if (titleKey && titleInputEl) rows.push({ key: titleKey, value: titleInputEl.value });
         if (pendingUrls[key]) rows.push({ key, value: pendingUrls[key] });
         const { error } = await sb.from('site_content').upsert(rows);
         if (error) {

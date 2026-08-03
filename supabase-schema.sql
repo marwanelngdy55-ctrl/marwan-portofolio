@@ -50,6 +50,9 @@ create table if not exists public.articles (
 -- لو الجدول كان موجود من قبل، ضيف عمود alt text لصورة الغلاف
 alter table public.articles add column if not exists cover_image_alt text;
 
+-- عمود Title منفصل لصورة الغلاف (يظهر كـ tooltip عند تمرير الماوس، مختلف عن Alt text)
+alter table public.articles add column if not exists cover_image_title text;
+
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
   key text primary key,
