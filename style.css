@@ -475,9 +475,7 @@ p{ margin: 0; }
   align-items: start;
 }
 .about__media{position: sticky;  top: calc(var(--nav-h) + 40px); z-index: 10;}
-.about__media{ position: relative;}
 
-.about__badge--top{z-index: 9999;}
 .about__photo{
   width: 100%;
   aspect-ratio: 4/5;
@@ -517,7 +515,7 @@ p{ margin: 0; }
   animation: badgePulse 3.2s ease-in-out infinite;
 }
 .about__badge--bottom{ bottom: -22px; left: -22px; }
-.about__badge--top{ top: 10px;  right: 10px;  background: var(--gold);  color: #2b1f05; animation-delay: 1.6s;  z-index: 999; border: 2px solid red;}
+.about__badge--top{ top: -22px; right: -22px; background: var(--gold); color: #2b1f05; animation-delay: 1.6s; }
 .about__badge-num{ font-family: var(--font-mono); font-size: 26px; font-weight: 700; line-height: 1; }
 .about__badge-label{ font-size: 11.5px; margin-top: 4px; }
 @keyframes badgePulse{
@@ -864,7 +862,7 @@ p{ margin: 0; }
   .serp-card{ max-width: 460px; transform: none; }
 
   .about{ grid-template-columns: 1fr; }
-  .about__media{ position: static; max-width: 320px; margin: 0 auto 60px; }
+  .about__media{ position: relative; max-width: 320px; margin: 0 auto 60px; }
 
   .results-grid{ grid-template-columns: 1fr; }
   .contact{ grid-template-columns: 1fr; gap: 48px; }
@@ -915,7 +913,10 @@ p{ margin: 0; }
 
 @media (max-width: 480px){
   .section__inner{ padding: 0 20px; }
-  .nav__inner{ padding: 0 20px; }
+  .nav__inner{ padding: 0 16px; gap: 10px; }
+  .nav__actions{ gap: 8px; }
+  .nav__actions .btn{ display: none; }
+  .nav__brand-text{ font-size: 13.5px; }
   .hero__inner{ padding: 0 20px; }
   .footer__inner{ padding: 0 20px; }
   .hero__cta{ flex-direction: column; align-items: stretch; }

@@ -919,7 +919,7 @@ p{ margin: 0; }
   .serp-card{ max-width: 460px; transform: none; }
 
   .about{ grid-template-columns: 1fr; }
-  .about__media{ position: static; max-width: 320px; margin: 0 auto 60px; }
+  .about__media{ position: relative; max-width: 320px; margin: 0 auto 60px; }
 
   .results-grid{ grid-template-columns: 1fr; }
   .contact{ grid-template-columns: 1fr; gap: 48px; }
@@ -970,7 +970,10 @@ p{ margin: 0; }
 
 @media (max-width: 480px){
   .section__inner{ padding: 0 20px; }
-  .nav__inner{ padding: 0 20px; }
+  .nav__inner{ padding: 0 16px; gap: 10px; }
+  .nav__actions{ gap: 8px; }
+  .nav__actions .btn{ display: none; }
+  .nav__brand-text{ font-size: 13.5px; }
   .hero__inner{ padding: 0 20px; }
   .footer__inner{ padding: 0 20px; }
   .hero__cta{ flex-direction: column; align-items: stretch; }
