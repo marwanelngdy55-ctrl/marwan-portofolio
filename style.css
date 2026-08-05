@@ -68,7 +68,7 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+html{ scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
 body{
   margin: 0;
   background: var(--bg);
@@ -78,6 +78,7 @@ body{
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  max-width: 100%;
   transition: background 0.4s var(--ease), color 0.4s var(--ease);
 }
 img{ max-width: 100%; display: block; }
@@ -331,8 +332,8 @@ p{ margin: 0; }
   margin-bottom: 22px;
   letter-spacing: 0.01em;
 }
-.hero__intro{ font-size: 19px; color: var(--text); margin-bottom: 14px; max-width: 560px; }
-.hero__support{ font-size: 15.5px; color: var(--text-muted); margin-bottom: 38px; max-width: 560px; }
+.hero__intro{ font-size: 19px; color: var(--text); margin-bottom: 14px; max-width: 560px; overflow-wrap: break-word; }
+.hero__support{ font-size: 15.5px; color: var(--text-muted); margin-bottom: 38px; max-width: 560px; overflow-wrap: break-word; }
 
 .hero__cta{ display: flex; gap: 14px; margin-bottom: 56px; flex-wrap: wrap; }
 
