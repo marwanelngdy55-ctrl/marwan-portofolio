@@ -23,6 +23,12 @@
   .article-body a{ color:var(--accent); text-decoration:underline; }
   .article-body ul{ margin:0 0 18px; padding-inline-start:22px; list-style:disc; }
   .article-body li{ margin-bottom:8px; }
+  /* المحتوى الملزوق من وورد أو مصادر تانية غالبًا بيجيب معاه ألوان نص ثابتة (زي أسود)
+     مكتوبة "جوه" العنصر نفسه (style="color:..."), واللون ده بيكسب لون الموقع العادي.
+     السطرين دول بيجبروا كل نصوص المقال تاخد لون الموقع (فاتح في الوضع الليلي) بغض النظر
+     عن أي لون ملزوق معاها، ما عدا الروابط اللي ليها لون مميز خاص بيها. */
+  .article-body *:not(a){ color:var(--text) !important; }
+  .article-body a{ color:var(--accent) !important; }
   .back-link{ display:inline-flex; align-items:center; gap:6px; color:var(--text-muted); font-size:14px; margin-bottom:22px; }
   .back-link:hover{ color:var(--accent); }
 
