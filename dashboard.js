@@ -393,7 +393,8 @@
     const path = `${Date.now()}-${slugify(file.name)}`;
     const { error: uploadError } = await sb.storage.from('article-images').upload(path, file, { upsert: true });
     if (uploadError) {
-      coverPreview.innerHTML = 'فشل رفع الصورة';
+      console.error('cover upload error:', uploadError);
+      coverPreview.innerHTML = 'فشل رفع الصورة: ' + escapeAttr(uploadError.message || 'خطأ غير معروف');
       return;
     }
     const { data } = sb.storage.from('article-images').getPublicUrl(path);
