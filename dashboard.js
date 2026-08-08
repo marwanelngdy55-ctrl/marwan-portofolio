@@ -271,6 +271,42 @@
     document.execCommand('formatBlock', false, `<${blockFormatSelect.value}>`);
   });
 
+  // لما تلصق نص من وورد أو جوجل دوكس أو أي حتة تانية، بيجيله عادة لون نص ثابت (زي أسود)
+  // جوه الكود نفسه — ده اللي بيخلي الكتابة تختفي في الوضع الداكن. الكود ده بيشيل أي لون
+  // (نص أو خلفية) مكتوب جوه الكونتنت المنسوخ، عشان الكتابة دايمًا تتبع لون الموقع الحالي
+  // (أبيض في الداكن، أسود في الفاتح) بدل ما تفضل ثابتة على اللون اللي جاية بيه.
+  contentEditor?.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const clipboard = e.clipboardData || window.clipboardData;
+    const html = clipboard?.getData('text/html');
+    const text = clipboard?.getData('text/plain') || '';
+
+    function stripColors(node) {
+      if (node.nodeType === 1) {
+        node.removeAttribute('color');
+        node.removeAttribute('bgcolor');
+        const style = node.getAttribute('style');
+        if (style) {
+          const cleaned = style.replace(/(^|;)\s*(color|background|background-color)\s*:[^;]*/gi, '');
+          if (cleaned.trim()) node.setAttribute('style', cleaned); else node.removeAttribute('style');
+        }
+        node.removeAttribute('class');
+        Array.from(node.childNodes).forEach(stripColors);
+      }
+    }
+
+    let cleanHtml;
+    if (html) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      stripColors(wrapper);
+      cleanHtml = wrapper.innerHTML;
+    } else {
+      cleanHtml = escapeHtml(text).replace(/\n/g, '<br>');
+    }
+    document.execCommand('insertHTML', false, cleanHtml);
+  });
+
   document.getElementById('link-btn')?.addEventListener('click', () => {
     const url = prompt('حط رابط الصفحة (لازم يبدأ بـ https://):', 'https://');
     if (!url) return;
