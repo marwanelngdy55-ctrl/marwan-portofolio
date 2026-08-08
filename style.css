@@ -29,9 +29,9 @@
   --shadow-md: 0 8px 24px rgba(0,0,0,0.35);
   --shadow-lg: 0 24px 64px rgba(0,0,0,0.45);
 
-  --font-display: 'Tajawal', 'Manrope', 'Inter', sans-serif;
-  --font-body: 'Tajawal', 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Tajawal', monospace;
+  --font-display: 'Alexandria', 'Manrope', 'Inter', sans-serif;
+  --font-body: 'Cairo', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cairo', monospace;
 
   --radius-sm: 8px;
   --radius-md: 14px;
