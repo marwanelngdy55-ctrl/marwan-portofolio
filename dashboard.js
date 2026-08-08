@@ -210,7 +210,7 @@
     coverPreview.innerHTML = 'بدون صورة';
     if (showAuthorCheck) showAuthorCheck.checked = true;
     if (showDateCheck) showDateCheck.checked = true;
-    if (editorAuthorNameEl) editorAuthorNameEl.textContent = '';
+    if (editorAuthorNameEl) editorAuthorNameEl.value = '';
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
     if (articleId) {
@@ -236,14 +236,14 @@
         currentAuthorName = data.author_name || '';
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
-        if (editorAuthorNameEl) editorAuthorNameEl.textContent = currentAuthorName ? `الكاتب: ${currentAuthorName}` : '';
+        if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName || (currentProfile?.full_name || currentProfile?.email || '');
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
       }
     } else {
       editorTitleEl.textContent = 'مقال جديد';
       currentAuthorName = currentProfile?.full_name || currentProfile?.email || '';
-      if (editorAuthorNameEl) editorAuthorNameEl.textContent = currentAuthorName ? `الكاتب: ${currentAuthorName}` : '';
+      if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName;
     }
     showView('editor');
   }
@@ -393,8 +393,7 @@
     const path = `${Date.now()}-${slugify(file.name)}`;
     const { error: uploadError } = await sb.storage.from('article-images').upload(path, file, { upsert: true });
     if (uploadError) {
-      console.error('cover upload error:', uploadError);
-      coverPreview.innerHTML = 'فشل رفع الصورة: ' + escapeAttr(uploadError.message || 'خطأ غير معروف');
+      coverPreview.innerHTML = 'فشل رفع الصورة';
       return;
     }
     const { data } = sb.storage.from('article-images').getPublicUrl(path);
@@ -413,12 +412,15 @@
       return;
     }
     const { data: { session } } = await sb.auth.getSession();
-    // مقال جديد: الكاتب هو المستخدم الحالي. مقال موجود: نحافظ على الكاتب الأصلي
-    // (عشان لو المدير فتح مقال عضو تاني للتعديل، ميتغيرش الكاتب المسجل)
+    // مقال جديد: الكاتب هو المستخدم الحالي. مقال موجود: نحافظ على نفس author_id الأصلي
+    // (عشان لو المدير فتح مقال عضو تاني للتعديل، ميتغيرش صاحب المقال الفعلي)
+    // اسم الكاتب اللي بيظهر للزوار: بياخده من حقل "اسم الكاتب" اللي المستخدم كتبه/عدّله بنفسه،
+    // ولو سابه فاضي بيرجع للاسم المسجل في الحساب أو الإيميل كحل احتياطي بس
     const authorId = currentArticleId ? currentAuthorId : (session?.user?.id || null);
-    const authorName = currentArticleId
-      ? (currentAuthorName || '')
-      : (currentProfile?.full_name || currentProfile?.email || session?.user?.email || '');
+    const typedAuthorName = editorAuthorNameEl ? editorAuthorNameEl.value.trim() : '';
+    const authorName = typedAuthorName
+      || currentAuthorName
+      || currentProfile?.full_name || currentProfile?.email || session?.user?.email || '';
     const payload = {
       title,
       slug,
