@@ -64,6 +64,11 @@ alter table public.articles add column if not exists author_name text;
 alter table public.articles add column if not exists show_author boolean not null default true;
 alter table public.articles add column if not exists show_date boolean not null default true;
 
+-- عنوان السيو (Meta Title) ووصف السيو (Meta Description): يظهروا في نتائج جوجل بدل
+-- عنوان المقال (H1) لو اتكتبوا. لو سايبهم فاضيين، الموقع بيستخدم عنوان المقال والمقتطف تلقائيًا.
+alter table public.articles add column if not exists meta_title text;
+alter table public.articles add column if not exists meta_description text;
+
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
   key text primary key,

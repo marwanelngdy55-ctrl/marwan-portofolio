@@ -352,6 +352,18 @@ a{color:inherit; text-decoration:none;}
           <p class="msg" id="editor-msg"></p>
         </div>
         <div class="card">
+          <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">إعدادات السيو (SEO)</label>
+          <p class="help-text" style="margin-bottom:14px;">دول بيتحكموا في اللي يظهر في نتائج جوجل — منفصلين عن عنوان المقال (H1) اللي بيظهر للزوار جوه الصفحة. سيبهم فاضيين لو عايز الموقع يستخدم عنوان المقال والمقتطف تلقائيًا.</p>
+          <div class="field">
+            <label for="meta-title">عنوان السيو (Meta Title — يظهر في جوجل)</label>
+            <input type="text" id="meta-title" maxlength="70" placeholder="لو فاضي، هيستخدم عنوان المقال">
+          </div>
+          <div class="field">
+            <label for="meta-description">وصف السيو (Meta Description)</label>
+            <textarea id="meta-description" rows="3" maxlength="160" placeholder="لو فاضي، هيستخدم المقتطف القصير"></textarea>
+          </div>
+        </div>
+        <div class="card">
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:12px;">إعدادات الظهور للجمهور</label>
           <div class="field">
             <label for="editor-author-name">اسم الكاتب (يظهر للزوار)</label>

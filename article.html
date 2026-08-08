@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title id="page-title">مقال | مروان النجدي</title>
+<meta id="meta-description" name="description" content="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -23,12 +24,6 @@
   .article-body a{ color:var(--accent); text-decoration:underline; }
   .article-body ul{ margin:0 0 18px; padding-inline-start:22px; list-style:disc; }
   .article-body li{ margin-bottom:8px; }
-  /* المحتوى الملزوق من وورد أو مصادر تانية غالبًا بيجيب معاه ألوان نص ثابتة (زي أسود)
-     مكتوبة "جوه" العنصر نفسه (style="color:..."), واللون ده بيكسب لون الموقع العادي.
-     السطرين دول بيجبروا كل نصوص المقال تاخد لون الموقع (فاتح في الوضع الليلي) بغض النظر
-     عن أي لون ملزوق معاها، ما عدا الروابط اللي ليها لون مميز خاص بيها. */
-  .article-body *:not(a){ color:var(--text) !important; }
-  .article-body a{ color:var(--accent) !important; }
   .back-link{ display:inline-flex; align-items:center; gap:6px; color:var(--text-muted); font-size:14px; margin-bottom:22px; }
   .back-link:hover{ color:var(--accent); }
 
@@ -132,7 +127,7 @@
 
   const { data, error } = await sb
     .from('articles')
-    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date')
+    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description')
     .eq('slug', slug)
     .eq('status', 'published')
     .single();
@@ -143,9 +138,16 @@
     return;
   }
 
-  document.title = data.title + ' | مروان النجدي';
-  document.getElementById('page-title').textContent = data.title + ' | مروان النجدي';
+  // عنوان السيو (يظهر في جوجل وتاب المتصفح) منفصل عن عنوان المقال (H1) اللي بيظهر للزوار.
+  // لو المدير سايب حقل "عنوان السيو" فاضي، بيرجع لعنوان المقال تلقائيًا.
+  const seoTitle = (data.meta_title || data.title || '').trim();
+  document.title = seoTitle + ' | مروان النجدي';
+  document.getElementById('page-title').textContent = seoTitle + ' | مروان النجدي';
   titleEl.textContent = data.title;
+
+  const seoDescription = (data.meta_description || data.excerpt || '').trim();
+  const metaDescTag = document.getElementById('meta-description');
+  if (metaDescTag && seoDescription) metaDescTag.setAttribute('content', seoDescription);
 
   const showDate = data.show_date !== false && data.published_at;
   const showAuthor = data.show_author !== false && data.author_name;

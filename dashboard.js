@@ -117,6 +117,8 @@
   const titleInput = document.getElementById('article-title');
   const slugInput = document.getElementById('article-slug');
   const excerptInput = document.getElementById('article-excerpt');
+  const metaTitleInput = document.getElementById('meta-title');
+  const metaDescriptionInput = document.getElementById('meta-description');
   const contentEditor = document.getElementById('article-content');
   const coverFileInput = document.getElementById('cover-file');
   const coverPreview = document.getElementById('cover-preview');
@@ -204,6 +206,8 @@
     titleInput.value = '';
     slugInput.value = '';
     excerptInput.value = '';
+    if (metaTitleInput) metaTitleInput.value = '';
+    if (metaDescriptionInput) metaDescriptionInput.value = '';
     contentEditor.innerHTML = '';
     coverAltInput.value = '';
     coverTitleInput.value = '';
@@ -228,6 +232,8 @@
         titleInput.value = data.title || '';
         slugInput.value = data.slug || '';
         excerptInput.value = data.excerpt || '';
+        if (metaTitleInput) metaTitleInput.value = data.meta_title || '';
+        if (metaDescriptionInput) metaDescriptionInput.value = data.meta_description || '';
         contentEditor.innerHTML = data.content || '';
         coverAltInput.value = data.cover_image_alt || '';
         coverTitleInput.value = data.cover_image_title || '';
@@ -425,6 +431,8 @@
       title,
       slug,
       excerpt: excerptInput.value.trim(),
+      meta_title: metaTitleInput ? metaTitleInput.value.trim() : '',
+      meta_description: metaDescriptionInput ? metaDescriptionInput.value.trim() : '',
       content: contentEditor.innerHTML,
       cover_image_url: currentCoverUrl,
       cover_image_alt: coverAltInput.value.trim(),
