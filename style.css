@@ -468,6 +468,122 @@ p{ margin: 0; }
   100%{ opacity: 0; }
 }
 
+/* ---------- Trusted By (Logo Marquee) ---------- */
+.trusted-by{
+  padding: 44px 0 68px;
+  position: relative;
+}
+.trusted-by__inner{
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+.trusted-by__label{
+  display: block;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  margin-bottom: 26px;
+}
+.logo-marquee{
+  position: relative;
+  overflow: hidden;
+  direction: ltr; /* الحاوية دي هي اللي بتحدد الحافة اللي الشريط بيتلزّق فيها؛ لازم تبقى LTR
+                     عشان الشريط يتلزق من الشمال ويفضل مليان دايمًا وهو بيتحرك، مهما كان
+                     باقي الموقع RTL */
+}
+/* تلاشي بسيط عند طرفي الشريط (بدل mask-image اللي بتتصرف غلط في متصفحات معينة
+   وبتخفي الشريط كله بالغلط) */
+.logo-marquee::before,
+.logo-marquee::after{
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 70px;
+  z-index: 2;
+  pointer-events: none;
+}
+.logo-marquee::before{
+  right: 0;
+  background: linear-gradient(to left, var(--bg), transparent);
+}
+.logo-marquee::after{
+  left: 0;
+  background: linear-gradient(to right, var(--bg), transparent);
+}
+@media (max-width: 720px){
+  .logo-marquee::before, .logo-marquee::after{ width: 36px; }
+}
+.logo-marquee__track{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: max-content;
+  direction: ltr; /* مهم: الموقع RTL، وده كان بيخلي المتصفح يرتب اللوجوهات من اليمين
+                     فمكانش فيه لوجوهات "جاهزة" تدخل من الناحية التانية أول ما وحدة تخرج،
+                     فتظهر مساحة فاضية. إجبار LTR هنا بيخلي الشريط متصل من غير فراغ. */
+  animation: logo-marquee-scroll 32s linear infinite;
+}
+/* بيوقف الحركة كلها لو الماوس فوق أي لوجو من اللي جوه الشريط */
+.logo-marquee:hover .logo-marquee__track{
+  animation-play-state: paused;
+}
+.logo-marquee__item{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84px;
+  width: 168px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 16px 22px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.logo-marquee__item img{
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(1) opacity(0.72);
+  transition: filter 0.3s var(--ease);
+}
+/* بعض اللوجوهات (زي نقشة) بيضاء اللون، فمحتاجة خلفية غامقة ثابتة عشان تبان في الوضعين */
+.logo-marquee__item--dark{
+  background: #12161F;
+  border-color: rgba(232,236,241,0.14);
+}
+.logo-marquee__item--dark img{
+  filter: opacity(0.82);
+}
+.logo-marquee__item--dark:hover img{
+  filter: opacity(1);
+}
+.logo-marquee__item:hover{
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+.logo-marquee__item:hover img{
+  filter: grayscale(0) opacity(1);
+}
+
+@keyframes logo-marquee-scroll{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
+}
+
+@media (max-width: 720px){
+  .trusted-by{ padding: 32px 0 52px; }
+  .logo-marquee__item{ height: 68px; width: 132px; padding: 12px 16px; }
+  .logo-marquee__track{ gap: 14px; animation-duration: 22s; }
+}
+
 /* ---------- About ---------- */
 .about{
   display: grid;
