@@ -5,47 +5,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title id="page-title">مروان النجدي | SEO Specialist</title>
-<meta id="meta-description" name="description" content="مروان النجدي - متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر. لو مبيعاتك العضوية واقفة، أنا الشخص اللي تعتمد عليه لحل المشكلة: سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
+<title id="page-title">مروان النجدي | متخصص SEO و GEO و AEO — يحل مشكلة مبيعاتك العضوية الواقفة</title>
+<meta id="meta-description" name="description" content="مروان النجدي: متخصص تحسين محركات البحث (SEO) والتهيئة لمحركات الإجابة والذكاء الاصطناعي (GEO / AEO) لأصحاب المتاجر والمواقع في السعودية ومصر. أكتر من 5 سنوات خبرة عملية على Salla وShopify وZid وWooCommerce، وأكتر من 50 عميل شافوا نمو حقيقي في الزيارات والمبيعات — مش تقارير بس.">
 <link id="canonical-link" rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="مروان النجدي">
-<meta id="og-title" property="og:title" content="مروان النجدي | SEO Specialist">
-<meta id="og-description" property="og:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر — سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
+<meta id="og-title" property="og:title" content="مروان النجدي | متخصص SEO و GEO و AEO للمتاجر والمواقع الإلكترونية">
+<meta id="og-description" property="og:description" content="مبيعاتك من جوجل وChatGPT واقفة؟ مروان النجدي متخصص SEO/GEO/AEO بخبرة +5 سنين وأكتر من 50 عميل في السعودية ومصر — سيو تقني، كلمات مفتاحية، وتهيئة للظهور في إجابات الذكاء الاصطناعي.">
 <meta id="og-image" property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
 <meta property="og:url" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/">
 <meta property="og:locale" content="ar_EG">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta id="twitter-title" name="twitter:title" content="مروان النجدي | SEO Specialist">
-<meta id="twitter-description" name="twitter:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
+<meta id="twitter-title" name="twitter:title" content="مروان النجدي | متخصص SEO و GEO و AEO">
+<meta id="twitter-description" name="twitter:description" content="متخصص SEO/GEO/AEO لأصحاب المتاجر والمواقع في السعودية ومصر — نتائج حقيقية في جوجل وفي إجابات الذكاء الاصطناعي.">
 <meta id="twitter-image" name="twitter:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800;900&family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <meta name="google-site-verification" content="8gHUzck-4M7g5MPH9Poue96_nbhPxqnZVBYSdEZ-Dws" />
+<style>
+  .faq-list{ max-width: 760px; margin: 36px auto 0; display:flex; flex-direction:column; gap:14px; }
+  .faq-item{
+    background: var(--bg-elevated); border:1px solid var(--border-strong); border-radius: var(--radius-md);
+    padding: 4px 22px; transition: border-color .3s var(--ease), background .3s var(--ease);
+  }
+  .faq-item[open]{ border-color: var(--accent); }
+  .faq-item__q{
+    cursor:pointer; list-style:none; padding: 18px 0; font-weight:700; font-size:16px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .faq-item__q::-webkit-details-marker{ display:none; }
+  .faq-item__q::after{
+    content:'+'; font-family:var(--font-mono); font-size:20px; color:var(--accent); flex-shrink:0;
+    transition: transform .3s var(--ease);
+  }
+  .faq-item[open] .faq-item__q::after{ transform: rotate(45deg); }
+  .faq-item__a{ color:var(--text-muted); font-size:14.5px; line-height:1.8; padding-bottom:20px; margin:0; }
+  .faq-item__a strong{ color: var(--text); }
+</style>
 
-<!-- JSON-LD: Person schema -->
+<!-- JSON-LD: Person schema (غني بالكيانات عشان يساعد جوجل ومحركات الذكاء الاصطناعي تفهم وتقتبس من مروان مباشرة) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Marwan El-Ngdy",
-  "alternateName": "مروان النجدي",
-  "jobTitle": "SEO Specialist",
-  "description": "متخصص SEO بخبرة تتجاوز 5 سنوات في حل مشكلة المبيعات العضوية الواقفة لمتاجر ومواقع إلكترونية في السعودية ومصر.",
+  "alternateName": ["مروان النجدي", "Marwan Elngdy"],
+  "jobTitle": "SEO, GEO & AEO Specialist",
+  "description": "متخصص تحسين محركات البحث (SEO) وتحسين الظهور في محركات الذكاء الاصطناعي ومحركات الإجابة (GEO / AEO)، بخبرة عملية تتجاوز 5 سنوات في حل مشكلة المبيعات العضوية الواقفة لأكتر من 50 متجرًا وموقعًا إلكترونيًا في السعودية ومصر.",
+  "disambiguatingDescription": "خبرة عملية على Salla وShopify وZid وWooCommerce، من التدقيق التقني لحد استراتيجية المحتوى وبناء الروابط.",
   "url": "https://marwanelngdy55-ctrl.github.io/marwan-portofolio/",
   "image": "https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp",
+  "email": "mailto:Marwanelngdy55@gmail.com",
+  "nationality": "Egyptian",
   "sameAs": [
     "https://www.facebook.com/marwan.elngdy.308",
     "https://www.linkedin.com/in/marwan-elngdy/"
   ],
-  "knowsAbout": ["Technical SEO", "Keyword Research", "E-commerce SEO", "Content Optimization", "Shopify SEO", "Salla SEO"],
-  "areaServed": ["Saudi Arabia", "Egypt"]
+  "knowsAbout": [
+    "Technical SEO", "Keyword Research", "E-commerce SEO", "Content Optimization",
+    "Shopify SEO", "Salla SEO", "Zid SEO", "WooCommerce SEO",
+    "Generative Engine Optimization (GEO)", "Answer Engine Optimization (AEO)",
+    "Schema Markup", "Link Building", "Search Intent Matching"
+  ],
+  "areaServed": ["Saudi Arabia", "Egypt"],
+  "knowsLanguage": ["ar", "en"]
+}
+</script>
+
+<!-- JSON-LD: FAQPage schema (للظهور كإجابات مباشرة في جوجل وChatGPT وباقي محركات الإجابة — AEO) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "مين مروان النجدي؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "مروان النجدي متخصص SEO مصري بخبرة عملية تتجاوز 5 سنوات، اشتغل مع أكتر من 50 متجرًا وموقعًا إلكترونيًا في السعودية ومصر على منصات Salla وShopify وZid وWooCommerce، وهدفه الأساسي إنه يحوّل الزيارات العضوية لمبيعات فعلية مش مجرد أرقام في تقرير."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "إيه الفرق بين SEO و GEO و AEO؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SEO هو تحسين الظهور في نتائج البحث التقليدية زي جوجل. GEO (Generative Engine Optimization) هو تهيئة المحتوى عشان يظهر ويُقتبس منه في إجابات أدوات الذكاء الاصطناعي زي ChatGPT وGemini. أما AEO (Answer Engine Optimization) فهو تنظيم المحتوى في صورة سؤال وجواب واضح عشان يظهر كإجابة مباشرة في محركات البحث ومساعدات الذكاء الاصطناعي. مروان النجدي بيشتغل على الثلاثة مع بعض عشان يضمن ظهور أوسع لعملائه."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "امتى أشوف نتيجة من شغل السيو؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "غالبًا أول نتائج ملموسة بتبدأ تظهر خلال 3 إلى 6 أشهر من العمل المستمر، والنمو الأكبر في الزيارات والمبيعات بيتضح خلال 6 إلى 12 شهر — حسب حجم المنافسة في مجال العميل وحالة الموقع أو المتجر قبل البدء."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "هل خدمات مروان النجدي مناسبة للمتاجر الصغيرة والناشئة؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "أيوه، الخدمات مصممة بمرونة حسب حجم المشروع الفعلي، من تدقيق SEO شامل لمرة واحدة لمتجر ناشئ، لحد إدارة SEO شهرية مستمرة لمتجر أو موقع أكبر يحتاج متابعة دورية."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "إيه المنصات اللي يشتغل عليها مروان النجدي؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "يشتغل مروان النجدي بثقة على Salla وShopify وZid وWooCommerce، بالإضافة إلى المواقع الإلكترونية الخدمية بشكل عام، ويستخدم Google Search Console وGoogle Analytics في التتبع والتحليل."
+      }
+    }
+  ]
 }
 </script>
 </head>
@@ -89,9 +168,9 @@
       <div class="hero__content">
         <span class="eyebrow"><span class="eyebrow__dot"></span> متاح للعمل الآن — عن بُعد</span>
         <h1 class="hero__name" data-editable="hero_name">Marwan El-Ngdy</h1>
-        <p class="hero__headline" data-editable="hero_headline">SEO Specialist | E-commerce SEO Expert</p>
-        <p class="hero__intro" data-editable="hero_intro">لو عندك متجر أو موقع إلكتروني ومبيعاتك من جوجل مش بتتحرك زي المفروض، أنا الشخص اللي تقدر تعتمد عليه لحل المشكلة دي — مش مجرد حد يعملك تقرير ويمشي.</p>
-        <p class="hero__support" data-editable="hero_support">خبرة عملية في السيو التقني، بحث كلمات مفتاحية، ومطابقة نية البحث لمنصات مثل Salla و Shopify و WooCommerce و Zid.</p>
+        <p class="hero__headline" data-editable="hero_headline">متخصص SEO و GEO و AEO | أحوّل الزيارات إلى مبيعات فعلية</p>
+        <p class="hero__intro" data-editable="hero_intro">أنا مروان النجدي. لو عندك متجر أو موقع إلكتروني ومبيعاتك من جوجل — أو حتى من ChatGPT وأدوات الذكاء الاصطناعي — واقفة مش بتتحرك، أنا الشخص اللي تقدر تحطّه مسؤول عن حل المشكلة دي. مش تقرير بيتقرا مرة واحدة ويتنسى، ده شغل مستمر لحد ما نشوف الأرقام بتتحرك فعلًا.</p>
+        <p class="hero__support" data-editable="hero_support">خبرة عملية تتجاوز 5 سنوات في السيو التقني، بحث الكلمات المفتاحية، ومطابقة نية البحث — بالإضافة إلى تهيئة المحتوى للظهور في إجابات الذكاء الاصطناعي (GEO/AEO) — على منصات Salla وShopify وWooCommerce وZid.</p>
         <div class="hero__cta">
           <a href="#projects" class="btn btn--primary">شاهد المشاريع</a>
           <a href="#contact" class="btn btn--ghost">تواصل معي</a>
@@ -206,9 +285,9 @@
       </div>
       <div class="about__body">
         <span class="section__eyebrow reveal">نبذة عني</span>
-        <p class="about__lead reveal">متخصص SEO شغوف بحل مشكلة واحدة بالظبط: مبيعاتك العضوية لما بتقف، سواء عندك متجر إلكتروني أو موقع خدمي.</p>
-        <p class="about__text reveal" data-editable="about_text_1">أعمل مع أصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر على بناء استراتيجيات SEO مبنية على البيانات، بداية من التدقيق التقني الكامل، مرورًا ببحث كلمات مفتاحية ومطابقة نية البحث، وصولًا إلى تحسين المحتوى وبناء الروابط.</p>
-        <p class="about__text reveal" data-editable="about_text_2">هدفي دائمًا واضح: ظهور أعلى في نتائج البحث، زيارات أكثر جودة، ومبيعات أكثر — وليس مجرد أرقام على تقرير.</p>
+        <p class="about__lead reveal">أنا مروان النجدي، متخصص شغوف بحل مشكلة واحدة بالظبط: مبيعاتك العضوية لما بتقف — سواء من جوجل، أو من أدوات الذكاء الاصطناعي اللي بقى الناس بتسأل فيها قبل ما تشتري.</p>
+        <p class="about__text reveal" data-editable="about_text_1">بدأت في مجال السيو من شغف حقيقي بفهم إزاي محركات البحث بتفكر، وطورت خبرتي عمليًا من خلال التدريب الميداني وتنفيذ مشاريع حقيقية مش نظرية بس — من التدقيق التقني الكامل، مرورًا ببحث الكلمات المفتاحية ومطابقة نية البحث، وصولًا لتحسين المحتوى وبناء الروابط. النهاردة بشتغل مع أصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر على استراتيجيات SEO مبنية على بيانات حقيقية، مش تخمين.</p>
+        <p class="about__text reveal" data-editable="about_text_2">اللي بيميزني إني مش واقف عند السيو التقليدي بس — بستثمر وقت إضافي في فهم GEO (تحسين الظهور في محركات الذكاء الاصطناعي) وAEO (تحسين الظهور كإجابة مباشرة)، عشان علامتك التجارية تكون حاضرة في كل مكان بيدور فيه عميلك المحتمل، مش في جوجل بس. هدفي مش أرقام على تقرير — هدفي زيارات حقيقية بتتحول لعملاء، ونتيجة تقدر تحسّها في مبيعاتك.</p>
 
         <div class="about__platforms reveal">
           <span class="about__platforms-label">يعمل بثقة على</span>
@@ -231,6 +310,8 @@
             <li>بناء الروابط الخارجية</li>
             <li>تحليل المنافسين</li>
             <li>تقارير أداء دورية</li>
+            <li>تهيئة GEO لمحركات الذكاء الاصطناعي</li>
+            <li>تهيئة AEO للظهور كإجابة مباشرة</li>
           </ul>
         </div>
       </div>
@@ -410,22 +491,27 @@
     <div class="section__inner">
       <span class="section__eyebrow center reveal" data-editable="services_eyebrow">الخدمات</span>
       <h2 class="section__title center reveal" data-editable="services_title">إيه اللي بقدمه ليك</h2>
-      <p class="section__subtitle center reveal" data-editable="services_subtitle">خدمات مرنة حسب حجم مشروعك واحتياجه الفعلي — متجر كان أو موقع إلكتروني.</p>
+      <p class="section__subtitle center reveal" data-editable="services_subtitle">خدمات مرنة حسب حجم مشروعك واحتياجه الفعلي — متجر كان أو موقع إلكتروني — تغطي SEO التقليدي وGEO وAEO مع بعض.</p>
       <div class="services-grid">
         <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">01</span>
           <h3 class="service-card__title">تدقيق SEO شامل</h3>
-          <p class="service-card__desc">تقرير مفصل بكل مشاكل الأرشفة، السرعة، والمحتوى مع خطة تنفيذ واضحة.</p>
+          <p class="service-card__desc">تقرير مفصل بكل مشاكل الأرشفة، السرعة، والمحتوى، مع خطة تنفيذ واضحة تعرف تبدأ بيها فورًا.</p>
         </div>
         <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">02</span>
           <h3 class="service-card__title">استراتيجية كلمات مفتاحية</h3>
-          <p class="service-card__desc">خريطة كلمات مفتاحية لكل صفحة منتج وفئة، مبنية على سلوك بحث عملائك الفعلي.</p>
+          <p class="service-card__desc">خريطة كلمات مفتاحية لكل صفحة منتج وفئة، مبنية على سلوك بحث عملائك الفعلي مش تخمين.</p>
         </div>
         <div class="service-card reveal" data-tilt-card>
           <span class="service-card__num">03</span>
+          <h3 class="service-card__title">تهيئة GEO و AEO</h3>
+          <p class="service-card__desc">تنظيم المحتوى وبناء البيانات المنظمة عشان علامتك التجارية تظهر في إجابات جوجل وChatGPT وأدوات الذكاء الاصطناعي، مش في نتائج البحث التقليدية بس.</p>
+        </div>
+        <div class="service-card reveal" data-tilt-card>
+          <span class="service-card__num">04</span>
           <h3 class="service-card__title">إدارة SEO شهرية</h3>
-          <p class="service-card__desc">متابعة مستمرة، تحسين محتوى دوري، وتقارير أداء شهرية بالأرقام.</p>
+          <p class="service-card__desc">متابعة مستمرة، تحسين محتوى دوري، وتقارير أداء شهرية بالأرقام — مش تقرير واحد وخلاص.</p>
         </div>
       </div>
     </div>
@@ -604,13 +690,44 @@
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="section section--alt" id="faq">
+    <div class="section__inner">
+      <span class="section__eyebrow center reveal">أسئلة شائعة</span>
+      <h2 class="section__title center reveal">أسئلة بيسألها العملاء قبل ما نبدأ</h2>
+      <p class="section__subtitle center reveal">إجابات مباشرة وواضحة — لو محتاج تفاصيل أكتر، تواصل معايا مباشرة.</p>
+      <div class="faq-list">
+        <details class="faq-item reveal" open>
+          <summary class="faq-item__q">مين مروان النجدي؟</summary>
+          <p class="faq-item__a">أنا متخصص SEO مصري بخبرة عملية تتجاوز 5 سنوات، اشتغلت مع أكتر من 50 متجرًا وموقعًا إلكترونيًا في السعودية ومصر على منصات Salla وShopify وZid وWooCommerce. هدفي إني أحوّل الزيارات العضوية لمبيعات فعلية، مش مجرد أرقام على تقرير.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary class="faq-item__q">إيه الفرق بين SEO و GEO و AEO؟</summary>
+          <p class="faq-item__a"><strong>SEO</strong> هو تحسين الظهور في نتائج البحث التقليدية زي جوجل. <strong>GEO</strong> (Generative Engine Optimization) هو تهيئة المحتوى عشان يظهر ويُقتبس منه في إجابات أدوات الذكاء الاصطناعي زي ChatGPT وGemini. أما <strong>AEO</strong> (Answer Engine Optimization) فهو تنظيم المحتوى في صورة سؤال وجواب واضح عشان يظهر كإجابة مباشرة. أنا بشتغل على الثلاثة مع بعض عشان أضمن ظهور أوسع لعملائي في كل مكان بيدوّر فيه عميلهم المحتمل.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary class="faq-item__q">امتى أشوف نتيجة من شغل السيو؟</summary>
+          <p class="faq-item__a">غالبًا أول نتائج ملموسة بتبدأ تظهر خلال 3 إلى 6 أشهر من العمل المستمر، والنمو الأكبر في الزيارات والمبيعات بيتضح خلال 6 إلى 12 شهر — حسب حجم المنافسة في مجالك وحالة موقعك أو متجرك قبل ما نبدأ.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary class="faq-item__q">هل الخدمات مناسبة للمتاجر الصغيرة والناشئة؟</summary>
+          <p class="faq-item__a">أيوه، الخدمات مصممة بمرونة حسب حجم مشروعك الفعلي — من تدقيق SEO شامل لمرة واحدة لمتجر ناشئ، لحد إدارة SEO شهرية مستمرة لمتجر أو موقع أكبر محتاج متابعة دورية.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary class="faq-item__q">إيه المنصات اللي تشتغل عليها؟</summary>
+          <p class="faq-item__a">بشتغل بثقة على Salla وShopify وZid وWooCommerce، بالإضافة للمواقع الإلكترونية الخدمية بشكل عام، وبستخدم Google Search Console وGoogle Analytics في التتبع والتحليل أول بأول.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section class="section" id="contact">
     <div class="section__inner contact">
       <div class="contact__info">
         <span class="section__eyebrow reveal" data-editable="contact_eyebrow">تواصل معي</span>
         <h2 class="section__title reveal" data-editable="contact_title">يلا نحل مشكلة مبيعاتك العضوية مع بعض</h2>
-        <p class="contact__lead reveal">لو عندك متجر أو موقع إلكتروني ومبيعاتك من جوجل واقفة أو مش بتتحرك زي المفروض، ابعتلي تفاصيل مشروعك ونتكلم.</p>
+        <p class="contact__lead reveal">لو عندك متجر أو موقع إلكتروني ومبيعاتك من جوجل — أو من أدوات الذكاء الاصطناعي — واقفة أو مش بتتحرك زي المفروض، ابعتلي تفاصيل مشروعك ونتكلم. هرد عليك بنفسي.</p>
         <ul class="contact__list reveal">
           <li>
             <span class="contact__label">Phone / WhatsApp</span>
@@ -669,6 +786,7 @@
       <a href="#services">الخدمات</a>
       <a href="#projects">المشاريع</a>
       <a href="blog.html">المدونة</a>
+      <a href="#faq">أسئلة شائعة</a>
       <a href="#contact">تواصل معي</a>
     </div>
     <div class="footer__meta">
