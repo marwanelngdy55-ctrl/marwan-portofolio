@@ -69,6 +69,9 @@ alter table public.articles add column if not exists show_date boolean not null 
 alter table public.articles add column if not exists meta_title text;
 alter table public.articles add column if not exists meta_description text;
 
+-- الكلمة المفتاحية المستهدفة للمقال (Focus Keyword) — تستخدم في تحليل السيو داخل لوحة التحكم
+alter table public.articles add column if not exists focus_keyword text;
+
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
   key text primary key,

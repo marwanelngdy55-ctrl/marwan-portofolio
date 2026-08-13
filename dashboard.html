@@ -158,6 +158,42 @@ a{color:inherit; text-decoration:none;}
 .cover-preview{width:100%; aspect-ratio:16/9; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; margin-bottom:12px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13px;}
 .cover-preview img{width:100%; height:100%; object-fit:cover;}
 .help-text{font-size:12.5px; color:var(--text-faint); margin-top:6px;}
+
+/* ---------- SEO: Google preview snippet ---------- */
+.seo-preview{
+  background:#fff; border-radius:var(--radius-sm); padding:16px 18px; margin-bottom:20px;
+  direction:ltr; text-align:left; font-family:arial,sans-serif;
+}
+.seo-preview__url{display:block; font-size:13px; color:#202124; margin-bottom:2px;}
+.seo-preview__title{display:block; font-size:18px; color:#1a0dab; line-height:1.3; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.seo-preview__desc{display:block; font-size:13px; color:#4d5156; line-height:1.5;}
+
+/* ---------- SEO: char counters ---------- */
+.char-count{display:block; font-size:12px; color:var(--text-faint); margin-top:5px; font-family:var(--font-mono);}
+.char-count.is-warn{color:var(--gold);}
+.char-count.is-over{color:var(--danger);}
+
+/* ---------- SEO: analysis checklist ---------- */
+.seo-score{
+  display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:var(--radius-sm);
+  margin-bottom:16px; font-weight:700; font-size:15px;
+}
+.seo-score--good{background:var(--accent-soft); color:var(--accent);}
+.seo-score--ok{background:var(--gold-soft); color:var(--gold);}
+.seo-score--bad{background:var(--danger-soft); color:var(--danger);}
+.seo-score__badge{
+  width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:13px; background:rgba(0,0,0,.15); flex-shrink:0;
+}
+.seo-checklist{display:flex; flex-direction:column; gap:9px;}
+.seo-check{display:flex; align-items:flex-start; gap:9px; font-size:13.5px; line-height:1.5;}
+.seo-check__icon{flex-shrink:0; width:18px; height:18px; margin-top:1px;}
+.seo-check--good .seo-check__icon{color:var(--accent);}
+.seo-check--ok .seo-check__icon{color:var(--gold);}
+.seo-check--bad .seo-check__icon{color:var(--danger);}
+.seo-check--good span:last-child{color:var(--text-muted);}
+.seo-check--ok span:last-child{color:var(--text);}
+.seo-check--bad span:last-child{color:var(--text);}
 .content-image-field{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-bottom:22px; padding-bottom:22px; border-bottom:1px solid var(--border);}
 .content-image-field:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
 .content-image-preview{width:140px; height:140px; flex-shrink:0; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:12px;}
@@ -242,6 +278,7 @@ a{color:inherit; text-decoration:none;}
     </div>
     <nav class="sidebar-nav" id="sidebar-nav">
       <button data-view="articles" class="is-active">📝 المقالات</button>
+      <button data-view="seo">🔍 السيو</button>
       <button data-view="team">👥 الفريق</button>
       <button data-view="content">🧩 محتوى الموقع</button>
       <button data-view="account">🔑 حسابي</button>
@@ -357,12 +394,34 @@ a{color:inherit; text-decoration:none;}
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">إعدادات السيو (SEO)</label>
           <p class="help-text" style="margin-bottom:14px;">دول بيتحكموا في اللي يظهر في نتائج جوجل — منفصلين عن عنوان المقال (H1) اللي بيظهر للزوار جوه الصفحة. سيبهم فاضيين لو عايز الموقع يستخدم عنوان المقال والمقتطف تلقائيًا.</p>
           <div class="field">
+            <label for="focus-keyword">الكلمة المفتاحية المستهدفة (Focus Keyword)</label>
+            <input type="text" id="focus-keyword" placeholder="مثال: سيو متاجر سلة">
+            <p class="help-text">اكتب الكلمة أو الجملة اللي عايز المقال يترتب عليها في جوجل — التحليل تحت هيتبني عليها.</p>
+          </div>
+          <div class="seo-preview" id="article-seo-preview">
+            <span class="seo-preview__url">marwanelngdy55-ctrl.github.io › marwan-portofolio › article</span>
+            <span class="seo-preview__title" data-preview-title></span>
+            <span class="seo-preview__desc" data-preview-desc></span>
+          </div>
+          <div class="field">
             <label for="meta-title">عنوان السيو (Meta Title — يظهر في جوجل)</label>
             <input type="text" id="meta-title" maxlength="70" placeholder="لو فاضي، هيستخدم عنوان المقال">
+            <span class="char-count" data-count-for="meta-title">0 / 60 حرف (المثالي)</span>
           </div>
           <div class="field">
             <label for="meta-description">وصف السيو (Meta Description)</label>
-            <textarea id="meta-description" rows="3" maxlength="160" placeholder="لو فاضي، هيستخدم المقتطف القصير"></textarea>
+            <textarea id="meta-description" rows="3" maxlength="200" placeholder="لو فاضي، هيستخدم المقتطف القصير"></textarea>
+            <span class="char-count" data-count-for="meta-description">0 / 160 حرف (المثالي)</span>
+          </div>
+        </div>
+        <div class="card">
+          <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:12px;">تحليل السيو للمحتوى</label>
+          <div id="seo-analysis-panel">
+            <div class="seo-score seo-score--bad" id="seo-score-badge">
+              <span class="seo-score__badge">–</span>
+              <span id="seo-score-label">اكتب كلمة مفتاحية عشان يبدأ التحليل</span>
+            </div>
+            <div class="seo-checklist" id="seo-checklist"></div>
           </div>
         </div>
         <div class="card">
@@ -381,6 +440,78 @@ a{color:inherit; text-decoration:none;}
           </label>
           <p class="help-text" style="margin-top:4px;">تقدر تكتب أي اسم تحب يظهر ككاتب للمقال (بدل الإيميل)، وتقدر كمان تخفي الاسم أو التاريخ من ظهورهم للزوار من غير ما تحذفهم من قاعدة البيانات.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== SEO VIEW ===== -->
+    <section id="view-seo" class="hidden">
+      <div class="main-header">
+        <div>
+          <h2 class="main-title">إعدادات السيو</h2>
+          <p class="main-sub">تحكم كامل في العنوان والوصف اللي يظهروا في نتائج جوجل، لكل صفحة على حدة — زي أي أداة سيو احترافية.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom:4px;">الصفحة الرئيسية</h3>
+        <p class="help-text" style="margin-bottom:16px;">لو سبت الحقول فاضية، الموقع هيستخدم العنوان والوصف الافتراضيين المكتوبين في كود الصفحة.</p>
+
+        <div class="seo-preview" id="home-seo-preview">
+          <span class="seo-preview__url">marwanelngdy55-ctrl.github.io › marwan-portofolio</span>
+          <span class="seo-preview__title" data-preview-title></span>
+          <span class="seo-preview__desc" data-preview-desc></span>
+        </div>
+
+        <div class="field">
+          <label for="seo-home-title">عنوان السيو (Meta Title / Title Tag)</label>
+          <input type="text" id="seo-home-title" data-seo-key="seo_home_title" maxlength="70" placeholder="مروان النجدي | SEO Specialist">
+          <span class="char-count" data-count-for="seo-home-title">0 / 60 حرف (المثالي)</span>
+        </div>
+        <div class="field">
+          <label for="seo-home-description">وصف السيو (Meta Description)</label>
+          <textarea id="seo-home-description" data-seo-key="seo_home_description" rows="3" maxlength="200" placeholder="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر..."></textarea>
+          <span class="char-count" data-count-for="seo-home-description">0 / 160 حرف (المثالي)</span>
+        </div>
+        <div class="field">
+          <label for="seo-home-og-image">صورة المشاركة (Open Graph Image) — رابط مباشر للصورة</label>
+          <input type="text" id="seo-home-og-image" data-seo-key="seo_home_og_image" placeholder="لو فاضي، هتستخدم صورتك الشخصية" style="direction:ltr; text-align:left; font-family:var(--font-mono); font-size:13px;">
+          <p class="help-text">دي الصورة اللي بتظهر لما حد يشارك رابط موقعك في واتساب أو فيسبوك.</p>
+        </div>
+        <button class="btn btn--primary btn--sm" data-seo-save="home">حفظ إعدادات الرئيسية</button>
+        <span class="msg" data-seo-status="home"></span>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom:4px;">صفحة المدونة</h3>
+        <p class="help-text" style="margin-bottom:16px;">العنوان والوصف اللي يظهروا لصفحة "كل المقالات" (blog.html) في نتائج البحث.</p>
+
+        <div class="seo-preview" id="blog-seo-preview">
+          <span class="seo-preview__url">marwanelngdy55-ctrl.github.io › marwan-portofolio › blog</span>
+          <span class="seo-preview__title" data-preview-title></span>
+          <span class="seo-preview__desc" data-preview-desc></span>
+        </div>
+
+        <div class="field">
+          <label for="seo-blog-title">عنوان السيو (Meta Title)</label>
+          <input type="text" id="seo-blog-title" data-seo-key="seo_blog_title" maxlength="70" placeholder="المدونة | مروان النجدي">
+          <span class="char-count" data-count-for="seo-blog-title">0 / 60 حرف (المثالي)</span>
+        </div>
+        <div class="field">
+          <label for="seo-blog-description">وصف السيو (Meta Description)</label>
+          <textarea id="seo-blog-description" data-seo-key="seo_blog_description" rows="3" maxlength="200" placeholder="مقالات عن تحسين محركات البحث لأصحاب المتاجر والمواقع الإلكترونية..."></textarea>
+          <span class="char-count" data-count-for="seo-blog-description">0 / 160 حرف (المثالي)</span>
+        </div>
+        <div class="field">
+          <label for="seo-blog-og-image">صورة المشاركة (Open Graph Image) — رابط مباشر للصورة</label>
+          <input type="text" id="seo-blog-og-image" data-seo-key="seo_blog_og_image" placeholder="لو فاضي، هتستخدم صورتك الشخصية" style="direction:ltr; text-align:left; font-family:var(--font-mono); font-size:13px;">
+        </div>
+        <button class="btn btn--primary btn--sm" data-seo-save="blog">حفظ إعدادات المدونة</button>
+        <span class="msg" data-seo-status="blog"></span>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom:4px;">ملحوظة عن مقالات المدونة</h3>
+        <p class="help-text">عنوان ووصف السيو الخاص بكل مقال على حدة تقدر تتحكم فيهم من داخل محرر المقال نفسه (تبويب "المقالات" → افتح أي مقال → قسم "إعدادات السيو" تحت المحرر)، مش من هنا.</p>
       </div>
     </section>
 

@@ -5,16 +5,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title>المدونة | مروان النجدي</title>
-<meta name="description" content="مقالات عن تحسين محركات البحث (SEO) لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
-<link rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/blog.html">
+<title id="page-title">المدونة | مروان النجدي</title>
+<meta id="meta-description" name="description" content="مقالات عن تحسين محركات البحث (SEO) لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
+<link id="canonical-link" rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/blog.html">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="مروان النجدي">
-<meta property="og:title" content="المدونة | مروان النجدي">
-<meta property="og:description" content="مقالات عن تحسين محركات البحث (SEO) لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
-<meta property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
+<meta id="og-title" property="og:title" content="المدونة | مروان النجدي">
+<meta id="og-description" property="og:description" content="مقالات عن تحسين محركات البحث (SEO) لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
+<meta id="og-image" property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
 <meta property="og:url" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/blog.html">
 <meta property="og:locale" content="ar_EG">
 <meta name="twitter:card" content="summary_large_image">
@@ -134,6 +134,25 @@
 (async () => {
   const sb = window.getSupabaseClient();
   const grid = document.getElementById('blog-grid');
+
+  /* إعدادات السيو لصفحة المدونة (بتتحدث من تبويب "السيو" في لوحة التحكم) */
+  try {
+    const { data: seoRows } = await sb.from('site_content').select('key, value').in('key', ['seo_blog_title', 'seo_blog_description', 'seo_blog_og_image']);
+    const seoValues = {};
+    (seoRows || []).forEach(r => { if (r.value) seoValues[r.key] = r.value; });
+    if (seoValues.seo_blog_title) {
+      document.title = seoValues.seo_blog_title;
+      document.getElementById('page-title').textContent = seoValues.seo_blog_title;
+      document.getElementById('og-title')?.setAttribute('content', seoValues.seo_blog_title);
+    }
+    if (seoValues.seo_blog_description) {
+      document.getElementById('meta-description')?.setAttribute('content', seoValues.seo_blog_description);
+      document.getElementById('og-description')?.setAttribute('content', seoValues.seo_blog_description);
+    }
+    if (seoValues.seo_blog_og_image) {
+      document.getElementById('og-image')?.setAttribute('content', seoValues.seo_blog_og_image);
+    }
+  } catch (e) { /* الصفحة تشتغل عادي حتى لو فشل الاتصال */ }
   const { data, error } = await sb
     .from('articles')
     .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date')

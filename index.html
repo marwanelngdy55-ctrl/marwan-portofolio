@@ -5,24 +5,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<title>مروان النجدي | SEO Specialist</title>
-<meta name="description" content="مروان النجدي - متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر. لو مبيعاتك العضوية واقفة، أنا الشخص اللي تعتمد عليه لحل المشكلة: سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
-<link rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/">
+<title id="page-title">مروان النجدي | SEO Specialist</title>
+<meta id="meta-description" name="description" content="مروان النجدي - متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر. لو مبيعاتك العضوية واقفة، أنا الشخص اللي تعتمد عليه لحل المشكلة: سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
+<link id="canonical-link" rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="مروان النجدي">
-<meta property="og:title" content="مروان النجدي | SEO Specialist">
-<meta property="og:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر — سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
-<meta property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
+<meta id="og-title" property="og:title" content="مروان النجدي | SEO Specialist">
+<meta id="og-description" property="og:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر — سيو تقني، كلمات مفتاحية، ومحتوى يبيع.">
+<meta id="og-image" property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
 <meta property="og:url" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/">
 <meta property="og:locale" content="ar_EG">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="مروان النجدي | SEO Specialist">
-<meta name="twitter:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
-<meta name="twitter:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
+<meta id="twitter-title" name="twitter:title" content="مروان النجدي | SEO Specialist">
+<meta id="twitter-description" name="twitter:description" content="متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.">
+<meta id="twitter-image" name="twitter:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800;900&family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -698,6 +698,26 @@
         el.textContent = value;
       });
     });
+
+    /* إعدادات السيو للصفحة الرئيسية (بتتحدث من تبويب "السيو" في لوحة التحكم) */
+    const seoTitle = values.seo_home_title;
+    const seoDesc = values.seo_home_description;
+    const seoImage = values.seo_home_og_image;
+    if (seoTitle) {
+      document.title = seoTitle;
+      document.getElementById('page-title').textContent = seoTitle;
+      document.getElementById('og-title')?.setAttribute('content', seoTitle);
+      document.getElementById('twitter-title')?.setAttribute('content', seoTitle);
+    }
+    if (seoDesc) {
+      document.getElementById('meta-description')?.setAttribute('content', seoDesc);
+      document.getElementById('og-description')?.setAttribute('content', seoDesc);
+      document.getElementById('twitter-description')?.setAttribute('content', seoDesc);
+    }
+    if (seoImage) {
+      document.getElementById('og-image')?.setAttribute('content', seoImage);
+      document.getElementById('twitter-image')?.setAttribute('content', seoImage);
+    }
 
     /* صور قابلة للتعديل من لوحة التحكم (زي صورة نبذة عني) */
     document.querySelectorAll('[data-editable-img]').forEach(el => {

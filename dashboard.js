@@ -19,6 +19,7 @@
   const views = {
     articles: document.getElementById('view-articles'),
     editor: document.getElementById('view-editor'),
+    seo: document.getElementById('view-seo'),
     team: document.getElementById('view-team'),
     content: document.getElementById('view-content'),
     account: document.getElementById('view-account'),
@@ -40,6 +41,7 @@
     navButtons.forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
     sidebarNav.classList.remove('is-open');
     if (name === 'articles') loadArticles();
+    if (name === 'seo') loadSeoSettings();
     if (name === 'team') loadTeam();
     if (name === 'content') { loadContent(); loadContentImages(); }
     if (name === 'account') loadAccount();
@@ -119,6 +121,7 @@
   const excerptInput = document.getElementById('article-excerpt');
   const metaTitleInput = document.getElementById('meta-title');
   const metaDescriptionInput = document.getElementById('meta-description');
+  const focusKeywordInput = document.getElementById('focus-keyword');
   const contentEditor = document.getElementById('article-content');
   const coverFileInput = document.getElementById('cover-file');
   const coverPreview = document.getElementById('cover-preview');
@@ -208,6 +211,7 @@
     excerptInput.value = '';
     if (metaTitleInput) metaTitleInput.value = '';
     if (metaDescriptionInput) metaDescriptionInput.value = '';
+    if (focusKeywordInput) focusKeywordInput.value = '';
     contentEditor.innerHTML = '';
     coverAltInput.value = '';
     coverTitleInput.value = '';
@@ -234,6 +238,7 @@
         excerptInput.value = data.excerpt || '';
         if (metaTitleInput) metaTitleInput.value = data.meta_title || '';
         if (metaDescriptionInput) metaDescriptionInput.value = data.meta_description || '';
+        if (focusKeywordInput) focusKeywordInput.value = data.focus_keyword || '';
         contentEditor.innerHTML = data.content || '';
         coverAltInput.value = data.cover_image_alt || '';
         coverTitleInput.value = data.cover_image_title || '';
@@ -252,6 +257,7 @@
       if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName;
     }
     showView('editor');
+    runSeoAnalysis();
   }
 
   /* ----- محرر المحتوى الغني (WYSIWYG) — من غير كود، بس أزرار عادية ----- */
@@ -469,6 +475,7 @@
       excerpt: excerptInput.value.trim(),
       meta_title: metaTitleInput ? metaTitleInput.value.trim() : '',
       meta_description: metaDescriptionInput ? metaDescriptionInput.value.trim() : '',
+      focus_keyword: focusKeywordInput ? focusKeywordInput.value.trim() : '',
       content: contentEditor.innerHTML,
       cover_image_url: currentCoverUrl,
       cover_image_alt: coverAltInput.value.trim(),
@@ -499,6 +506,245 @@
 
   saveDraftBtn.addEventListener('click', () => saveArticle('draft'));
   publishBtn.addEventListener('click', () => saveArticle('published'));
+
+  /* ---------------------------------------------------------------------
+     إعدادات السيو العامة (الصفحة الرئيسية + صفحة المدونة)
+     زي أي أداة سيو (Rank Math / Yoast) بس مبنية على جدول site_content
+  --------------------------------------------------------------------- */
+  const SEO_KEYS = [
+    'seo_home_title', 'seo_home_description', 'seo_home_og_image',
+    'seo_blog_title', 'seo_blog_description', 'seo_blog_og_image',
+  ];
+  const DEFAULT_SEO_PREVIEW = {
+    home: { title: 'مروان النجدي | SEO Specialist', desc: 'مروان النجدي - متخصص SEO لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر...' },
+    blog: { title: 'المدونة | مروان النجدي', desc: 'مقالات عن تحسين محركات البحث (SEO) لأصحاب المتاجر والمواقع الإلكترونية في السعودية ومصر.' },
+  };
+
+  function updateCharCount(inputEl, idealMax) {
+    const countEl = document.querySelector(`[data-count-for="${inputEl.id}"]`);
+    if (!countEl) return;
+    const len = inputEl.value.length;
+    countEl.textContent = `${len} / ${idealMax} حرف (المثالي)`;
+    countEl.classList.remove('is-warn', 'is-over');
+    if (len > idealMax) countEl.classList.add('is-over');
+    else if (len > idealMax * 0.85) countEl.classList.add('is-warn');
+  }
+
+  function updateSeoPreview(scope) {
+    const wrap = document.getElementById(`${scope}-seo-preview`);
+    if (!wrap) return;
+    const titleInputEl = document.getElementById(`seo-${scope}-title`) || (scope === 'article' ? metaTitleInput : null);
+    const descInputEl = document.getElementById(`seo-${scope}-description`) || (scope === 'article' ? metaDescriptionInput : null);
+    const fallbackTitle = scope === 'article' ? (titleInput.value.trim() || 'عنوان المقال') : (DEFAULT_SEO_PREVIEW[scope]?.title || '');
+    const fallbackDesc = scope === 'article' ? (excerptInput.value.trim() || 'مقتطف المقال هيظهر هنا...') : (DEFAULT_SEO_PREVIEW[scope]?.desc || '');
+    wrap.querySelector('[data-preview-title]').textContent = (titleInputEl?.value.trim() || fallbackTitle) + (scope !== 'article' ? '' : '');
+    wrap.querySelector('[data-preview-desc]').textContent = descInputEl?.value.trim() || fallbackDesc;
+  }
+
+  async function loadSeoSettings() {
+    const { data, error } = await sb.from('site_content').select('key, value').in('key', SEO_KEYS);
+    const values = {};
+    (data || []).forEach(row => { values[row.key] = row.value; });
+    SEO_KEYS.forEach(key => {
+      const el = document.querySelector(`[data-seo-key="${key}"]`);
+      if (el) el.value = values[key] || '';
+    });
+    document.getElementById('seo-home-title') && updateCharCount(document.getElementById('seo-home-title'), 60);
+    document.getElementById('seo-home-description') && updateCharCount(document.getElementById('seo-home-description'), 160);
+    document.getElementById('seo-blog-title') && updateCharCount(document.getElementById('seo-blog-title'), 60);
+    document.getElementById('seo-blog-description') && updateCharCount(document.getElementById('seo-blog-description'), 160);
+    updateSeoPreview('home');
+    updateSeoPreview('blog');
+  }
+
+  document.querySelectorAll('[data-seo-save]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const scope = btn.dataset.seoSave; // 'home' or 'blog'
+      const statusEl = document.querySelector(`[data-seo-status="${scope}"]`);
+      statusEl.textContent = '';
+      statusEl.className = 'msg';
+      const keysForScope = SEO_KEYS.filter(k => k.startsWith(`seo_${scope}_`));
+      const rows = keysForScope.map(key => ({ key, value: document.querySelector(`[data-seo-key="${key}"]`)?.value || '' }));
+      const { error } = await sb.from('site_content').upsert(rows);
+      if (error) {
+        statusEl.textContent = 'حصل خطأ: ' + error.message;
+        statusEl.classList.add('msg--error');
+      } else {
+        statusEl.textContent = 'تم الحفظ ✅';
+        statusEl.classList.add('msg--ok');
+      }
+    });
+  });
+
+  ['seo-home-title', 'seo-blog-title'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', (e) => {
+      updateCharCount(e.target, 60);
+      updateSeoPreview(id.includes('home') ? 'home' : 'blog');
+    });
+  });
+  ['seo-home-description', 'seo-blog-description'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', (e) => {
+      updateCharCount(e.target, 160);
+      updateSeoPreview(id.includes('home') ? 'home' : 'blog');
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+     تحليل السيو الحي لمحتوى المقال (زي Yoast / Rank Math)
+     كل التحليل بيحصل في المتصفح مباشرة من غير أي API خارجي
+  --------------------------------------------------------------------- */
+  const seoChecklistEl = document.getElementById('seo-checklist');
+  const seoScoreBadge = document.getElementById('seo-score-badge');
+  const seoScoreLabel = document.getElementById('seo-score-label');
+
+  function stripHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return tmp.textContent || '';
+  }
+
+  function countOccurrences(haystack, needle) {
+    if (!needle) return 0;
+    const h = haystack.toLowerCase();
+    const n = needle.toLowerCase();
+    let count = 0, pos = 0;
+    while ((pos = h.indexOf(n, pos)) !== -1) { count++; pos += n.length; }
+    return count;
+  }
+
+  function seoCheck(status, text) {
+    const icon = status === 'good' ? '✔' : status === 'ok' ? '!' : '✕';
+    return `<div class="seo-check seo-check--${status}"><span class="seo-check__icon">${icon}</span><span>${escapeHtml(text)}</span></div>`;
+  }
+
+  function runSeoAnalysis() {
+    if (!seoChecklistEl) return;
+    const keyword = (focusKeywordInput?.value || '').trim();
+    const title = titleInput.value.trim();
+    const seoTitle = (metaTitleInput?.value || '').trim() || title;
+    const excerpt = excerptInput.value.trim();
+    const seoDesc = (metaDescriptionInput?.value || '').trim() || excerpt;
+    const slug = slugInput.value.trim();
+    const contentText = stripHtml(contentEditor.innerHTML).trim();
+    const wordCount = contentText ? contentText.split(/\s+/).filter(Boolean).length : 0;
+    const htmlContent = contentEditor.innerHTML || '';
+    const hasH2 = /<h2[\s>]/i.test(htmlContent);
+    const imgTags = htmlContent.match(/<img[^>]*>/gi) || [];
+    const imagesWithoutAlt = imgTags.filter(tag => !/alt\s*=\s*"[^"]+"/i.test(tag)).length;
+    const hasLink = /<a[\s>]/i.test(htmlContent);
+
+    const checks = []; // { status: 'good'|'ok'|'bad', text }
+
+    if (!keyword) {
+      checks.push({ status: 'bad', text: 'محتاج تكتب "الكلمة المفتاحية المستهدفة" الأول عشان التحليل يبقى دقيق.' });
+    } else {
+      // العنوان
+      if (countOccurrences(title, keyword) > 0) checks.push({ status: 'good', text: 'الكلمة المفتاحية موجودة في عنوان المقال.' });
+      else checks.push({ status: 'bad', text: 'الكلمة المفتاحية مش موجودة في عنوان المقال — حاول تضيفها.' });
+
+      // عنوان السيو
+      if (countOccurrences(seoTitle, keyword) > 0) checks.push({ status: 'good', text: 'الكلمة المفتاحية موجودة في عنوان السيو (Meta Title).' });
+      else checks.push({ status: 'ok', text: 'ينفع تضيف الكلمة المفتاحية في عنوان السيو كمان.' });
+
+      // وصف السيو
+      if (!seoDesc) checks.push({ status: 'bad', text: 'مفيش وصف سيو (Meta Description) لسه.' });
+      else if (countOccurrences(seoDesc, keyword) > 0) checks.push({ status: 'good', text: 'الكلمة المفتاحية موجودة في وصف السيو.' });
+      else checks.push({ status: 'ok', text: 'وصف السيو موجود بس من غير الكلمة المفتاحية — ينفع تضيفها.' });
+
+      // الرابط (slug)
+      if (slug && countOccurrences(slug.replace(/-/g, ' '), keyword) > 0) checks.push({ status: 'good', text: 'الكلمة المفتاحية موجودة في رابط المقال (slug).' });
+      else checks.push({ status: 'ok', text: 'الرابط (slug) من الأفضل يحتوي على الكلمة المفتاحية بالإنجليزي لو ينفع.' });
+
+      // أول فقرة
+      const first150 = contentText.slice(0, 150);
+      if (countOccurrences(first150, keyword) > 0) checks.push({ status: 'good', text: 'الكلمة المفتاحية موجودة في بداية المحتوى (أول 150 حرف).' });
+      else checks.push({ status: 'ok', text: 'حاول تستخدم الكلمة المفتاحية بدري في أول فقرة من المقال.' });
+
+      // كثافة الكلمة المفتاحية
+      if (wordCount > 0) {
+        const occurrences = countOccurrences(contentText, keyword);
+        const density = (occurrences / wordCount) * 100;
+        if (density === 0) checks.push({ status: 'bad', text: 'الكلمة المفتاحية مش مستخدمة خالص في محتوى المقال.' });
+        else if (density < 0.5) checks.push({ status: 'ok', text: `كثافة الكلمة المفتاحية منخفضة (${density.toFixed(1)}%) — استخدمها شوية زيادة بشكل طبيعي.` });
+        else if (density <= 2.5) checks.push({ status: 'good', text: `كثافة الكلمة المفتاحية كويسة (${density.toFixed(1)}%).` });
+        else checks.push({ status: 'ok', text: `كثافة الكلمة المفتاحية عالية شوية (${density.toFixed(1)}%) — خلي استخدامها طبيعي مش متكرر أوي.` });
+      }
+    }
+
+    // طول عنوان السيو
+    if (!seoTitle) checks.push({ status: 'bad', text: 'مفيش عنوان سيو أو عنوان مقال لسه.' });
+    else if (seoTitle.length > 60) checks.push({ status: 'ok', text: `عنوان السيو طويل شوية (${seoTitle.length} حرف) — ينفع يتقص لحد 60.` });
+    else if (seoTitle.length < 30) checks.push({ status: 'ok', text: `عنوان السيو قصير (${seoTitle.length} حرف) — ينفع يتزود شوية.` });
+    else checks.push({ status: 'good', text: `طول عنوان السيو مناسب (${seoTitle.length} حرف).` });
+
+    // طول وصف السيو
+    if (!seoDesc) checks.push({ status: 'bad', text: 'مفيش وصف سيو أو مقتطف لسه.' });
+    else if (seoDesc.length > 160) checks.push({ status: 'ok', text: `وصف السيو طويل (${seoDesc.length} حرف) — جوجل ممكن يقصه، حاول تخليه تحت 160.` });
+    else if (seoDesc.length < 70) checks.push({ status: 'ok', text: `وصف السيو قصير (${seoDesc.length} حرف) — ينفع يتزود لحد 120-160.` });
+    else checks.push({ status: 'good', text: `طول وصف السيو مناسب (${seoDesc.length} حرف).` });
+
+    // طول المحتوى
+    if (wordCount === 0) checks.push({ status: 'bad', text: 'المقال لسه من غير محتوى.' });
+    else if (wordCount < 300) checks.push({ status: 'ok', text: `المحتوى قصير (${wordCount} كلمة) — المقالات الأطول (300+ كلمة) بتترتب أحسن غالبًا.` });
+    else checks.push({ status: 'good', text: `طول المحتوى كويس (${wordCount} كلمة).` });
+
+    // عناوين فرعية H2
+    if (hasH2) checks.push({ status: 'good', text: 'فيه عناوين فرعية (H2) بتقسم المقال — ده كويس للقراءة والسيو.' });
+    else checks.push({ status: 'ok', text: 'مفيش عناوين فرعية (H2) — استخدم قائمة "نوع النص" فوق المحرر عشان تقسم المقال.' });
+
+    // الصور و Alt text
+    if (imgTags.length === 0) checks.push({ status: 'ok', text: 'مفيش صور داخل المقال — الصور بتساعد في السيو وتجربة القراءة.' });
+    else if (imagesWithoutAlt > 0) checks.push({ status: 'bad', text: `فيه ${imagesWithoutAlt} صورة من غير Alt text — أضف وصف لكل صورة.` });
+    else checks.push({ status: 'good', text: 'كل الصور جوه المقال ليها Alt text — تمام.' });
+
+    // روابط
+    if (hasLink) checks.push({ status: 'good', text: 'فيه رابط واحد على الأقل جوه المقال.' });
+    else checks.push({ status: 'ok', text: 'ينفع تضيف رابط داخلي (لمقال تاني) أو خارجي لمصدر موثوق.' });
+
+    // slug عمومًا
+    if (!slug) checks.push({ status: 'bad', text: 'مفيش رابط (slug) للمقال لسه.' });
+    else if (slug.length > 75) checks.push({ status: 'ok', text: 'رابط المقال طويل — الروابط القصيرة أوضح لجوجل وللزوار.' });
+    else checks.push({ status: 'good', text: 'طول رابط المقال مناسب.' });
+
+    seoChecklistEl.innerHTML = checks.map(c => seoCheck(c.status, c.text)).join('');
+
+    const goodCount = checks.filter(c => c.status === 'good').length;
+    const totalCount = checks.length;
+    const scorePct = totalCount ? Math.round((goodCount / totalCount) * 100) : 0;
+
+    seoScoreBadge.className = 'seo-score';
+    let badgeEl = seoScoreBadge.querySelector('.seo-score__badge');
+    if (scorePct >= 75) {
+      seoScoreBadge.classList.add('seo-score--good');
+      badgeEl.textContent = '👍';
+      seoScoreLabel.textContent = `ممتاز — ${goodCount} من ${totalCount} نقطة متحققة`;
+    } else if (scorePct >= 45) {
+      seoScoreBadge.classList.add('seo-score--ok');
+      badgeEl.textContent = '~';
+      seoScoreLabel.textContent = `متوسط — ${goodCount} من ${totalCount} نقطة متحققة، فيه مجال للتحسين`;
+    } else {
+      seoScoreBadge.classList.add('seo-score--bad');
+      badgeEl.textContent = '!';
+      seoScoreLabel.textContent = `ضعيف — ${goodCount} من ${totalCount} نقطة متحققة`;
+    }
+
+    updateSeoPreview('article');
+  }
+
+  let seoAnalysisTimer = null;
+  function scheduleSeoAnalysis() {
+    clearTimeout(seoAnalysisTimer);
+    seoAnalysisTimer = setTimeout(runSeoAnalysis, 300);
+  }
+  [titleInput, excerptInput, slugInput, metaTitleInput, metaDescriptionInput, focusKeywordInput].forEach(el => {
+    el?.addEventListener('input', () => {
+      scheduleSeoAnalysis();
+      if (el === metaTitleInput) updateCharCount(metaTitleInput, 60);
+      if (el === metaDescriptionInput) updateCharCount(metaDescriptionInput, 160);
+    });
+  });
+  contentEditor?.addEventListener('input', scheduleSeoAnalysis);
+  contentEditor?.addEventListener('blur', scheduleSeoAnalysis);
 
   deleteArticleBtn.addEventListener('click', async () => {
     if (!currentArticleId) return;
