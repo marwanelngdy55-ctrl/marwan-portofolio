@@ -132,7 +132,7 @@
 
   /* ============ SERP TYPEWRITER ============ */
   const typewriterEl = document.getElementById('serp-typewriter');
-  const typewriterText = 'متخصص SEO بخبرة تتجاوز 5 سنوات في تنمية النمو العضوي لمتاجر إلكترونية في السعودية ومصر.';
+  const typewriterText = 'متخصص SEO بخبرة تتجاوز 5 سنوات في حل مشكلة المبيعات العضوية الواقفة لمتاجر ومواقع إلكترونية في السعودية ومصر.';
 
   function typeWriter(el, text, speed = 28){
     let i = 0;
