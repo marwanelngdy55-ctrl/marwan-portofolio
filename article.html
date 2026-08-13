@@ -7,6 +7,18 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title id="page-title">مقال | مروان النجدي</title>
 <meta id="meta-description" name="description" content="">
+<link id="canonical-link" rel="canonical" href="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/article.html">
+
+<!-- Open Graph (يتحدث ديناميكيًا حسب المقال عن طريق JS تحت) -->
+<meta id="og-type" property="og:type" content="article">
+<meta property="og:site_name" content="مروان النجدي">
+<meta id="og-title" property="og:title" content="مقال | مروان النجدي">
+<meta id="og-description" property="og:description" content="">
+<meta id="og-image" property="og:image" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp">
+<meta id="og-url" property="og:url" content="https://marwanelngdy55-ctrl.github.io/marwan-portofolio/article.html">
+<meta property="og:locale" content="ar_EG">
+<meta name="twitter:card" content="summary_large_image">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800;900&family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -104,7 +116,7 @@
       <span>© <span id="year"></span> Marwan El-Ngdy. جميع الحقوق محفوظة.</span>
       <div style="display:flex; gap:12px;">
         <a href="https://www.facebook.com/marwan.elngdy.308" target="_blank" rel="noopener">Facebook</a>
-        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/marwan-elngdy/" target="_blank" rel="noopener">LinkedIn</a>
       </div>
     </div>
   </div>
@@ -126,6 +138,10 @@
 
   if (!slug) {
     titleEl.textContent = 'المقال غير موجود';
+    const robotsTag = document.createElement('meta');
+    robotsTag.name = 'robots';
+    robotsTag.content = 'noindex';
+    document.head.appendChild(robotsTag);
     return;
   }
 
@@ -139,19 +155,50 @@
   if (error || !data) {
     titleEl.textContent = 'المقال غير موجود';
     bodyEl.innerHTML = '<p>المقال ده مش موجود أو لسه مش منشور.</p>';
+    const robotsTag = document.createElement('meta');
+    robotsTag.name = 'robots';
+    robotsTag.content = 'noindex';
+    document.head.appendChild(robotsTag);
     return;
   }
 
   // عنوان السيو (يظهر في جوجل وتاب المتصفح) منفصل عن عنوان المقال (H1) اللي بيظهر للزوار.
   // لو المدير سايب حقل "عنوان السيو" فاضي، بيرجع لعنوان المقال تلقائيًا.
   const seoTitle = (data.meta_title || data.title || '').trim();
-  document.title = seoTitle + ' | مروان النجدي';
-  document.getElementById('page-title').textContent = seoTitle + ' | مروان النجدي';
+  const fullTitle = seoTitle + ' | مروان النجدي';
+  document.title = fullTitle;
+  document.getElementById('page-title').textContent = fullTitle;
   titleEl.textContent = data.title;
 
   const seoDescription = (data.meta_description || data.excerpt || '').trim();
   const metaDescTag = document.getElementById('meta-description');
   if (metaDescTag && seoDescription) metaDescTag.setAttribute('content', seoDescription);
+
+  // تحديث Open Graph والـ canonical بمحتوى المقال الفعلي (يفيد المشاركة على واتساب/فيسبوك وظهور المقال في نتائج البحث)
+  const pageUrl = `https://marwanelngdy55-ctrl.github.io/marwan-portofolio/article.html?slug=${encodeURIComponent(slug)}`;
+  const ogImage = data.cover_image_url || 'https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp';
+  document.getElementById('canonical-link').setAttribute('href', pageUrl);
+  document.getElementById('og-title').setAttribute('content', fullTitle);
+  if (seoDescription) document.getElementById('og-description').setAttribute('content', seoDescription);
+  document.getElementById('og-image').setAttribute('content', ogImage);
+  document.getElementById('og-url').setAttribute('content', pageUrl);
+
+  // بيانات منظمة (JSON-LD) للمقال — بتساعد جوجل يفهم المقال ويظهره بشكل غني في النتائج
+  const articleLd = document.createElement('script');
+  articleLd.type = 'application/ld+json';
+  articleLd.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: data.title,
+    description: seoDescription || undefined,
+    image: ogImage,
+    datePublished: data.published_at || undefined,
+    dateModified: data.published_at || undefined,
+    author: (data.show_author !== false && data.author_name) ? { '@type': 'Person', name: data.author_name } : { '@type': 'Person', name: 'Marwan El-Ngdy' },
+    publisher: { '@type': 'Person', name: 'Marwan El-Ngdy' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl }
+  });
+  document.head.appendChild(articleLd);
 
   const showDate = data.show_date !== false && data.published_at;
   const showAuthor = data.show_author !== false && data.author_name;

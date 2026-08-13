@@ -193,15 +193,19 @@ create policy "site content is public to read"
   on public.site_content for select
   using (true);
 
+-- ملحوظة أمان مهمة: النسخة القديمة من الـ policies دي كانت بتتحقق بس من auth.role() = 'authenticated'
+-- من غير ما تتأكد إن العضو نشط (is_active). ده معناه إن عضو "موقوف" من المدير كان لسه
+-- يقدر يعدّل نصوص وصور الموقع العام لو بعت الطلب مباشرة لـ Supabase (حتى لو اللوحة نفسها مخفية عنه).
+-- التحديث ده بيضيف شرط is_active_member() عشان العضو الموقوف يتمنع فعليًا من أي تعديل.
 drop policy if exists "admins can upsert site content" on public.site_content;
 create policy "admins can upsert site content"
   on public.site_content for insert
-  with check (auth.role() = 'authenticated');
+  with check (auth.role() = 'authenticated' and public.is_active_member());
 
 drop policy if exists "admins can update site content" on public.site_content;
 create policy "admins can update site content"
   on public.site_content for update
-  using (auth.role() = 'authenticated');
+  using (auth.role() = 'authenticated' and public.is_active_member());
 
 -- ==========================================================================
 -- Storage bucket لصور المقالات (غلاف المقال)
@@ -218,12 +222,12 @@ create policy "public can view article images"
 drop policy if exists "admins can upload article images" on storage.objects;
 create policy "admins can upload article images"
   on storage.objects for insert
-  with check (bucket_id = 'article-images' and auth.role() = 'authenticated');
+  with check (bucket_id = 'article-images' and auth.role() = 'authenticated' and public.is_active_member());
 
 drop policy if exists "admins can delete article images" on storage.objects;
 create policy "admins can delete article images"
   on storage.objects for delete
-  using (bucket_id = 'article-images' and auth.role() = 'authenticated');
+  using (bucket_id = 'article-images' and auth.role() = 'authenticated' and public.is_active_member());
 
 -- ==========================================================================
 -- Storage bucket لصور الموقع العامة (صورة نبذة عني، وأي صور تانية في محتوى الموقع)
@@ -240,17 +244,17 @@ create policy "public can view site images"
 drop policy if exists "admins can upload site images" on storage.objects;
 create policy "admins can upload site images"
   on storage.objects for insert
-  with check (bucket_id = 'site-images' and auth.role() = 'authenticated');
+  with check (bucket_id = 'site-images' and auth.role() = 'authenticated' and public.is_active_member());
 
 drop policy if exists "admins can update site images" on storage.objects;
 create policy "admins can update site images"
   on storage.objects for update
-  using (bucket_id = 'site-images' and auth.role() = 'authenticated');
+  using (bucket_id = 'site-images' and auth.role() = 'authenticated' and public.is_active_member());
 
 drop policy if exists "admins can delete site images" on storage.objects;
 create policy "admins can delete site images"
   on storage.objects for delete
-  using (bucket_id = 'site-images' and auth.role() = 'authenticated');
+  using (bucket_id = 'site-images' and auth.role() = 'authenticated' and public.is_active_member());
 
 -- ==========================================================================
 -- تحديث updated_at تلقائيًا

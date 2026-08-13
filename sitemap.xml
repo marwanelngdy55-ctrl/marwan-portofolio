@@ -10,9 +10,12 @@
 
   <url>
     <loc>https://marwanelngdy55-ctrl.github.io/marwan-portofolio/blog.html</loc>
-    <lastmod>2026-08-07</lastmod>
+    <lastmod>2026-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- ملحوظة: لما تنشر مقال جديد على blog.html، ينفع تضيفله سطر <url> هنا بنفس الشكل
+       (الرابط: article.html?slug=...) عشان جوجل يكتشفه أسرع. -->
 
 </urlset>

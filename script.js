@@ -172,6 +172,15 @@
       const name = form.querySelector('#name').value.trim();
       const submitBtn = form.querySelector('button[type="submit"]');
 
+      // لو حقل الـ honeypot اتملى، غالبًا ده بوت مش زائر حقيقي — نتظاهر بالنجاح من غير ما نبعت فعليًا
+      const honeypot = form.querySelector('#company-website');
+      if (honeypot && honeypot.value.trim() !== '') {
+        status.style.color = 'var(--accent)';
+        status.textContent = `شكرًا${name ? ' ' + name.split(' ')[0] : ''} — وصلتني رسالتك وهرد عليك قريب.`;
+        form.reset();
+        return;
+      }
+
       if (!form.checkValidity()) {
         status.textContent = 'من فضلك املأ كل الحقول قبل الإرسال.';
         status.style.color = 'var(--danger)';
