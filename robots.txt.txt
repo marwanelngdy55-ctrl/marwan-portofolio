@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://marwanelngdy55-ctrl.github.io/marwan-portofolio/sitemap.xml
