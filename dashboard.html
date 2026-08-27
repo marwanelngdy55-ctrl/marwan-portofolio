@@ -153,6 +153,16 @@ a{color:inherit; text-decoration:none;}
 .content-editor img{max-width:100%; border-radius:8px; margin:10px 0;}
 .content-editor, .content-editor *{ color:var(--text) !important; background-color:transparent !important; }
 .content-editor a{ color:var(--accent) !important; }
+/* توحيد وزن الخط: نص ملصوق من وورد أو جوجل دوكس بيجيب معاه غالبًا وزن غامق (bold) على
+   كل حرف حتى النص العادي، فيبقى شكل العناوين والفقرات متشابه ومفيش فرق باين بينهم داخل
+   المحرر نفسه. الأسطر دي بتلغي أي وزن غامق ملصوق وترجّع النص العادي لوزنه الطبيعي، وتسيب
+   الغامق الحقيقي (زرار Bold / العناوين) بس هو اللي يبان غامق — بنفس منطق صفحة المقال. */
+.content-editor, .content-editor p, .content-editor span, .content-editor div,
+.content-editor li, .content-editor a, .content-editor td, .content-editor th { font-weight:400 !important; }
+.content-editor h2, .content-editor h3 { font-weight:800 !important; }
+.content-editor h4, .content-editor h5, .content-editor h6 { font-weight:700 !important; }
+.content-editor strong, .content-editor b, .content-editor th { font-weight:700 !important; }
+.content-editor em, .content-editor i { font-style:italic !important; }
 .content-editor ul, .content-editor ol{padding-inline-start:22px; margin:0 0 12px;}
 .content-editor:empty::before{content:attr(data-placeholder); color:var(--text-faint);}
 .cover-preview{width:100%; aspect-ratio:16/9; border-radius:var(--radius-sm); background:var(--bg-elevated-2); border:1px solid var(--border-strong); overflow:hidden; margin-bottom:12px; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13px;}

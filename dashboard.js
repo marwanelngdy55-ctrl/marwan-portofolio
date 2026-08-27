@@ -305,7 +305,10 @@
         node.removeAttribute('bgcolor');
         const style = node.getAttribute('style');
         if (style) {
-          const cleaned = style.replace(/(^|;)\s*(color|background|background-color)\s*:[^;]*/gi, '');
+          // بنشيل كمان أي font-weight/font-family/line-height ملصوقة من وورد، عشان الشكل
+          // النهائي يتبع تنسيق الموقع دايمًا (مش الغامق أو الخط اللي كان في المصدر الأصلي).
+          // وزن الغامق الحقيقي (لو المستخدم فعلاً عامل Bold) بيفضل موجود عن طريق تاج <b>/<strong> نفسه.
+          const cleaned = style.replace(/(^|;)\s*(color|background|background-color|font-weight|font-family|line-height)\s*:[^;]*/gi, '');
           if (cleaned.trim()) node.setAttribute('style', cleaned); else node.removeAttribute('style');
         }
         node.removeAttribute('class');
