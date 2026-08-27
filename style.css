@@ -1079,3 +1079,6 @@ p{ margin: 0; }
   .about__badge--top{ top: -14px; right: -14px; }
   .about__badge-num{ font-size: 21px; }
 }
+
+/* أداة إخفاء عامة تستخدمها كل صفحات الموقع (index/blog/article/404) عن طريق JS */
+.hidden{ display:none !important; }

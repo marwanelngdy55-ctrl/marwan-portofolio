@@ -40,6 +40,23 @@
      الكتابة دايمًا تتبع لون الموقع الحالي (أبيض في الداكن، أسود في الفاتح) مهما كان اللون الأصلي. */
   .article-body, .article-body *{ color:var(--text) !important; background-color:transparent !important; }
   .article-body a{ color:var(--accent) !important; text-decoration:underline; }
+
+  /* توحيد وزن الخط: محتوى ملصوق من وورد أو مصدر خارجي بيجيب معاه غالبًا وزن غامق (bold)
+     على كل حرف حتى النص العادي، فيبقى شكل العناوين والفقرات متشابه ومفيش فرق باين بينهم.
+     الأسطر دي بتلغي أي وزن غامق ملصوق وترجّع النص العادي لوزنه الطبيعي، وتسيب الغامق
+     الحقيقي (Bold/H2...) بس هو اللي يبان غامق. */
+  .article-body, .article-body p, .article-body span, .article-body div,
+  .article-body li, .article-body a, .article-body td, .article-body th { font-weight:400 !important; }
+  .article-body h2, .article-body h3, .article-body h4, .article-body h5, .article-body h6 { font-weight:800 !important; }
+  .article-body strong, .article-body b, .article-body th { font-weight:700 !important; }
+  .article-body em, .article-body i { font-style:italic !important; }
+
+  /* جداول ملصوقة من وورد بتيجي غالبًا بخطوط سودة ثابتة مكتوبة جوه الكود نفسه، فبتبقى مش
+     ظاهرة في الوضع الداكن. الأسطر دي بتفرض لون خطوط الجدول يتبع ثيم الموقع الحالي. */
+  .article-body table{ width:100%; border-collapse:collapse; margin:0 0 24px; }
+  .article-body table, .article-body th, .article-body td{ border:1px solid var(--border-strong) !important; }
+  .article-body th, .article-body td{ padding:10px 14px; text-align:right; }
+  .article-body th{ background:var(--bg-elevated-2) !important; }
   .back-link{ display:inline-flex; align-items:center; gap:6px; color:var(--text-muted); font-size:14px; margin-bottom:22px; }
   .back-link:hover{ color:var(--accent); }
 
@@ -54,7 +71,8 @@
     background:var(--bg-elevated-2); border:1px solid var(--border-strong);
   }
   .author-bio-card__photo img{ width:100%; height:100%; object-fit:cover; }
-  .author-bio-card__eyebrow{ display:block; font-size:13px; color:var(--accent); font-weight:700; margin-bottom:4px; }
+  .author-bio-card__text{ flex:1; min-width:0; }
+  .author-bio-card__eyebrow{ display:block; font-size:13px; color:var(--accent); font-weight:700; margin-bottom:4px; background:transparent; }
   .author-bio-card__name{ font-size:18px; font-weight:800; margin:0 0 8px; color:var(--text); }
   .author-bio-card__desc{ font-size:15px; line-height:1.8; color:var(--text-muted); margin:0; }
 
@@ -118,7 +136,7 @@
   <div class="article-hero__inner">
     <div class="author-bio-card hidden" id="author-bio-card" style="margin-bottom:80px;">
       <div class="author-bio-card__photo" id="author-bio-photo-wrap"></div>
-      <div>
+      <div class="author-bio-card__text">
         <span class="author-bio-card__eyebrow">كتب بواسطة</span>
         <h3 class="author-bio-card__name" id="author-bio-name"></h3>
         <p class="author-bio-card__desc" id="author-bio-desc"></p>
