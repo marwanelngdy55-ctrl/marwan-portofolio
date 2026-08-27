@@ -157,6 +157,7 @@
     .from('articles')
     .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date')
     .eq('status', 'published')
+    .lte('published_at', new Date().toISOString()) // نتأكد إن معاد النشر وصل فعلاً (عشان المقالات المتجدولة تتخفي حتى لو كاتبها فاتح جلسته)
     .order('published_at', { ascending: false });
 
   if (error) {

@@ -188,14 +188,16 @@ create policy "members can update own bio"
   using (auth.role() = 'authenticated' and id = auth.uid())
   with check (auth.role() = 'authenticated' and id = auth.uid());
 
--- articles: الزوار يشوفوا المقالات المنشورة بس. الأعضاء المسجلين يشوفوا مقالاتهم هم،
--- والمدير يشوف كل المقالات (منشورة أو مسودة، لأي عضو)
+-- articles: الزوار يشوفوا المقالات المنشورة اللي وصل معادها بس (لو مقال متجدول لوقت
+-- في المستقبل، مستخدمين "جدولة النشر"، يفضل مخفي عن الزوار تلقائيًا لحد ما يجي معاده —
+-- من غير الحاجة لأي كرون أو سيرفر شغال، لأن الشرط ده بيتفحص وقت كل زيارة).
+-- الأعضاء المسجلين يشوفوا مقالاتهم هم (حتى لو متجدولة)، والمدير يشوف كل المقالات.
 drop policy if exists "published articles are public" on public.articles;
 drop policy if exists "read articles" on public.articles;
 create policy "read articles"
   on public.articles for select
   using (
-    status = 'published'
+    (status = 'published' and published_at is not null and published_at <= now())
     or (
       auth.role() = 'authenticated' and public.is_active_member()
       and (author_id = auth.uid() or public.is_owner())

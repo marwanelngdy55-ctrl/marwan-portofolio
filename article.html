@@ -266,6 +266,7 @@
     .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description, author_bio, author_photo_url, author_photo_alt, show_author_bio')
     .eq('slug', slug)
     .eq('status', 'published')
+    .lte('published_at', new Date().toISOString()) // مقال متجدول لمعاد لسه ما جاش يتعامل معاملة "مش موجود" للزوار
     .single();
 
   if (error || !data) {

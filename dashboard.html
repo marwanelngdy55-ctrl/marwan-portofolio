@@ -118,6 +118,7 @@ a{color:inherit; text-decoration:none;}
 .pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:4px 10px; border-radius:100px; font-family:var(--font-mono);}
 .pill--published{background:var(--accent-soft); color:var(--accent);}
 .pill--draft{background:var(--gold-soft); color:var(--gold);}
+.pill--scheduled{background:rgba(94,129,244,0.14); color:#5E81F4;}
 .pill--owner{background:var(--accent-soft); color:var(--accent);}
 .pill--editor{background:var(--bg-elevated-2); color:var(--text-muted); border:1px solid var(--border-strong);}
 .row-actions{display:flex; gap:8px; justify-content:flex-end;}
@@ -433,6 +434,15 @@ a{color:inherit; text-decoration:none;}
             </div>
             <div class="seo-checklist" id="seo-checklist"></div>
           </div>
+        </div>
+        <div class="card">
+          <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">جدولة النشر</label>
+          <div class="field">
+            <label for="schedule-at-input">تاريخ ووقت النشر التلقائي (اختياري)</label>
+            <input type="datetime-local" id="schedule-at-input" style="direction:ltr; text-align:left; font-family:var(--font-mono);">
+          </div>
+          <p class="help-text">سيبها فاضية عشان زرار "نشر" ينشر المقال فورًا. لو حددت تاريخ ووقت في المستقبل واضغطت "جدولة النشر"، المقال هيفضل مخفي تمامًا عن الزوار وجوجل لحد ما يوصل المعاد ده بالظبط — وهيظهر تلقائيًا من غير ما تحتاج تفتح اللوحة تاني أو تعمل أي حاجة.</p>
+          <p class="msg" id="schedule-status-msg" style="margin-top:6px;"></p>
         </div>
         <div class="card">
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:12px;">إعدادات الظهور للجمهور</label>

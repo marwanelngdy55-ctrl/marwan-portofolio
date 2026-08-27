@@ -145,6 +145,41 @@
   const showDateCheck = document.getElementById('show-date-check');
   const showAuthorBioCheck = document.getElementById('show-author-bio-check');
   const editorAuthorNameEl = document.getElementById('editor-author-name');
+  const scheduleAtInput = document.getElementById('schedule-at-input');
+  const scheduleStatusMsg = document.getElementById('schedule-status-msg');
+
+  // تحويل تاريخ ISO (من قاعدة البيانات) لصيغة يفهمها input[type=datetime-local] بالتوقيت المحلي
+  function isoToLocalInputValue(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // بتحدّث نص زرار النشر ورسالة الحالة حسب التاريخ المكتوب في خانة الجدولة
+  function refreshScheduleUI() {
+    if (!scheduleAtInput) return;
+    const now = new Date();
+    const typed = scheduleAtInput.value ? new Date(scheduleAtInput.value) : null;
+    if (typed && !isNaN(typed.getTime()) && typed > now) {
+      publishBtn.textContent = 'جدولة النشر';
+      if (scheduleStatusMsg) {
+        scheduleStatusMsg.textContent = '🕒 هيتنشر تلقائيًا يوم ' + typed.toLocaleString('ar-EG', { dateStyle: 'full', timeStyle: 'short' });
+        scheduleStatusMsg.style.color = 'var(--gold)';
+      }
+      return;
+    }
+    publishBtn.textContent = 'نشر';
+    if (scheduleStatusMsg) {
+      if (currentPublishedAt && new Date(currentPublishedAt) > now) {
+        scheduleStatusMsg.textContent = '🕒 هيتنشر تلقائيًا يوم ' + new Date(currentPublishedAt).toLocaleString('ar-EG', { dateStyle: 'full', timeStyle: 'short' });
+        scheduleStatusMsg.style.color = 'var(--gold)';
+      } else {
+        scheduleStatusMsg.textContent = '';
+      }
+    }
+  }
+  scheduleAtInput?.addEventListener('input', refreshScheduleUI);
 
   function slugify(text) {
     return text
@@ -175,23 +210,32 @@
       articlesTableWrap.innerHTML = '<p class="empty-state">مفيش مقالات لسه. اضغط "مقال جديد" عشان تبدأ.</p>';
       return;
     }
-    const rows = data.map(a => `
+    const rows = data.map(a => {
+      const now = new Date();
+      const isScheduled = a.status === 'published' && a.published_at && new Date(a.published_at) > now;
+      const statusLabel = a.status !== 'published' ? 'مسودة' : (isScheduled ? 'مجدولة' : 'منشور');
+      const statusClass = a.status !== 'published' ? 'pill--draft' : (isScheduled ? 'pill--scheduled' : 'pill--published');
+      const dateCell = isScheduled
+        ? `<span title="هتتنشر تلقائيًا في المعاد ده">🕒 ${new Date(a.published_at).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' })}</span>`
+        : new Date(a.created_at).toLocaleDateString('ar-EG');
+      return `
       <tr>
         <td>${escapeHtml(a.title)}</td>
         <td style="color:var(--text-muted); font-size:13.5px;">${escapeHtml(a.author_name || '—')}</td>
-        <td><span class="pill ${a.status === 'published' ? 'pill--published' : 'pill--draft'}">${a.status === 'published' ? 'منشور' : 'مسودة'}</span></td>
-        <td style="color:var(--text-faint); font-size:13px;">${new Date(a.created_at).toLocaleDateString('ar-EG')}</td>
+        <td><span class="pill ${statusClass}">${statusLabel}</span></td>
+        <td style="color:var(--text-faint); font-size:13px;">${dateCell}</td>
         <td>
           <div class="row-actions">
             <button class="btn btn--ghost btn--sm" data-edit="${a.id}">تعديل</button>
           </div>
         </td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
     articlesTableWrap.innerHTML = `
       <div class="table-scroll">
         <table class="table">
-          <thead><tr><th>العنوان</th><th>الكاتب</th><th>الحالة</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
+          <thead><tr><th>العنوان</th><th>الكاتب</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
@@ -229,6 +273,8 @@
     if (showDateCheck) showDateCheck.checked = true;
     if (showAuthorBioCheck) showAuthorBioCheck.checked = true;
     if (editorAuthorNameEl) editorAuthorNameEl.value = '';
+    if (scheduleAtInput) scheduleAtInput.value = '';
+    if (scheduleStatusMsg) scheduleStatusMsg.textContent = '';
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
     if (articleId) {
@@ -259,6 +305,10 @@
         currentAuthorPhotoUrl = data.author_photo_url || null;
         currentAuthorPhotoAlt = data.author_photo_alt || '';
         currentPublishedAt = data.published_at || null;
+        // لو المقال متجدول لتاريخ في المستقبل، نعرضه في خانة الجدولة عشان لو حابب تغيّره
+        if (scheduleAtInput && currentPublishedAt && new Date(currentPublishedAt) > new Date()) {
+          scheduleAtInput.value = isoToLocalInputValue(currentPublishedAt);
+        }
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
         if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
@@ -273,6 +323,7 @@
     }
     showView('editor');
     runSeoAnalysis();
+    refreshScheduleUI();
   }
 
   /* ----- محرر المحتوى الغني (WYSIWYG) — من غير كود، بس أزرار عادية ----- */
@@ -516,10 +567,15 @@
       show_author_bio: showAuthorBioCheck ? showAuthorBioCheck.checked : true,
     };
     if (status === 'published') {
-      // نسجّل تاريخ النشر مرة واحدة بس (أول ما المقال يتنشر فعليًا). لو المقال كان
-      // منشور من قبل وبتحفظ تعديل عليه، بنسيب تاريخ النشر الأصلي زي ما هو من غير
-      // ما نستبدله بتاريخ التعديل الحالي.
-      payload.published_at = currentPublishedAt || new Date().toISOString();
+      // لو المستخدم حدد تاريخ ووقت في خانة الجدولة، ده اللي بيتسجّل كتاريخ نشر (سواء كان
+      // في المستقبل = جدولة، أو دلوقتي/في الماضي = نشر فوري بتاريخ محدد). لو سابها فاضية،
+      // نفضل زي ما هي (تاريخ النشر الأصلي لمقال منشور قبل كده) أو نسجّل وقت النهارده لأول مرة.
+      const typed = scheduleAtInput && scheduleAtInput.value ? new Date(scheduleAtInput.value) : null;
+      if (typed && !isNaN(typed.getTime())) {
+        payload.published_at = typed.toISOString();
+      } else {
+        payload.published_at = currentPublishedAt || new Date().toISOString();
+      }
     }
 
     let result;
@@ -535,7 +591,11 @@
     }
     currentArticleId = result.data.id;
     currentPublishedAt = result.data.published_at || currentPublishedAt;
-    editorMsg.textContent = status === 'published' ? 'تم النشر بنجاح ✅' : 'تم حفظ المسودة ✅';
+    refreshScheduleUI();
+    const isFutureSchedule = status === 'published' && currentPublishedAt && new Date(currentPublishedAt) > new Date();
+    editorMsg.textContent = isFutureSchedule
+      ? 'تم جدولة النشر ✅'
+      : (status === 'published' ? 'تم النشر بنجاح ✅' : 'تم حفظ المسودة ✅');
     editorMsg.classList.add('msg--ok');
   }
 
