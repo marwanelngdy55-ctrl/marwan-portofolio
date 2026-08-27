@@ -139,6 +139,7 @@
   let currentAuthorBio = '';
   let currentAuthorPhotoUrl = null;
   let currentAuthorPhotoAlt = '';
+  let currentPublishedAt = null;
   let slugManuallyEdited = false;
   const showAuthorCheck = document.getElementById('show-author-check');
   const showDateCheck = document.getElementById('show-date-check');
@@ -211,6 +212,7 @@
     currentAuthorBio = '';
     currentAuthorPhotoUrl = null;
     currentAuthorPhotoAlt = '';
+    currentPublishedAt = null;
     slugManuallyEdited = false;
     editorMsg.textContent = '';
     titleInput.value = '';
@@ -256,6 +258,7 @@
         currentAuthorBio = data.author_bio || '';
         currentAuthorPhotoUrl = data.author_photo_url || null;
         currentAuthorPhotoAlt = data.author_photo_alt || '';
+        currentPublishedAt = data.published_at || null;
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
         if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
@@ -512,7 +515,12 @@
       show_date: showDateCheck ? showDateCheck.checked : true,
       show_author_bio: showAuthorBioCheck ? showAuthorBioCheck.checked : true,
     };
-    if (status === 'published') payload.published_at = new Date().toISOString();
+    if (status === 'published') {
+      // نسجّل تاريخ النشر مرة واحدة بس (أول ما المقال يتنشر فعليًا). لو المقال كان
+      // منشور من قبل وبتحفظ تعديل عليه، بنسيب تاريخ النشر الأصلي زي ما هو من غير
+      // ما نستبدله بتاريخ التعديل الحالي.
+      payload.published_at = currentPublishedAt || new Date().toISOString();
+    }
 
     let result;
     if (currentArticleId) {
@@ -526,6 +534,7 @@
       return;
     }
     currentArticleId = result.data.id;
+    currentPublishedAt = result.data.published_at || currentPublishedAt;
     editorMsg.textContent = status === 'published' ? 'تم النشر بنجاح ✅' : 'تم حفظ المسودة ✅';
     editorMsg.classList.add('msg--ok');
   }
