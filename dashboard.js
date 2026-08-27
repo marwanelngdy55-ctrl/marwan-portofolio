@@ -136,9 +136,13 @@
   let currentCoverUrl = null;
   let currentAuthorId = null;
   let currentAuthorName = '';
+  let currentAuthorBio = '';
+  let currentAuthorPhotoUrl = null;
+  let currentAuthorPhotoAlt = '';
   let slugManuallyEdited = false;
   const showAuthorCheck = document.getElementById('show-author-check');
   const showDateCheck = document.getElementById('show-date-check');
+  const showAuthorBioCheck = document.getElementById('show-author-bio-check');
   const editorAuthorNameEl = document.getElementById('editor-author-name');
 
   function slugify(text) {
@@ -204,6 +208,9 @@
     currentCoverUrl = null;
     currentAuthorId = null;
     currentAuthorName = '';
+    currentAuthorBio = '';
+    currentAuthorPhotoUrl = null;
+    currentAuthorPhotoAlt = '';
     slugManuallyEdited = false;
     editorMsg.textContent = '';
     titleInput.value = '';
@@ -218,6 +225,7 @@
     coverPreview.innerHTML = 'بدون صورة';
     if (showAuthorCheck) showAuthorCheck.checked = true;
     if (showDateCheck) showDateCheck.checked = true;
+    if (showAuthorBioCheck) showAuthorBioCheck.checked = true;
     if (editorAuthorNameEl) editorAuthorNameEl.value = '';
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
@@ -245,8 +253,12 @@
         currentCoverUrl = data.cover_image_url || null;
         currentAuthorId = data.author_id || null;
         currentAuthorName = data.author_name || '';
+        currentAuthorBio = data.author_bio || '';
+        currentAuthorPhotoUrl = data.author_photo_url || null;
+        currentAuthorPhotoAlt = data.author_photo_alt || '';
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
+        if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
         if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName || (currentProfile?.full_name || currentProfile?.email || '');
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
@@ -469,6 +481,13 @@
     const authorName = typedAuthorName
       || currentAuthorName
       || currentProfile?.full_name || currentProfile?.email || session?.user?.email || '';
+    // بطاقة "كتب بواسطة": لو الكاتب هو المستخدم الحالي، ناخد آخر نسخة من نبذته وصورته
+    // المحفوظة في حسابه (عشان تفضل محدّثة على مقاله). لو المقال لعضو تاني (المدير بيعدّله)،
+    // نحافظ على النسخة اللي كانت متسجلة على المقال من قبل من غير ما نلمسها.
+    const isCurrentUserTheAuthor = authorId && currentProfile?.id === authorId;
+    const authorBio = isCurrentUserTheAuthor ? (currentProfile?.bio_text || '') : currentAuthorBio;
+    const authorPhotoUrl = isCurrentUserTheAuthor ? (currentProfile?.bio_photo_url || null) : currentAuthorPhotoUrl;
+    const authorPhotoAlt = isCurrentUserTheAuthor ? (currentProfile?.bio_photo_alt || '') : currentAuthorPhotoAlt;
     const payload = {
       title,
       slug,
@@ -483,8 +502,12 @@
       status,
       author_id: authorId,
       author_name: authorName,
+      author_bio: authorBio,
+      author_photo_url: authorPhotoUrl,
+      author_photo_alt: authorPhotoAlt,
       show_author: showAuthorCheck ? showAuthorCheck.checked : true,
       show_date: showDateCheck ? showDateCheck.checked : true,
+      show_author_bio: showAuthorBioCheck ? showAuthorBioCheck.checked : true,
     };
     if (status === 'published') payload.published_at = new Date().toISOString();
 
@@ -1054,11 +1077,71 @@
   const changePasswordBtn = document.getElementById('change-password-btn');
   const accountMsg = document.getElementById('account-msg');
 
+  const bioPhotoPreview = document.getElementById('bio-photo-preview');
+  const bioPhotoUpload = document.getElementById('bio-photo-upload');
+  const bioPhotoAltInput = document.getElementById('bio-photo-alt');
+  const bioDisplayNameInput = document.getElementById('bio-display-name');
+  const bioTextInput = document.getElementById('bio-text');
+  const saveBioBtn = document.getElementById('save-bio-btn');
+  const bioMsg = document.getElementById('bio-msg');
+  let pendingBioPhotoUrl = null;
+
   async function loadAccount() {
     const { data: { session } } = await sb.auth.getSession();
     const accountEmailEl = document.getElementById('account-email');
     if (accountEmailEl && session) accountEmailEl.value = session.user.email;
+
+    pendingBioPhotoUrl = null;
+    if (bioDisplayNameInput) bioDisplayNameInput.value = currentProfile?.full_name || '';
+    if (bioTextInput) bioTextInput.value = currentProfile?.bio_text || '';
+    if (bioPhotoAltInput) bioPhotoAltInput.value = currentProfile?.bio_photo_alt || '';
+    if (bioPhotoPreview) {
+      bioPhotoPreview.innerHTML = currentProfile?.bio_photo_url
+        ? `<img src="${escapeAttr(currentProfile.bio_photo_url)}" alt="">`
+        : 'بدون صورة';
+    }
   }
+
+  bioPhotoUpload?.addEventListener('change', async () => {
+    const file = bioPhotoUpload.files[0];
+    if (!file) return;
+    bioPhotoPreview.innerHTML = 'جارِ الرفع...';
+    const { data: { session } } = await sb.auth.getSession();
+    const path = `author-bio/${session?.user?.id || 'user'}-${Date.now()}-${slugify(file.name)}`;
+    const { error: uploadError } = await sb.storage.from('site-images').upload(path, file, { upsert: true });
+    if (uploadError) {
+      bioPhotoPreview.innerHTML = 'فشل رفع الصورة';
+      return;
+    }
+    const { data: urlData } = sb.storage.from('site-images').getPublicUrl(path);
+    pendingBioPhotoUrl = urlData.publicUrl;
+    bioPhotoPreview.innerHTML = `<img src="${escapeAttr(pendingBioPhotoUrl)}" alt="">`;
+  });
+
+  saveBioBtn?.addEventListener('click', async () => {
+    bioMsg.textContent = '';
+    bioMsg.className = 'msg';
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+    const payload = {
+      full_name: (bioDisplayNameInput?.value || '').trim(),
+      bio_text: (bioTextInput?.value || '').trim(),
+      bio_photo_alt: (bioPhotoAltInput?.value || '').trim(),
+    };
+    if (pendingBioPhotoUrl) payload.bio_photo_url = pendingBioPhotoUrl;
+    saveBioBtn.disabled = true;
+    const { data, error } = await sb.from('profiles').update(payload).eq('id', session.user.id).select().single();
+    saveBioBtn.disabled = false;
+    if (error) {
+      bioMsg.textContent = 'حصل خطأ: ' + error.message;
+      bioMsg.classList.add('msg--error');
+      return;
+    }
+    currentProfile = data;
+    pendingBioPhotoUrl = null;
+    bioMsg.textContent = 'تم الحفظ ✅';
+    bioMsg.classList.add('msg--ok');
+  });
 
   changePasswordBtn?.addEventListener('click', async () => {
     accountMsg.textContent = '';

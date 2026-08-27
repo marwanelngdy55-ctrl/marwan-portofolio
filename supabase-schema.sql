@@ -35,6 +35,12 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+-- نبذة الكاتب (بايو) وصورته الشخصية: بتتحط مرة واحدة في حساب كل عضو (من "حسابي" داخل اللوحة)
+-- وبتتنسخ تلقائيًا على مقالاته وقت الحفظ (نفس فكرة اسم الكاتب author_name اللي فوق)
+alter table public.profiles add column if not exists bio_text text;
+alter table public.profiles add column if not exists bio_photo_url text;
+alter table public.profiles add column if not exists bio_photo_alt text;
+
 -- 2) جدول المقالات
 create table if not exists public.articles (
   id uuid primary key default gen_random_uuid(),
@@ -71,6 +77,13 @@ alter table public.articles add column if not exists meta_description text;
 
 -- الكلمة المفتاحية المستهدفة للمقال (Focus Keyword) — تستخدم في تحليل السيو داخل لوحة التحكم
 alter table public.articles add column if not exists focus_keyword text;
+
+-- بطاقة "كتب بواسطة" في نهاية المقال: نسخة محفوظة من نبذة الكاتب وصورته وقت حفظ المقال
+-- (نفس فكرة author_name فوق — تعديل الكاتب لبياناته لاحقًا في حسابه بيتحدث في مقالاته الجديدة/التالية)
+alter table public.articles add column if not exists author_bio text;
+alter table public.articles add column if not exists author_photo_url text;
+alter table public.articles add column if not exists author_photo_alt text;
+alter table public.articles add column if not exists show_author_bio boolean not null default true;
 
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
@@ -125,6 +138,26 @@ create trigger profiles_prevent_last_owner
   before update on public.profiles
   for each row execute procedure public.prevent_last_owner_change();
 
+-- تمنع أي عضو (غير مدير) من تغيير دوره أو حالة تفعيله بنفسه، حتى لو حاول يبعت الطلب
+-- مباشرة لـ Supabase من غير ما يمر باللوحة. مسموح له بس يعدّل بياناته الشخصية
+-- (الاسم، النبذة، الصورة) عن طريق سياسة "members can update own bio" تحت.
+create or replace function public.prevent_self_privilege_escalation()
+returns trigger
+language plpgsql security definer set search_path = public
+as $$
+begin
+  if not public.is_owner() and (new.role is distinct from old.role or new.is_active is distinct from old.is_active) then
+    raise exception 'مينفعش تغيّر دورك أو حالة تفعيلك بنفسك.';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists profiles_prevent_self_escalation on public.profiles;
+create trigger profiles_prevent_self_escalation
+  before update on public.profiles
+  for each row execute procedure public.prevent_self_privilege_escalation();
+
 -- ==========================================================================
 -- Row Level Security
 -- ==========================================================================
@@ -145,6 +178,15 @@ create policy "owner can update profiles"
   on public.profiles for update
   using (public.is_owner())
   with check (public.is_owner());
+
+-- profiles: أي عضو (مدير أو عادي) يقدر يعدّل بياناته الشخصية هو بس من "حسابي"
+-- (الاسم الظاهر، نبذة عني، الصورة الشخصية). التريجر فوق (profiles_prevent_self_escalation)
+-- بيتأكد إنه ميقدرش يغيّر دوره أو حالة تفعيله من نفس الطريق.
+drop policy if exists "members can update own bio" on public.profiles;
+create policy "members can update own bio"
+  on public.profiles for update
+  using (auth.role() = 'authenticated' and id = auth.uid())
+  with check (auth.role() = 'authenticated' and id = auth.uid());
 
 -- articles: الزوار يشوفوا المقالات المنشورة بس. الأعضاء المسجلين يشوفوا مقالاتهم هم،
 -- والمدير يشوف كل المقالات (منشورة أو مسودة، لأي عضو)

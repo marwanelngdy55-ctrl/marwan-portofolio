@@ -439,6 +439,11 @@ a{color:inherit; text-decoration:none;}
             <span>إظهار تاريخ النشر</span>
           </label>
           <p class="help-text" style="margin-top:4px;">تقدر تكتب أي اسم تحب يظهر ككاتب للمقال (بدل الإيميل)، وتقدر كمان تخفي الاسم أو التاريخ من ظهورهم للزوار من غير ما تحذفهم من قاعدة البيانات.</p>
+          <label class="checkbox-row">
+            <input type="checkbox" id="show-author-bio-check" checked>
+            <span>إظهار بطاقة "كتب بواسطة" في نهاية المقال</span>
+          </label>
+          <p class="help-text" style="margin-top:4px;">البطاقة بتاخد الاسم والصورة والنبذة اللي كتبتها في "حسابي" وقت حفظ المقال. لو مسجلش نبذة لسه في حسابك، البطاقة مش هتظهر حتى لو الخانة دي متعلّمة.</p>
         </div>
       </div>
     </section>
@@ -604,6 +609,32 @@ a{color:inherit; text-decoration:none;}
         </div>
         <button class="btn btn--primary" id="change-password-btn">تحديث كلمة المرور</button>
         <p class="msg" id="account-msg"></p>
+      </div>
+
+      <div class="card" style="max-width:520px;">
+        <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">بطاقة "كتب بواسطة" (تظهر أسفل مقالاتك)</label>
+        <p class="help-text" style="margin-bottom:16px;">اكتب نبذة قصيرة عن نفسك وارفع صورة شخصية، وهيظهروا في بطاقة أسفل كل مقال تنشره — بياخدوا آخر نسخة محفوظة هنا وقت ما تحفظ أو تنشر المقال.</p>
+        <div class="content-image-field" style="margin-bottom:16px;">
+          <div class="content-image-preview" id="bio-photo-preview">بدون صورة</div>
+          <div class="content-image-body">
+            <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">الصورة الشخصية</label>
+            <input type="file" accept="image/*" id="bio-photo-upload" style="margin-bottom:10px;">
+            <div class="field">
+              <label for="bio-photo-alt">Alt text لصورة</label>
+              <input type="text" id="bio-photo-alt" placeholder="مثال: صورة شخصية لـ مروان النجدي">
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="bio-display-name">الاسم الظاهر في البطاقة</label>
+          <input type="text" id="bio-display-name" placeholder="مثال: مروان النجدي">
+        </div>
+        <div class="field">
+          <label for="bio-text">نبذة عني</label>
+          <textarea id="bio-text" rows="4" placeholder="مثال: متخصص SEO بخبرة X سنوات في..."></textarea>
+        </div>
+        <button class="btn btn--primary" id="save-bio-btn">حفظ بيانات البطاقة</button>
+        <p class="msg" id="bio-msg"></p>
       </div>
     </section>
   </main>
