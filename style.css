@@ -115,7 +115,9 @@ p{ margin: 0; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
-  margin: 0 0 14px;
+  margin: 8px 0 16px; /* هامش صغير من فوق كمان (زيادة أمان)، عشان تفضل الكلمة
+                          بعيدة عن أي عنصر قبلها (زي صورة "نبذة عن مروان") حتى
+                          لو الفراغ الجاي من العنصر اللي قبلها اتقل لأي سبب */
 }
 .section__title{
   font-size: clamp(28px, 4vw, 42px);
