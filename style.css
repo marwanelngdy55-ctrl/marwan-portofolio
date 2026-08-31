@@ -107,6 +107,9 @@ p{ margin: 0; }
 .section__inner{ max-width: var(--container); margin: 0 auto; padding: 0 32px; }
 
 .section__eyebrow{
+  display: block; /* كانت span عادية (inline)، فهامش margin-bottom كان بيتجاهل تمامًا
+                      من المتصفح ولمّا كانت العنوان بيبان لازق فيها؛ display:block بيخلي
+                      الهامش يشتغل فعليًا */
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -1023,6 +1026,7 @@ p{ margin: 0; }
 
 @media (max-width: 720px){
   .section{ padding: 80px 0; }
+  .section__eyebrow{ margin-bottom: 18px; }
   .section__subtitle{ margin-bottom: 40px; }
   .process__step{ flex-basis: calc(50% - 10px); }
   .skill-card, .project-card, .service-card{ flex-basis: 100%; }
