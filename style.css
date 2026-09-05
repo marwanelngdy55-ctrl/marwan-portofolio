@@ -303,9 +303,15 @@ p{ margin: 0; }
   padding: 0 32px;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  gap: 64px;
+  grid-template-areas:
+    "top    visual"
+    "bottom visual";
+  column-gap: 64px;
+  row-gap: 12px;
   align-items: center;
 }
+.hero__top{ grid-area: top; }
+.hero__bottom{ grid-area: bottom; }
 
 .eyebrow{
   display: inline-flex;
@@ -354,7 +360,7 @@ p{ margin: 0; }
 .hero__stat-label{ font-size: 13px; color: var(--text-faint); margin-top: 4px; }
 
 /* ---------- SERP visual (signature element) ---------- */
-.hero__visual{ display: flex; justify-content: center; }
+.hero__visual{ grid-area: visual; display: flex; justify-content: center; }
 .serp-card{
   width: 100%;
   max-width: 440px;
@@ -1015,9 +1021,18 @@ p{ margin: 0; }
   }
   .nav.is-open .nav__link{ padding: 12px 0; width: 100%; }
 
-  .hero__inner{ grid-template-columns: 1fr; gap: 56px; }
-  .hero__visual{ order: -1; }
-  .serp-card{ max-width: 460px; transform: none; }
+  .hero{ min-height: auto; padding-top: calc(var(--nav-h) + 36px); padding-bottom: 56px; }
+  .hero__inner{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "top"
+      "visual"
+      "bottom";
+    row-gap: 40px;
+  }
+  .serp-card{ max-width: 460px; width: 100%; transform: none; margin: 0 auto; }
+  /* بيبقى فاضل احتياجه لما الهيرو بيبقى أطول من الشاشة على الموبايل، ولإنه كان بيتراكب فوق العنوان */
+  .scroll-cue{ display: none; }
 
   .about{ grid-template-columns: 1fr; }
   .about__media{ position: relative; max-width: 320px; margin: 0 auto 60px; }
@@ -1074,8 +1089,14 @@ p{ margin: 0; }
   .nav__actions{ gap: 8px; }
   .nav__actions .btn{ display: none; }
   .nav__brand-text{ font-size: 13.5px; }
-  .hero__inner{ padding: 0 20px; }
+  .hero__inner{ padding: 0 20px; row-gap: 32px; }
   .footer__inner{ padding: 0 20px; }
+  .serp-card__bar{ padding: 12px 14px; }
+  .serp-card__url{ font-size: 10.5px; }
+  .serp-card__body{ padding: 16px 14px; gap: 14px; }
+  .serp-result__title, .serp-result__breadcrumb{ font-size: 12.5px; }
+  .serp-card__footer{ padding: 12px 14px; flex-wrap: wrap; }
+  .serp-spark{ width: 70px; }
   .hero__cta{ flex-direction: column; align-items: stretch; }
   .process__step{ flex-basis: 100%; }
   .hero__name{ font-size: 30px; }
