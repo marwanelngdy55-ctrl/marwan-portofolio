@@ -149,9 +149,39 @@
   }
 
   /* ---------- الأسئلة الشائعة (FAQ) — بتتحط كجزء طبيعي من محتوى المقال، جوه article-body،
-     مباشرة قبل الخاتمة، فبتاخد نفس تنسيق h2/h3/p العادي، وبكده بتتحسب في محتويات المقال
-     وبتتفهرس عادي زي أي فقرة تانية. مفيش تنسيق خاص إضافي مطلوب غير مسافة بسيطة فوق عنوانها. */
+     مباشرة قبل الخاتمة، فبتتحسب في محتويات المقال وتتفهرس عادي زي أي عنوان تاني (لسه h3 لكل
+     سؤال). كل سؤال بيتبني من <details> عشان الفتح/القفل يشتغل بمحرك المتصفح نفسه (بدون JS)،
+     وعلامة "+" اللي بتدور 45 درجة (تبقى ×) لما السؤال يتفتح. الإجابة بتفضل موجودة في الصفحة
+     دايمًا (مخفية بصريًا بس، مش متشالة) عشان جوجل يقدر يقرأها زي أي جزء تاني من المقال. */
   .article-body .article-faq-title{ margin-top:44px; }
+  .article-faq-list{ margin-top:18px; }
+  .article-faq-item{
+    border:1px solid var(--border-strong); border-radius:var(--radius-md);
+    background:var(--bg-elevated) !important; margin-bottom:12px; overflow:hidden;
+    transition: border-color .25s var(--ease);
+  }
+  .article-faq-item[open]{ border-color:var(--accent); }
+  .article-faq-item__q{
+    list-style:none; cursor:pointer; padding:18px 22px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .article-faq-item__q::-webkit-details-marker{ display:none; }
+  .article-faq-item__q h3{ margin:0 !important; font-size:16.5px !important; }
+  .article-faq-item__icon{
+    flex-shrink:0; width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft) !important; color:var(--accent) !important;
+    font-size:18px; font-weight:700; line-height:1;
+    transition: transform .3s var(--ease);
+  }
+  .article-faq-item[open] .article-faq-item__icon{ transform:rotate(45deg); }
+  .article-faq-item__a{ padding:0 22px 20px; }
+  .article-faq-item__a p:last-child{ margin-bottom:0; }
+  @media (max-width: 480px){
+    .article-faq-item__q{ padding:15px 18px; }
+    .article-faq-item__a{ padding:0 18px 16px; }
+  }
 
   /* ---------- استمر في التعلم (مقالات جديدة / مرتبطة) ---------- */
   .continue-learning{ max-width:var(--container); margin:0 auto; padding:20px 32px 100px; }
@@ -384,13 +414,24 @@
   const validFaqs = Array.isArray(data.faqs) ? data.faqs.filter(f => f && f.question && f.answer) : [];
   if (validFaqs.length) {
     const faqTitle = (data.faq_title || 'الأسئلة الشائعة').trim();
-    let faqHtml = `<h2 class="article-faq-title">${esc(faqTitle)}</h2>`;
+    // الإجابة مكتوبة أصلاً كـ HTML من لوحة التحكم (فقرات/تنسيق كامل)، فبتتحط زي ما هي من
+    // غير ما تتهرب، بنفس منطق ثقة محتوى المقال الرئيسي (bodyEl.innerHTML فوق).
+    let faqHtml = `<h2 class="article-faq-title">${esc(faqTitle)}</h2><div class="article-faq-list">`;
     validFaqs.forEach(f => {
-      faqHtml += `<h3>${esc(f.question)}</h3><p>${esc(f.answer)}</p>`;
+      faqHtml += `
+        <details class="article-faq-item">
+          <summary class="article-faq-item__q">
+            <h3>${esc(f.question)}</h3>
+            <span class="article-faq-item__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="article-faq-item__a">${f.answer}</div>
+        </details>`;
     });
+    faqHtml += '</div>';
     bodyEl.insertAdjacentHTML('beforeend', faqHtml);
 
-    // بيانات منظمة FAQPage — بتساعد المقال يظهر بشكل غني (أسئلة قابلة للطي) في نتائج جوجل
+    // بيانات منظمة FAQPage — بتساعد المقال يظهر بشكل غني (أسئلة قابلة للطي) في نتائج جوجل.
+    // جوجل بتسمح ببعض تاجات HTML البسيطة (a, strong, em, ul, li...) جوه نص الإجابة هنا.
     const faqLd = document.createElement('script');
     faqLd.type = 'application/ld+json';
     faqLd.textContent = JSON.stringify({

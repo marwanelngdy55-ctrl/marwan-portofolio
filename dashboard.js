@@ -147,43 +147,103 @@
   const editorAuthorNameEl = document.getElementById('editor-author-name');
   const scheduleAtInput = document.getElementById('schedule-at-input');
   const scheduleStatusMsg = document.getElementById('schedule-status-msg');
-  const faqListEl = document.getElementById('faq-list');
-  const addFaqBtn = document.getElementById('add-faq-btn');
+  const faqContentEditor = document.getElementById('faq-content');
   const faqTitleInput = document.getElementById('faq-title-input');
   const conclusionInput = document.getElementById('conclusion-input');
-  let currentFaqs = [];
 
-  /* ----- محرر "الأسئلة الشائعة" (FAQ) ----- */
-  function renderFaqEditor() {
-    if (!faqListEl) return;
-    faqListEl.innerHTML = '';
-    currentFaqs.forEach((faq, i) => {
-      const item = document.createElement('div');
-      item.className = 'faq-item';
-      item.innerHTML = `
-        <div class="faq-item-head"><span>سؤال ${i + 1}</span></div>
-        <div class="field">
-          <label>السؤال (هيظهر في الموقع كعنوان H3)</label>
-          <input type="text" class="faq-question-input" placeholder="مثال: كام تكلفة الخدمة؟" value="${escapeAttr(faq.question || '')}">
-        </div>
-        <div class="field">
-          <label>الإجابة (فقرة عادية تحت السؤال)</label>
-          <textarea class="faq-answer-input" rows="2" placeholder="اكتب الإجابة هنا">${escapeHtml(faq.answer || '')}</textarea>
-        </div>
-        <button type="button" class="btn btn--danger btn--sm faq-remove-btn">حذف السؤال</button>
-      `;
-      item.querySelector('.faq-question-input').addEventListener('input', (e) => { currentFaqs[i].question = e.target.value; });
-      item.querySelector('.faq-answer-input').addEventListener('input', (e) => { currentFaqs[i].answer = e.target.value; });
-      item.querySelector('.faq-remove-btn').addEventListener('click', () => {
-        currentFaqs.splice(i, 1);
-        renderFaqEditor();
-      });
-      faqListEl.appendChild(item);
-    });
+  /* ----- محرر "الأسئلة الشائعة" (FAQ) — مكان واحد لكل الأسئلة والأجوبة ورا بعض -----
+     كل سؤال بيتكتب كعنوان H3 (بزرار "+ سؤال")، والإجابة هي كل حاجة تحته (فقرات عادية)
+     لحد ما يجي H3 جديد. الدالتين تحت بيحوّلوا بين شكل الـ HTML ده ومصفوفة {question, answer}
+     المخزّنة فعليًا في قاعدة البيانات (نفس شكل التخزين القديم، فمفيش داعي لتعديل الجدول). */
+  function faqsToEditorHtml(faqs) {
+    return (Array.isArray(faqs) ? faqs : []).map(f => {
+      const q = escapeHtml(f?.question || '');
+      const answer = f?.answer || '';
+      // إجابات قديمة كانت بتتخزن كنص عادي بدون تاجات HTML؛ الجديدة ممكن تكون فقرات/تنسيق كامل
+      const looksLikeHtml = /<[a-z][\s\S]*>/i.test(answer);
+      const answerHtml = looksLikeHtml ? answer : `<p>${escapeHtml(answer)}</p>`;
+      return `<h3>${q}</h3>${answerHtml}`;
+    }).join('');
   }
-  addFaqBtn?.addEventListener('click', () => {
-    currentFaqs.push({ question: '', answer: '' });
-    renderFaqEditor();
+
+  function parseFaqEditorHtml(html) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html || '';
+    const items = [];
+    let current = null;
+    Array.from(wrapper.childNodes).forEach(node => {
+      if (node.nodeType === 1 && node.tagName === 'H3') {
+        current = { question: node.textContent.trim(), answerNodes: [] };
+        items.push(current);
+      } else if (current) {
+        if (node.nodeType === 3 && !node.textContent.trim()) return; // نتجاهل نصوص فاضية بين العناصر
+        current.answerNodes.push(node);
+      }
+      // أي حاجة قبل أول H3 بيتم تجاهلها — المفروض أول حاجة يكتبها المستخدم تبقى سؤال
+    });
+    return items
+      .map(it => {
+        const answerWrap = document.createElement('div');
+        it.answerNodes.forEach(n => answerWrap.appendChild(n.cloneNode(true)));
+        return { question: it.question, answer: answerWrap.innerHTML.trim() };
+      })
+      .filter(f => f.question && f.answer);
+  }
+
+  function focusFaqEditor() { faqContentEditor.focus(); }
+
+  document.querySelectorAll('#faq-toolbar [data-faq-cmd]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      focusFaqEditor();
+      document.execCommand(btn.dataset.faqCmd, false, null);
+    });
+  });
+
+  document.querySelectorAll('#faq-toolbar [data-faq-block]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      focusFaqEditor();
+      document.execCommand('formatBlock', false, `<${btn.dataset.faqBlock}>`);
+    });
+  });
+
+  document.getElementById('faq-link-btn')?.addEventListener('click', () => {
+    const url = prompt('حط رابط الصفحة (لازم يبدأ بـ https://):', 'https://');
+    if (!url) return;
+    focusFaqEditor();
+    document.execCommand('createLink', false, url);
+  });
+
+  // نفس تنضيف اللصق المستخدم في محرر المحتوى الرئيسي (شيل أي لون/خط ثابت ملصوق من وورد أو مصدر تاني)
+  faqContentEditor?.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const clipboard = e.clipboardData || window.clipboardData;
+    const html = clipboard?.getData('text/html');
+    const text = clipboard?.getData('text/plain') || '';
+
+    function stripColors(node) {
+      if (node.nodeType === 1) {
+        node.removeAttribute('color');
+        node.removeAttribute('bgcolor');
+        const style = node.getAttribute('style');
+        if (style) {
+          const cleaned = style.replace(/(^|;)\s*(color|background|background-color|font-weight|font-family|line-height)\s*:[^;]*/gi, '');
+          if (cleaned.trim()) node.setAttribute('style', cleaned); else node.removeAttribute('style');
+        }
+        node.removeAttribute('class');
+        Array.from(node.childNodes).forEach(stripColors);
+      }
+    }
+
+    let cleanHtml;
+    if (html) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      stripColors(wrapper);
+      cleanHtml = wrapper.innerHTML;
+    } else {
+      cleanHtml = escapeHtml(text).replace(/\n/g, '<br>');
+    }
+    document.execCommand('insertHTML', false, cleanHtml);
   });
 
   // تحويل تاريخ ISO (من قاعدة البيانات) لصيغة يفهمها input[type=datetime-local] بالتوقيت المحلي
@@ -313,10 +373,9 @@
     if (editorAuthorNameEl) editorAuthorNameEl.value = '';
     if (scheduleAtInput) scheduleAtInput.value = '';
     if (scheduleStatusMsg) scheduleStatusMsg.textContent = '';
-    currentFaqs = [];
+    if (faqContentEditor) faqContentEditor.innerHTML = '';
     if (faqTitleInput) faqTitleInput.value = '';
     if (conclusionInput) conclusionInput.value = '';
-    renderFaqEditor();
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
     if (articleId) {
@@ -354,10 +413,9 @@
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
         if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
-        currentFaqs = Array.isArray(data.faqs) ? data.faqs.map(f => ({ question: f?.question || '', answer: f?.answer || '' })) : [];
+        if (faqContentEditor) faqContentEditor.innerHTML = faqsToEditorHtml(data.faqs);
         if (faqTitleInput) faqTitleInput.value = data.faq_title || '';
         if (conclusionInput) conclusionInput.value = data.conclusion || '';
-        renderFaqEditor();
         if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName || (currentProfile?.full_name || currentProfile?.email || '');
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
@@ -611,9 +669,7 @@
       show_author: showAuthorCheck ? showAuthorCheck.checked : true,
       show_date: showDateCheck ? showDateCheck.checked : true,
       show_author_bio: showAuthorBioCheck ? showAuthorBioCheck.checked : true,
-      faqs: currentFaqs
-        .map(f => ({ question: (f.question || '').trim(), answer: (f.answer || '').trim() }))
-        .filter(f => f.question && f.answer),
+      faqs: parseFaqEditorHtml(faqContentEditor ? faqContentEditor.innerHTML : ''),
       faq_title: faqTitleInput ? faqTitleInput.value.trim() : '',
       conclusion: conclusionInput ? conclusionInput.value.trim() : '',
     };
