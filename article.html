@@ -33,7 +33,7 @@
   .article-body{ max-width:760px; margin:0 auto; padding:0 32px 100px; font-size:17px; line-height:1.9; color:var(--text); }
   .article-body h2{ font-size:24px; font-weight:800; margin:36px 0 14px; }
   .article-body p{ margin:0 0 18px; color:var(--text); }
-  .article-body a{ color:var(--link, #2F6FED); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:2px; font-weight:600; }
+  .article-body a{ color:var(--link, #2F6FED); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:4px; font-weight:600; }
   .article-body a:hover{ color:var(--link-strong, #1E56C7); }
   .article-body ul{ margin:0 0 18px; padding-inline-start:22px; list-style:disc; }
   .article-body li{ margin-bottom:8px; }
@@ -42,7 +42,7 @@
   .article-body, .article-body *{ color:var(--text) !important; background-color:transparent !important; }
   /* الروابط بتتلوّن أزرق حتى لو جوّاها عنصر تاني (span من لصق وورد) بيحمل لون جواه؛
      لازم نستهدف كل حاجة جوه الرابط كمان، وإلا الـ span الداخلي بيغلب لون الرابط. */
-  .article-body a, .article-body a *{ color:var(--link, #2F6FED) !important; text-decoration:underline; }
+  .article-body a, .article-body a *{ color:var(--link, #2F6FED) !important; text-decoration:underline; text-underline-offset:4px; }
   .article-body a:hover, .article-body a:hover *{ color:var(--link-strong, #1E56C7) !important; }
 
   /* توحيد وزن الخط: محتوى ملصوق من وورد أو مصدر خارجي بيجيب معاه غالبًا وزن غامق (bold)
