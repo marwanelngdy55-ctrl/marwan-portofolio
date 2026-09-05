@@ -23,8 +23,8 @@
   --link: #5B9DFF;
   --link-strong: #7FB2FF;
 
-  --gold: #D4A857;
-  --gold-soft: rgba(212,168,87,0.14);
+  --gold: #2FD68C;
+  --gold-soft: rgba(47,214,140,0.14);
 
   --danger: #E4667A;
 
@@ -64,8 +64,8 @@
   --link: #1D6FE0;
   --link-strong: #1558B8;
 
-  --gold: #A9791F;
-  --gold-soft: rgba(169,121,31,0.10);
+  --gold: #148A5A;
+  --gold-soft: rgba(20,138,90,0.10);
 
   --shadow-sm: 0 1px 2px rgba(16,21,31,0.06);
   --shadow-md: 0 8px 24px rgba(16,21,31,0.08);
@@ -677,7 +677,7 @@ p{ margin: 0; }
   animation: badgePulse 3.2s ease-in-out infinite;
 }
 .about__badge--bottom{ bottom: -22px; left: -22px; }
-.about__badge--top{ top: -22px; right: -22px; background: var(--gold); color: #2b1f05; animation-delay: 1.6s; }
+.about__badge--top{ top: -22px; right: -22px; background: var(--gold); color: #06231A; animation-delay: 1.6s; }
 .about__badge-num{ font-family: var(--font-mono); font-size: 26px; font-weight: 700; line-height: 1; }
 .about__badge-label{ font-size: 11.5px; margin-top: 4px; }
 @keyframes badgePulse{
