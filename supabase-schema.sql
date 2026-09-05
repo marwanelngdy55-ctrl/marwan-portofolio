@@ -85,6 +85,11 @@ alter table public.articles add column if not exists author_photo_url text;
 alter table public.articles add column if not exists author_photo_alt text;
 alter table public.articles add column if not exists show_author_bio boolean not null default true;
 
+-- الأسئلة الشائعة (FAQ) الخاصة بكل مقال: مصفوفة JSON من عناصر {question, answer}.
+-- بتتظهر تلقائيًا في نهاية المقال (بعد الخاتمة) على شكل أزرار قابلة للفتح والغلق (أكورديون)،
+-- وبتتحول كمان لبيانات منظمة FAQPage تساعد جوجل يظهر مقالك بشكل غني في نتائج البحث.
+alter table public.articles add column if not exists faqs jsonb not null default '[]'::jsonb;
+
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (
   key text primary key,

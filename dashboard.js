@@ -147,6 +147,42 @@
   const editorAuthorNameEl = document.getElementById('editor-author-name');
   const scheduleAtInput = document.getElementById('schedule-at-input');
   const scheduleStatusMsg = document.getElementById('schedule-status-msg');
+  const faqListEl = document.getElementById('faq-list');
+  const addFaqBtn = document.getElementById('add-faq-btn');
+  let currentFaqs = [];
+
+  /* ----- محرر "الأسئلة الشائعة" (FAQ) ----- */
+  function renderFaqEditor() {
+    if (!faqListEl) return;
+    faqListEl.innerHTML = '';
+    currentFaqs.forEach((faq, i) => {
+      const item = document.createElement('div');
+      item.className = 'faq-item';
+      item.innerHTML = `
+        <div class="faq-item-head"><span>سؤال ${i + 1}</span></div>
+        <div class="field">
+          <label>السؤال</label>
+          <input type="text" class="faq-question-input" placeholder="مثال: كام تكلفة الخدمة؟" value="${escapeAttr(faq.question || '')}">
+        </div>
+        <div class="field">
+          <label>الإجابة</label>
+          <textarea class="faq-answer-input" rows="2" placeholder="اكتب الإجابة هنا">${escapeHtml(faq.answer || '')}</textarea>
+        </div>
+        <button type="button" class="btn btn--danger btn--sm faq-remove-btn">حذف السؤال</button>
+      `;
+      item.querySelector('.faq-question-input').addEventListener('input', (e) => { currentFaqs[i].question = e.target.value; });
+      item.querySelector('.faq-answer-input').addEventListener('input', (e) => { currentFaqs[i].answer = e.target.value; });
+      item.querySelector('.faq-remove-btn').addEventListener('click', () => {
+        currentFaqs.splice(i, 1);
+        renderFaqEditor();
+      });
+      faqListEl.appendChild(item);
+    });
+  }
+  addFaqBtn?.addEventListener('click', () => {
+    currentFaqs.push({ question: '', answer: '' });
+    renderFaqEditor();
+  });
 
   // تحويل تاريخ ISO (من قاعدة البيانات) لصيغة يفهمها input[type=datetime-local] بالتوقيت المحلي
   function isoToLocalInputValue(iso) {
@@ -275,6 +311,8 @@
     if (editorAuthorNameEl) editorAuthorNameEl.value = '';
     if (scheduleAtInput) scheduleAtInput.value = '';
     if (scheduleStatusMsg) scheduleStatusMsg.textContent = '';
+    currentFaqs = [];
+    renderFaqEditor();
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
     if (articleId) {
@@ -312,6 +350,8 @@
         if (showAuthorCheck) showAuthorCheck.checked = data.show_author !== false;
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
         if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
+        currentFaqs = Array.isArray(data.faqs) ? data.faqs.map(f => ({ question: f?.question || '', answer: f?.answer || '' })) : [];
+        renderFaqEditor();
         if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName || (currentProfile?.full_name || currentProfile?.email || '');
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
         slugManuallyEdited = true;
@@ -565,6 +605,9 @@
       show_author: showAuthorCheck ? showAuthorCheck.checked : true,
       show_date: showDateCheck ? showDateCheck.checked : true,
       show_author_bio: showAuthorBioCheck ? showAuthorBioCheck.checked : true,
+      faqs: currentFaqs
+        .map(f => ({ question: (f.question || '').trim(), answer: (f.answer || '').trim() }))
+        .filter(f => f.question && f.answer),
     };
     if (status === 'published') {
       // لو المستخدم حدد تاريخ ووقت في خانة الجدولة، ده اللي بيتسجّل كتاريخ نشر (سواء كان
