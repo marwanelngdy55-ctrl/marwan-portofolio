@@ -33,20 +33,23 @@
   .article-body{ max-width:760px; margin:0 auto; padding:0 32px 100px; font-size:17px; line-height:1.9; color:var(--text); }
   .article-body h2{ font-size:24px; font-weight:800; margin:36px 0 14px; }
   .article-body p{ margin:0 0 18px; color:var(--text); }
-  .article-body a{ color:var(--accent); text-decoration:underline; }
+  .article-body a{ color:var(--link); text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:2px; font-weight:600; }
+  .article-body a:hover{ color:var(--link-strong); }
   .article-body ul{ margin:0 0 18px; padding-inline-start:22px; list-style:disc; }
   .article-body li{ margin-bottom:8px; }
   /* أي كتابة ملصوقة من وورد أو مصدر تاني ممكن تيجي بلون ثابت جواها؛ الأسطر دي بتضمن إن
      الكتابة دايمًا تتبع لون الموقع الحالي (أبيض في الداكن، أسود في الفاتح) مهما كان اللون الأصلي. */
   .article-body, .article-body *{ color:var(--text) !important; background-color:transparent !important; }
-  .article-body a{ color:var(--accent) !important; text-decoration:underline; }
+  .article-body a{ color:var(--link) !important; text-decoration:underline; }
+  .article-body a:hover{ color:var(--link-strong) !important; }
 
   /* توحيد وزن الخط: محتوى ملصوق من وورد أو مصدر خارجي بيجيب معاه غالبًا وزن غامق (bold)
      على كل حرف حتى النص العادي، فيبقى شكل العناوين والفقرات متشابه ومفيش فرق باين بينهم.
      الأسطر دي بتلغي أي وزن غامق ملصوق وترجّع النص العادي لوزنه الطبيعي، وتسيب الغامق
      الحقيقي (Bold/H2...) بس هو اللي يبان غامق. */
   .article-body, .article-body p, .article-body span, .article-body div,
-  .article-body li, .article-body a, .article-body td, .article-body th { font-weight:400 !important; }
+  .article-body li, .article-body td, .article-body th { font-weight:400 !important; }
+  .article-body a{ font-weight:600 !important; }
   .article-body h2, .article-body h3, .article-body h4, .article-body h5, .article-body h6 { font-weight:800 !important; }
   .article-body strong, .article-body b, .article-body th { font-weight:700 !important; }
   .article-body em, .article-body i { font-style:italic !important; }

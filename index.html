@@ -1092,6 +1092,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       .from('articles')
       .select('title, slug, excerpt, cover_image_url, cover_image_alt, cover_image_title, published_at')
       .eq('status', 'published')
+      .lte('published_at', new Date().toISOString()) // نتأكد إن معاد النشر وصل فعلاً (عشان المقالات المتجدولة متظهرش قبل معادها)
       .order('published_at', { ascending: false })
       .limit(3);
 

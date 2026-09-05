@@ -20,6 +20,9 @@
   --accent-strong: #2FB57B;
   --accent-soft: rgba(62,207,142,0.12);
 
+  --link: #5B9DFF;
+  --link-strong: #7FB2FF;
+
   --gold: #D4A857;
   --gold-soft: rgba(212,168,87,0.14);
 
@@ -57,6 +60,9 @@
   --accent: #1F9C67;
   --accent-strong: #178356;
   --accent-soft: rgba(31,156,103,0.10);
+
+  --link: #1D6FE0;
+  --link-strong: #1558B8;
 
   --gold: #A9791F;
   --gold-soft: rgba(169,121,31,0.10);
