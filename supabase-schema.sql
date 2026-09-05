@@ -85,19 +85,8 @@ alter table public.articles add column if not exists author_photo_url text;
 alter table public.articles add column if not exists author_photo_alt text;
 alter table public.articles add column if not exists show_author_bio boolean not null default true;
 
--- الأسئلة الشائعة (FAQ) الخاصة بكل مقال: مصفوفة JSON من عناصر {question, answer}.
--- بتتحط تلقائيًا جوه محتوى المقال نفسه (h2 لعنوان القسم، وh3 لكل سؤال) مباشرة قبل الخاتمة —
--- يعني بتتحسب في محتويات المقال (Table of Contents) وبتتفهرس زي أي فقرة تانية بالظبط،
--- وكمان بتتحول لبيانات منظمة FAQPage تساعد جوجل يظهر مقالك بشكل غني في نتائج البحث.
-alter table public.articles add column if not exists faqs jsonb not null default '[]'::jsonb;
-
--- عنوان قسم الأسئلة الشائعة (H2) — قابل للتعديل من لوحة التحكم، ولو سايبه فاضي بيرجع
--- تلقائيًا لـ "الأسئلة الشائعة".
-alter table public.articles add column if not exists faq_title text;
-
--- الخاتمة: فقرة منفصلة عن محرر المحتوى الرئيسي، بتتحط دايمًا آخر حاجة في المقال
--- (بعد الأسئلة الشائعة مباشرة) عشان الأسئلة الشائعة تفضل قبلها ثابتة.
-alter table public.articles add column if not exists conclusion text;
+-- ملحوظة: الأسئلة الشائعة والخاتمة مبقاش لهم أعمدة/محرر منفصل — بيتكتبوا دلوقتي كجزء
+-- طبيعي من محتوى المقال نفسه (عمود content فوق)، زي أي عنوان وفقرة عاديين.
 
 -- 3) جدول محتوى الموقع (نصوص قابلة للتعديل من اللوحة)
 create table if not exists public.site_content (

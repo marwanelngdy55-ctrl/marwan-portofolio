@@ -148,41 +148,6 @@
     .article-layout{ padding:0 20px; }
   }
 
-  /* ---------- الأسئلة الشائعة (FAQ) — بتتحط كجزء طبيعي من محتوى المقال، جوه article-body،
-     مباشرة قبل الخاتمة، فبتتحسب في محتويات المقال وتتفهرس عادي زي أي عنوان تاني (لسه h3 لكل
-     سؤال). كل سؤال بيتبني من <details> عشان الفتح/القفل يشتغل بمحرك المتصفح نفسه (بدون JS)،
-     وعلامة "+" اللي بتدور 45 درجة (تبقى ×) لما السؤال يتفتح. الإجابة بتفضل موجودة في الصفحة
-     دايمًا (مخفية بصريًا بس، مش متشالة) عشان جوجل يقدر يقرأها زي أي جزء تاني من المقال. */
-  .article-body .article-faq-title{ margin-top:44px; }
-  .article-faq-list{ margin-top:18px; }
-  .article-faq-item{
-    border:1px solid var(--border-strong); border-radius:var(--radius-md);
-    background:var(--bg-elevated) !important; margin-bottom:12px; overflow:hidden;
-    transition: border-color .25s var(--ease);
-  }
-  .article-faq-item[open]{ border-color:var(--accent); }
-  .article-faq-item__q{
-    list-style:none; cursor:pointer; padding:18px 22px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .article-faq-item__q::-webkit-details-marker{ display:none; }
-  .article-faq-item__q h3{ margin:0 !important; font-size:16.5px !important; }
-  .article-faq-item__icon{
-    flex-shrink:0; width:26px; height:26px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    background:var(--accent-soft) !important; color:var(--accent) !important;
-    font-size:18px; font-weight:700; line-height:1;
-    transition: transform .3s var(--ease);
-  }
-  .article-faq-item[open] .article-faq-item__icon{ transform:rotate(45deg); }
-  .article-faq-item__a{ padding:0 22px 20px; }
-  .article-faq-item__a p:last-child{ margin-bottom:0; }
-  @media (max-width: 480px){
-    .article-faq-item__q{ padding:15px 18px; }
-    .article-faq-item__a{ padding:0 18px 16px; }
-  }
-
   /* ---------- استمر في التعلم (مقالات جديدة / مرتبطة) ---------- */
   .continue-learning{ max-width:var(--container); margin:0 auto; padding:20px 32px 100px; }
   .continue-learning__title{ font-size:24px; font-weight:800; margin-bottom:22px; }
@@ -221,7 +186,7 @@
 <nav class="nav" id="nav">
   <div class="nav__inner">
     <a href="index.html" class="nav__brand">
-      <span class="nav__brand-mark">SEO</span>
+      <img src="logo-mark-blue.svg" alt="مروان النجدي" class="nav__brand-mark">
       <span class="nav__brand-text">مروان النجدي</span>
     </a>
     <ul class="nav__links">
@@ -327,7 +292,7 @@
 
   const { data, error } = await sb
     .from('articles')
-    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description, author_bio, author_photo_url, author_photo_alt, show_author_bio, faqs, faq_title, conclusion')
+    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description, author_bio, author_photo_url, author_photo_alt, show_author_bio')
     .eq('slug', slug)
     .eq('status', 'published')
     .lte('published_at', new Date().toISOString()) // مقال متجدول لمعاد لسه ما جاش يتعامل معاملة "مش موجود" للزوار
@@ -404,56 +369,12 @@
     if (data.cover_image_title) coverImg.title = data.cover_image_title;
     coverWrap.classList.remove('hidden');
   }
-  // المحتوى مكتوب من لوحة التحكم بمعرفة الأدمن فقط (HTML بسيط: h2, p, strong, em, a, ul/li)
+  // المحتوى مكتوب من لوحة التحكم بمعرفة الأدمن فقط (HTML بسيط: h2, p, strong, em, a, ul/li).
+  // الأسئلة الشائعة والخاتمة (لو موجودين) بيكونوا جزء طبيعي من نفس المحتوى ده،
+  // فبيتحسبوا تلقائيًا في "محتويات المقال" تحت زي أي عنوان تاني.
   bodyEl.innerHTML = data.content || '';
 
   function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  // الأسئلة الشائعة (FAQ) — بتتحط كجزء طبيعي من محتوى المقال (h2 للعنوان و h3 لكل سؤال)
-  // مباشرة قبل الخاتمة، عشان تتحسب في محتويات المقال وتتفهرس زي أي فقرة تانية بالظبط.
-  const validFaqs = Array.isArray(data.faqs) ? data.faqs.filter(f => f && f.question && f.answer) : [];
-  if (validFaqs.length) {
-    const faqTitle = (data.faq_title || 'الأسئلة الشائعة').trim();
-    // الإجابة مكتوبة أصلاً كـ HTML من لوحة التحكم (فقرات/تنسيق كامل)، فبتتحط زي ما هي من
-    // غير ما تتهرب، بنفس منطق ثقة محتوى المقال الرئيسي (bodyEl.innerHTML فوق).
-    let faqHtml = `<h2 class="article-faq-title">${esc(faqTitle)}</h2><div class="article-faq-list">`;
-    validFaqs.forEach(f => {
-      faqHtml += `
-        <details class="article-faq-item">
-          <summary class="article-faq-item__q">
-            <h3>${esc(f.question)}</h3>
-            <span class="article-faq-item__icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="article-faq-item__a">${f.answer}</div>
-        </details>`;
-    });
-    faqHtml += '</div>';
-    bodyEl.insertAdjacentHTML('beforeend', faqHtml);
-
-    // بيانات منظمة FAQPage — بتساعد المقال يظهر بشكل غني (أسئلة قابلة للطي) في نتائج جوجل.
-    // جوجل بتسمح ببعض تاجات HTML البسيطة (a, strong, em, ul, li...) جوه نص الإجابة هنا.
-    const faqLd = document.createElement('script');
-    faqLd.type = 'application/ld+json';
-    faqLd.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: validFaqs.map(f => ({
-        '@type': 'Question',
-        name: f.question,
-        acceptedAnswer: { '@type': 'Answer', text: f.answer }
-      }))
-    });
-    document.head.appendChild(faqLd);
-  }
-
-  // الخاتمة — بتتحط دايمًا آخر حاجة في المقال، بعد الأسئلة الشائعة مباشرة
-  if (data.conclusion && data.conclusion.trim()) {
-    const conclusionHtml = data.conclusion.trim()
-      .split(/\n{2,}/)
-      .map(p => `<p>${esc(p.trim()).replace(/\n/g, '<br>')}</p>`)
-      .join('');
-    bodyEl.insertAdjacentHTML('beforeend', conclusionHtml);
-  }
 
   // بناء "محتويات المقال" (Table of Contents) تلقائيًا من عناوين المقال (h2/h3/h4)
   (function buildToc(){

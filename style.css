@@ -240,11 +240,8 @@ p{ margin: 0; }
 .nav__brand-mark{
   width: 36px; height: 36px;
   border-radius: 10px;
-  background: linear-gradient(155deg, var(--accent), var(--gold));
-  color: #06140D;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  display: flex; align-items: center; justify-content: center;
+  object-fit: contain;
+  display: block;
   flex-shrink: 0;
 }
 .nav__brand-text{ font-size: 15px; }
@@ -1110,7 +1107,6 @@ p{ margin: 0; }
 
 
 [dir="rtl"] .serp-result__desc::after{ margin-left: 0; margin-right: 2px; }
-[dir="rtl"] .nav__brand-mark{ font-family: var(--font-body); }
 
 @media (max-width: 720px){
   [dir="rtl"] .timeline{ padding-right: 30px; padding-left: 0; }
