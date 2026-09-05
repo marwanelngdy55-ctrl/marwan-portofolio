@@ -1215,20 +1215,4 @@ p{ margin: 0; }
 .service-card:hover{ box-shadow: 0 16px 40px -10px rgba(59,125,250,0.28); }
 .project-card:hover{ box-shadow: 0 16px 40px -10px rgba(59,125,250,0.22); }
 
-/* ---------- بانر ختامي فاخر (قبل الفوتر مباشرة) ---------- */
-.cta-banner{
-  position: relative;
-  padding: 90px 0;
-  text-align: center;
-  background:
-    radial-gradient(ellipse 720px 460px at 20% 30%, var(--accent-soft), transparent 68%),
-    radial-gradient(ellipse 640px 460px at 82% 70%, var(--gold-soft), transparent 68%);
-}
-.cta-banner__inner{ position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 0 32px; }
-.cta-banner__eyebrow{ margin-bottom: 18px; }
-.cta-banner__title{ font-size: clamp(24px, 3.6vw, 34px); font-weight: 800; margin-bottom: 14px; letter-spacing: -0.02em; }
-.cta-banner__desc{ color: var(--text-muted); font-size: 16px; margin-bottom: 32px; }
-
-@media (max-width: 720px){
-  .cta-banner{ padding: 64px 0; }
-}
+/* ---------- بانر ختامي (تم إلغاؤه من الصفحة الرئيسية) ---------- */
