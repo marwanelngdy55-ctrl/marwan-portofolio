@@ -1116,3 +1116,97 @@ p{ margin: 0; }
 
 /* أداة إخفاء عامة تستخدمها كل صفحات الموقع (index/blog/article/404) عن طريق JS */
 .hidden{ display:none !important; }
+
+/* ==========================================================================
+   PREMIUM POLISH — إحساس بريميوم أقرب لمواقع شركات التقنية الكبيرة:
+   توهج خلفي هادئ متحرك، أزرار بلمعة وتوهج نابض، بطاقات بحلقة تدرّج عند الهوفر،
+   وبانر ختامي فاخر قبل الفوتر.
+   ========================================================================== */
+
+/* ---------- Ambient gradient orbs (كرات توهج خلفية بتتحرك ببطء) ---------- */
+.orb-field{
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1; /* تفضل تحت المحتوى دايمًا، فوق خلفية القسم بس */
+}
+.orb{
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  animation: orbDrift 20s ease-in-out infinite;
+  will-change: transform;
+}
+.orb--accent{ background: radial-gradient(circle, var(--accent) 0%, transparent 70%); }
+.orb--gold{ background: radial-gradient(circle, var(--gold) 0%, transparent 70%); animation-duration: 26s; }
+[data-theme="light"] .orb{ opacity: 0.22; }
+@keyframes orbDrift{
+  0%, 100%{ transform: translate(0, 0) scale(1); }
+  33%{ transform: translate(40px, -30px) scale(1.08); }
+  66%{ transform: translate(-30px, 20px) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce){ .orb{ animation: none; } }
+
+/* ---------- زرار الدعوة الأساسي: لمعة بتعدي عليه + توهج نابض اختياري ---------- */
+.btn--primary{ position: relative; overflow: hidden; isolation: isolate; }
+.btn--primary::before{
+  content: '';
+  position: absolute; top: 0; left: -60%;
+  width: 45%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.65s var(--ease);
+  z-index: 1;
+}
+.btn--primary:hover::before{ left: 130%; }
+/* أضف الكلاس دي لأي زرار عايزه يفضل ينبض بتوهج خفيف (زي الزرار الرئيسي في الهيرو والبانر الختامي) */
+.btn--glow{ animation: btnGlowPulse 2.6s ease-in-out infinite; }
+@keyframes btnGlowPulse{
+  0%, 100%{ box-shadow: 0 8px 20px -6px rgba(62,207,142,0.55); }
+  50%{ box-shadow: 0 10px 36px -4px rgba(62,207,142,0.9); }
+}
+@media (prefers-reduced-motion: reduce){ .btn--glow{ animation: none; } }
+
+/* ---------- بطاقات الخدمات والمشاريع: حلقة تدرّج بتظهر عند الهوفر بدل تغيير بسيط في البوردر ---------- */
+.service-card, .project-card{ position: relative; isolation: isolate; }
+.service-card::after, .project-card::after{
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+  z-index: -1;
+}
+.service-card:hover::after, .project-card:hover::after{ opacity: 1; }
+.service-card:hover{ box-shadow: 0 16px 40px -10px rgba(62,207,142,0.28); }
+.project-card:hover{ box-shadow: 0 16px 40px -10px rgba(62,207,142,0.22); }
+
+/* ---------- بانر ختامي فاخر (قبل الفوتر مباشرة) ---------- */
+.cta-banner{
+  position: relative;
+  overflow: hidden;
+  padding: 90px 0;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 640px 380px at 20% 30%, var(--accent-soft), transparent 65%),
+    radial-gradient(ellipse 560px 380px at 82% 70%, var(--gold-soft), transparent 65%),
+    var(--bg-elevated);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.cta-banner__inner{ position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 0 32px; }
+.cta-banner__eyebrow{ margin-bottom: 18px; }
+.cta-banner__title{ font-size: clamp(24px, 3.6vw, 34px); font-weight: 800; margin-bottom: 14px; letter-spacing: -0.02em; }
+.cta-banner__desc{ color: var(--text-muted); font-size: 16px; margin-bottom: 32px; }
+
+@media (max-width: 720px){
+  .cta-banner{ padding: 64px 0; }
+}
