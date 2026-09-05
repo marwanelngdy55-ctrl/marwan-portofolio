@@ -1154,7 +1154,6 @@ p{ margin: 0; }
 .orb-field{
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
   z-index: -1; /* تفضل تحت المحتوى دايمًا، فوق خلفية القسم بس */
 }
@@ -1219,15 +1218,11 @@ p{ margin: 0; }
 /* ---------- بانر ختامي فاخر (قبل الفوتر مباشرة) ---------- */
 .cta-banner{
   position: relative;
-  overflow: hidden;
   padding: 90px 0;
   text-align: center;
   background:
-    radial-gradient(ellipse 640px 380px at 20% 30%, var(--accent-soft), transparent 65%),
-    radial-gradient(ellipse 560px 380px at 82% 70%, var(--gold-soft), transparent 65%),
-    var(--bg-elevated);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+    radial-gradient(ellipse 720px 460px at 20% 30%, var(--accent-soft), transparent 68%),
+    radial-gradient(ellipse 640px 460px at 82% 70%, var(--gold-soft), transparent 68%);
 }
 .cta-banner__inner{ position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 0 32px; }
 .cta-banner__eyebrow{ margin-bottom: 18px; }
