@@ -234,6 +234,7 @@ p{ margin: 0; }
 
 .nav__links{ display: flex; align-items: center; gap: 30px; }
 .nav__link{
+  display: inline-block;
   font-size: 14.5px;
   color: var(--text-muted);
   position: relative;
@@ -242,7 +243,7 @@ p{ margin: 0; }
 }
 .nav__link::after{
   content: '';
-  position: absolute; left: 0; right: 100%; bottom: 0;
+  position: absolute; left: 0; right: 100%; bottom: -4px;
   height: 2px;
   background: var(--accent);
   transition: right 0.3s var(--ease);
@@ -1017,9 +1018,9 @@ p{ margin: 0; }
     border-bottom: 1px solid var(--border);
     flex-direction: column;
     padding: 20px 32px 28px;
-    gap: 4px;
+    gap: 8px;
   }
-  .nav.is-open .nav__link{ padding: 12px 0; width: 100%; }
+  .nav.is-open .nav__link{ display: block; padding: 12px 0 16px; width: 100%; }
 
   .hero{ min-height: auto; padding-top: calc(var(--nav-h) + 36px); padding-bottom: 56px; }
   .hero__inner{
