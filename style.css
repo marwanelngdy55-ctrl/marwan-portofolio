@@ -305,11 +305,11 @@ p{ margin: 0; }
 
 /* ---------- Hero ---------- */
 .hero{
-  min-height: 100vh;
+  min-height: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: calc(var(--nav-h) + 48px) 0 80px;
+  justify-content: flex-start;
+  padding: calc(var(--nav-h) + 40px) 0 80px;
   position: relative;
   background:
     radial-gradient(ellipse 900px 500px at 15% 0%, var(--accent-soft), transparent 60%),
