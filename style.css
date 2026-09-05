@@ -1,7 +1,7 @@
 /* ==========================================================================
    MARWAN EL-NGDY — SEO SPECIALIST PORTFOLIO
    Design concept: the SERP (search results page) as the signature motif.
-   Dual accent — organic emerald + premium gold — on an ink-navy ground.
+   Dual accent — trust blue + premium gold — on an ink-navy ground.
    ========================================================================== */
 
 /* ---------- Design Tokens ---------- */
@@ -16,9 +16,9 @@
   --text-muted: #8B95A5;
   --text-faint: #5B6472;
 
-  --accent: #3ECF8E;
-  --accent-strong: #2FB57B;
-  --accent-soft: rgba(62,207,142,0.12);
+  --accent: #3B7DFA;
+  --accent-strong: #275FDB;
+  --accent-soft: rgba(59,125,250,0.14);
 
   --link: #5B9DFF;
   --link-strong: #7FB2FF;
@@ -57,9 +57,9 @@
   --text-muted: #545E6E;
   --text-faint: #8A93A2;
 
-  --accent: #1F9C67;
-  --accent-strong: #178356;
-  --accent-soft: rgba(31,156,103,0.10);
+  --accent: #1D54D6;
+  --accent-strong: #143E9E;
+  --accent-soft: rgba(29,84,214,0.10);
 
   --link: #1D6FE0;
   --link-strong: #1558B8;
@@ -167,10 +167,10 @@ p{ margin: 0; }
 }
 .btn--primary{
   background: var(--accent);
-  color: #052014;
-  box-shadow: 0 8px 20px -6px rgba(62,207,142,0.55);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -6px rgba(59,125,250,0.55);
 }
-.btn--primary:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px -6px rgba(62,207,142,0.6); background: var(--accent-strong); }
+.btn--primary:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px -6px rgba(59,125,250,0.6); background: var(--accent-strong); }
 .btn--ghost{
   background: transparent;
   color: var(--text);
@@ -179,6 +179,17 @@ p{ margin: 0; }
 .btn--ghost:hover{ border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 .btn--block{ width: 100%; }
 .btn--sm{ padding: 10px 20px; font-size: 13.5px; }
+
+/* زرار الدعوة في الهيدر — تدرّج بريميوم + توهج بدل التعبئة الفلات */
+.nav__actions .btn--primary{
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  box-shadow: 0 6px 18px -6px rgba(59,125,250,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.nav__actions .btn--primary:hover{
+  background: linear-gradient(135deg, var(--accent-strong) 0%, var(--accent) 100%);
+  box-shadow: 0 10px 26px -6px rgba(59,125,250,0.7), inset 0 1px 0 rgba(255,255,255,0.18);
+}
 
 /* ---------- Scroll Progress ---------- */
 .scroll-progress{
@@ -304,6 +315,22 @@ p{ margin: 0; }
     radial-gradient(ellipse 900px 500px at 15% 0%, var(--accent-soft), transparent 60%),
     radial-gradient(ellipse 700px 500px at 100% 20%, var(--gold-soft), transparent 60%);
 }
+.hero::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(232,236,241,0.14) 1px, transparent 1px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(ellipse 900px 560px at 50% 15%, black, transparent 72%);
+  mask-image: radial-gradient(ellipse 900px 560px at 50% 15%, black, transparent 72%);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: -1;
+  animation: gridDrift 34s linear infinite;
+}
+[data-theme="light"] .hero::before{ background-image: radial-gradient(circle, rgba(16,21,31,0.10) 1px, transparent 1px); }
+@keyframes gridDrift{ from{ background-position: 0 0; } to{ background-position: 60px 60px; } }
+@media (prefers-reduced-motion: reduce){ .hero::before{ animation: none; } }
 .hero__inner{
   max-width: var(--container);
   margin: 0 auto;
@@ -329,7 +356,7 @@ p{ margin: 0; }
   letter-spacing: 0.04em;
   color: var(--accent);
   background: var(--accent-soft);
-  border: 1px solid rgba(62,207,142,0.25);
+  border: 1px solid rgba(59,125,250,0.28);
   padding: 7px 14px;
   border-radius: 100px;
   margin: 0 0 24px;
@@ -641,7 +668,7 @@ p{ margin: 0; }
 .about__badge{
   position: absolute;
   background: var(--accent);
-  color: #052014;
+  color: #FFFFFF;
   border-radius: var(--radius-md);
   padding: 16px 20px;
   box-shadow: var(--shadow-lg);
@@ -1164,8 +1191,8 @@ p{ margin: 0; }
 /* أضف الكلاس دي لأي زرار عايزه يفضل ينبض بتوهج خفيف (زي الزرار الرئيسي في الهيرو والبانر الختامي) */
 .btn--glow{ animation: btnGlowPulse 2.6s ease-in-out infinite; }
 @keyframes btnGlowPulse{
-  0%, 100%{ box-shadow: 0 8px 20px -6px rgba(62,207,142,0.55); }
-  50%{ box-shadow: 0 10px 36px -4px rgba(62,207,142,0.9); }
+  0%, 100%{ box-shadow: 0 8px 20px -6px rgba(59,125,250,0.55); }
+  50%{ box-shadow: 0 10px 36px -4px rgba(59,125,250,0.9); }
 }
 @media (prefers-reduced-motion: reduce){ .btn--glow{ animation: none; } }
 
@@ -1186,8 +1213,8 @@ p{ margin: 0; }
   z-index: -1;
 }
 .service-card:hover::after, .project-card:hover::after{ opacity: 1; }
-.service-card:hover{ box-shadow: 0 16px 40px -10px rgba(62,207,142,0.28); }
-.project-card:hover{ box-shadow: 0 16px 40px -10px rgba(62,207,142,0.22); }
+.service-card:hover{ box-shadow: 0 16px 40px -10px rgba(59,125,250,0.28); }
+.project-card:hover{ box-shadow: 0 16px 40px -10px rgba(59,125,250,0.22); }
 
 /* ---------- بانر ختامي فاخر (قبل الفوتر مباشرة) ---------- */
 .cta-banner{
