@@ -149,6 +149,8 @@
   const scheduleStatusMsg = document.getElementById('schedule-status-msg');
   const faqListEl = document.getElementById('faq-list');
   const addFaqBtn = document.getElementById('add-faq-btn');
+  const faqTitleInput = document.getElementById('faq-title-input');
+  const conclusionInput = document.getElementById('conclusion-input');
   let currentFaqs = [];
 
   /* ----- محرر "الأسئلة الشائعة" (FAQ) ----- */
@@ -161,11 +163,11 @@
       item.innerHTML = `
         <div class="faq-item-head"><span>سؤال ${i + 1}</span></div>
         <div class="field">
-          <label>السؤال</label>
+          <label>السؤال (هيظهر في الموقع كعنوان H3)</label>
           <input type="text" class="faq-question-input" placeholder="مثال: كام تكلفة الخدمة؟" value="${escapeAttr(faq.question || '')}">
         </div>
         <div class="field">
-          <label>الإجابة</label>
+          <label>الإجابة (فقرة عادية تحت السؤال)</label>
           <textarea class="faq-answer-input" rows="2" placeholder="اكتب الإجابة هنا">${escapeHtml(faq.answer || '')}</textarea>
         </div>
         <button type="button" class="btn btn--danger btn--sm faq-remove-btn">حذف السؤال</button>
@@ -312,6 +314,8 @@
     if (scheduleAtInput) scheduleAtInput.value = '';
     if (scheduleStatusMsg) scheduleStatusMsg.textContent = '';
     currentFaqs = [];
+    if (faqTitleInput) faqTitleInput.value = '';
+    if (conclusionInput) conclusionInput.value = '';
     renderFaqEditor();
     deleteArticleBtn.classList.toggle('hidden', !articleId);
 
@@ -351,6 +355,8 @@
         if (showDateCheck) showDateCheck.checked = data.show_date !== false;
         if (showAuthorBioCheck) showAuthorBioCheck.checked = data.show_author_bio !== false;
         currentFaqs = Array.isArray(data.faqs) ? data.faqs.map(f => ({ question: f?.question || '', answer: f?.answer || '' })) : [];
+        if (faqTitleInput) faqTitleInput.value = data.faq_title || '';
+        if (conclusionInput) conclusionInput.value = data.conclusion || '';
         renderFaqEditor();
         if (editorAuthorNameEl) editorAuthorNameEl.value = currentAuthorName || (currentProfile?.full_name || currentProfile?.email || '');
         if (currentCoverUrl) coverPreview.innerHTML = `<img src="${escapeAttr(currentCoverUrl)}" alt="${escapeAttr(data.cover_image_alt || '')}" title="${escapeAttr(data.cover_image_title || '')}">`;
@@ -608,6 +614,8 @@
       faqs: currentFaqs
         .map(f => ({ question: (f.question || '').trim(), answer: (f.answer || '').trim() }))
         .filter(f => f.question && f.answer),
+      faq_title: faqTitleInput ? faqTitleInput.value.trim() : '',
+      conclusion: conclusionInput ? conclusionInput.value.trim() : '',
     };
     if (status === 'published') {
       // لو المستخدم حدد تاريخ ووقت في خانة الجدولة، ده اللي بيتسجّل كتاريخ نشر (سواء كان

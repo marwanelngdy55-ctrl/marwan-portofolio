@@ -148,28 +148,10 @@
     .article-layout{ padding:0 20px; }
   }
 
-  /* ---------- الأسئلة الشائعة (FAQ) ---------- */
-  .article-faq{ max-width:760px; margin:8px auto 0; padding:0 32px 20px; }
-  .article-faq__title{ font-size:24px; font-weight:800; margin-bottom:18px; }
-  .article-faq__list{ display:flex; flex-direction:column; gap:10px; }
-  .faq-accordion-item{
-    border:1px solid var(--border-strong); border-radius:var(--radius-lg);
-    background:var(--bg-elevated); overflow:hidden; transition: border-color .25s var(--ease);
-  }
-  .faq-accordion-item.is-open{ border-color:var(--accent); }
-  .faq-accordion-btn{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:14px;
-    padding:18px 20px; background:none; border:none; cursor:pointer;
-    font-family:inherit; font-size:16px; font-weight:700; color:var(--text); text-align:right;
-  }
-  .faq-accordion-icon{
-    flex-shrink:0; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    background:var(--accent-soft); color:var(--accent); font-size:18px; line-height:1; font-weight:700;
-    transition: transform .25s var(--ease);
-  }
-  .faq-accordion-item.is-open .faq-accordion-icon{ transform:rotate(45deg); }
-  .faq-accordion-panel{ max-height:0; overflow:hidden; transition: max-height .3s var(--ease); }
-  .faq-accordion-panel p{ margin:0; padding:0 20px 18px; color:var(--text-muted); font-size:15px; line-height:1.8; }
+  /* ---------- الأسئلة الشائعة (FAQ) — بتتحط كجزء طبيعي من محتوى المقال، جوه article-body،
+     مباشرة قبل الخاتمة، فبتاخد نفس تنسيق h2/h3/p العادي، وبكده بتتحسب في محتويات المقال
+     وبتتفهرس عادي زي أي فقرة تانية. مفيش تنسيق خاص إضافي مطلوب غير مسافة بسيطة فوق عنوانها. */
+  .article-body .article-faq-title{ margin-top:44px; }
 
   /* ---------- استمر في التعلم (مقالات جديدة / مرتبطة) ---------- */
   .continue-learning{ max-width:var(--container); margin:0 auto; padding:20px 32px 100px; }
@@ -188,7 +170,6 @@
   .post-card__link{ font-size:14px; color:var(--accent); font-weight:600; margin-top:4px; }
 
   @media (max-width: 480px){
-    .article-faq{ padding:0 20px 16px; }
     .continue-learning__grid{ grid-template-columns:1fr; }
   }
 
@@ -250,10 +231,6 @@
       <ul class="article-toc__list" id="article-toc-list"></ul>
     </nav>
     <div class="article-body" id="article-body"></div>
-  </div>
-  <div class="article-faq hidden" id="article-faq">
-    <h2 class="article-faq__title">الأسئلة الشائعة</h2>
-    <div class="article-faq__list" id="article-faq-list"></div>
   </div>
   <div class="article-hero__inner">
     <div class="author-bio-card hidden reveal" id="author-bio-card" style="margin-bottom:24px;">
@@ -320,7 +297,7 @@
 
   const { data, error } = await sb
     .from('articles')
-    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description, author_bio, author_photo_url, author_photo_alt, show_author_bio, faqs')
+    .select('title, slug, excerpt, content, cover_image_url, cover_image_alt, cover_image_title, published_at, author_name, show_author, show_date, meta_title, meta_description, author_bio, author_photo_url, author_photo_alt, show_author_bio, faqs, faq_title, conclusion')
     .eq('slug', slug)
     .eq('status', 'published')
     .lte('published_at', new Date().toISOString()) // مقال متجدول لمعاد لسه ما جاش يتعامل معاملة "مش موجود" للزوار
@@ -400,6 +377,43 @@
   // المحتوى مكتوب من لوحة التحكم بمعرفة الأدمن فقط (HTML بسيط: h2, p, strong, em, a, ul/li)
   bodyEl.innerHTML = data.content || '';
 
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // الأسئلة الشائعة (FAQ) — بتتحط كجزء طبيعي من محتوى المقال (h2 للعنوان و h3 لكل سؤال)
+  // مباشرة قبل الخاتمة، عشان تتحسب في محتويات المقال وتتفهرس زي أي فقرة تانية بالظبط.
+  const validFaqs = Array.isArray(data.faqs) ? data.faqs.filter(f => f && f.question && f.answer) : [];
+  if (validFaqs.length) {
+    const faqTitle = (data.faq_title || 'الأسئلة الشائعة').trim();
+    let faqHtml = `<h2 class="article-faq-title">${esc(faqTitle)}</h2>`;
+    validFaqs.forEach(f => {
+      faqHtml += `<h3>${esc(f.question)}</h3><p>${esc(f.answer)}</p>`;
+    });
+    bodyEl.insertAdjacentHTML('beforeend', faqHtml);
+
+    // بيانات منظمة FAQPage — بتساعد المقال يظهر بشكل غني (أسئلة قابلة للطي) في نتائج جوجل
+    const faqLd = document.createElement('script');
+    faqLd.type = 'application/ld+json';
+    faqLd.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: validFaqs.map(f => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer }
+      }))
+    });
+    document.head.appendChild(faqLd);
+  }
+
+  // الخاتمة — بتتحط دايمًا آخر حاجة في المقال، بعد الأسئلة الشائعة مباشرة
+  if (data.conclusion && data.conclusion.trim()) {
+    const conclusionHtml = data.conclusion.trim()
+      .split(/\n{2,}/)
+      .map(p => `<p>${esc(p.trim()).replace(/\n/g, '<br>')}</p>`)
+      .join('');
+    bodyEl.insertAdjacentHTML('beforeend', conclusionHtml);
+  }
+
   // بناء "محتويات المقال" (Table of Contents) تلقائيًا من عناوين المقال (h2/h3/h4)
   (function buildToc(){
     const tocNav = document.getElementById('article-toc');
@@ -471,52 +485,6 @@
       photoWrap.style.display = 'none';
     }
     bioCard.classList.remove('hidden');
-  }
-
-  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  // الأسئلة الشائعة (FAQ) — بتتحط بعد الخاتمة على شكل أزرار قابلة للفتح والغلق (أكورديون)
-  if (Array.isArray(data.faqs) && data.faqs.length) {
-    const faqSection = document.getElementById('article-faq');
-    const faqList = document.getElementById('article-faq-list');
-    const validFaqs = data.faqs.filter(f => f && f.question && f.answer);
-    validFaqs.forEach(item => {
-      const wrap = document.createElement('div');
-      wrap.className = 'faq-accordion-item';
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'faq-accordion-btn';
-      btn.setAttribute('aria-expanded', 'false');
-      btn.innerHTML = `<span>${esc(item.question)}</span><span class="faq-accordion-icon">+</span>`;
-      const panel = document.createElement('div');
-      panel.className = 'faq-accordion-panel';
-      panel.innerHTML = `<p>${esc(item.answer)}</p>`;
-      btn.addEventListener('click', () => {
-        const isOpen = btn.getAttribute('aria-expanded') === 'true';
-        btn.setAttribute('aria-expanded', String(!isOpen));
-        wrap.classList.toggle('is-open', !isOpen);
-        panel.style.maxHeight = isOpen ? '0px' : panel.scrollHeight + 'px';
-      });
-      wrap.appendChild(btn);
-      wrap.appendChild(panel);
-      faqList.appendChild(wrap);
-    });
-    if (validFaqs.length) {
-      faqSection.classList.remove('hidden');
-      // بيانات منظمة FAQPage — بتساعد المقال يظهر بشكل غني (أسئلة قابلة للطي) في نتائج جوجل
-      const faqLd = document.createElement('script');
-      faqLd.type = 'application/ld+json';
-      faqLd.textContent = JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: validFaqs.map(f => ({
-          '@type': 'Question',
-          name: f.question,
-          acceptedAnswer: { '@type': 'Answer', text: f.answer }
-        }))
-      });
-      document.head.appendChild(faqLd);
-    }
   }
 
   // "استمر في التعلم" — أحدث المقالات المنشورة (غير المقال الحالي) عشان الزائر يكمل القراءة

@@ -466,9 +466,22 @@ a{color:inherit; text-decoration:none;}
         </div>
         <div class="card">
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">الأسئلة الشائعة (FAQ)</label>
-          <p class="help-text" style="margin-bottom:14px;">تظهر تلقائيًا في نهاية المقال (بعد الخاتمة) على شكل أزرار قابلة للفتح والغلق، وكمان بتساعد مقالك يظهر بشكل غني في نتائج جوجل. سيبها فاضية لو المقال مش محتاج أسئلة شائعة.</p>
+          <p class="help-text" style="margin-bottom:14px;">بتتحط تلقائيًا جوه المقال نفسه (عنوان H2 لهذا القسم، وكل سؤال بيبقى عنوان H3) مباشرة قبل الخاتمة — يعني بتظهر كجزء طبيعي من المقال، وبتتحسب في "محتويات المقال"، وبتساعد مقالك يظهر بشكل غني في نتائج جوجل. سيبها فاضية لو المقال مش محتاج أسئلة شائعة.</p>
+          <div class="field">
+            <label for="faq-title-input">عنوان قسم الأسئلة الشائعة</label>
+            <input type="text" id="faq-title-input" placeholder="الأسئلة الشائعة">
+            <p class="help-text">سيبه فاضي عشان يستخدم "الأسئلة الشائعة" تلقائيًا.</p>
+          </div>
           <div id="faq-list"></div>
           <button type="button" class="btn btn--ghost btn--sm" id="add-faq-btn">+ إضافة سؤال</button>
+        </div>
+        <div class="card">
+          <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">الخاتمة</label>
+          <p class="help-text" style="margin-bottom:14px;">فقرة منفصلة عن محتوى المقال، بتتحط دايمًا آخر حاجة في المقال — يعني الأسئلة الشائعة فوق هتفضل ثابتة قبلها. سيبها فاضية لو مش عايز خاتمة منفصلة (تقدر تكتبها عادي في نهاية محتوى المقال بدل كده).</p>
+          <div class="field">
+            <label for="conclusion-input">نص الخاتمة</label>
+            <textarea id="conclusion-input" rows="4" placeholder="اكتب خاتمة المقال هنا... سطر فاضي بين كل فقرة والتانية"></textarea>
+          </div>
         </div>
         <div class="card">
           <label style="display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;">جدولة النشر</label>
