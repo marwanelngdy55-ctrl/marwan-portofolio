@@ -45,7 +45,7 @@
 .nav{background:var(--bg)}
 .section,.footer{content-visibility:auto;contain-intrinsic-size:auto 700px}
 .logo-marquee__track{will-change:transform}
-@media (hover:hover) and (min-width:900px){
+@media (min-width:900px){
 .btn,.theme-toggle,.social-btn,.project-card__link{transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease,background-color .25s ease,border-color .25s ease!important}
 .btn:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 12px 28px -8px var(--accent)}
 .btn:active{transform:translateY(0) scale(.96)}
@@ -54,6 +54,7 @@
 .theme-toggle:hover{transform:rotate(25deg) scale(1.12)}
 .social-btn:hover{transform:translateY(-4px) scale(1.12)}
 .project-card__link:hover{transform:translateX(-6px)}
+.btn.dodge{transition:transform .25s cubic-bezier(.34,1.56,.64,1),translate .28s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease,background-color .25s ease,border-color .25s ease!important}
 @keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.45)}50%{box-shadow:0 0 0 12px rgba(59,130,246,0)}}
 .projects-marquee{overflow:hidden;width:100%;padding:12px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
 .projects-grid.is-marquee{display:flex;flex-wrap:nowrap;gap:0;width:max-content;direction:ltr;animation:projScroll 45s linear infinite;will-change:transform}
@@ -62,7 +63,6 @@
 .is-marquee .project-card:hover{transform:translateY(-6px)}
 @keyframes projScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>window.onIdle=function(f){var r=function(){(window.requestIdleCallback||function(c){setTimeout(c,300)})(f,{timeout:2500})};document.readyState==='loading'?document.addEventListener('DOMContentLoaded',r):r()};</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Marwan El-Ngdy","alternateName":["مروان النجدي","Marwan Elngdy"],"jobTitle":"Ecommerce SEO Specialist","description":"متخصص SEO في السعودية، متخصص في SEO للمتاجر الإلكترونية على منصات Salla وZid وShopify وWooCommerce، بخبرة عملية تتجاوز 5 سنوات في السيو التقني وبحث الكلمات المفتاحية وتحسين صفحات المنتجات والفئات.","url":"https://marwanelngdy55-ctrl.github.io/marwan-portofolio/","image":"https://marwanelngdy55-ctrl.github.io/marwan-portofolio/assets/marwan.webp","email":"mailto:Marwanelngdy55@gmail.com","nationality":"Egyptian","sameAs":["https://www.facebook.com/marwan.elngdy.308","https://www.linkedin.com/in/marwan-elngdy/"],"knowsAbout":["Ecommerce SEO","Technical SEO","Keyword Research","Product & Category SEO","Competitor Analysis","Salla SEO","Zid SEO","Shopify SEO","WooCommerce SEO","Schema Markup","Link Building","Search Intent Matching","Generative Engine Optimization (GEO)","Answer Engine Optimization (AEO)"],"areaServed":["Saudi Arabia","Egypt"],"knowsLanguage":["ar","en"]}</script>
@@ -130,7 +130,8 @@ onIdle(async () => {
   } catch (e) { grid.innerHTML = '<p class="empty-state">تعذر تحميل المقالات حاليًا.</p>'; }
 });
 </script>
-<script>(function(){var g=document.querySelector('.projects-grid');if(!g||!matchMedia('(hover:hover) and (min-width:900px)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;var w=document.createElement('div');w.className='projects-marquee';g.parentNode.insertBefore(w,g);w.appendChild(g);Array.from(g.children).forEach(function(c){var k=c.cloneNode(true);k.setAttribute('aria-hidden','true');k.classList.remove('reveal');k.querySelectorAll('a').forEach(function(a){a.tabIndex=-1});g.appendChild(k)});g.classList.add('is-marquee')})();</script>
+<script>(function(){if(!matchMedia('(min-width:900px) and (pointer:fine)').matches)return;var MAX=4,els=Array.prototype.map.call(document.querySelectorAll('.hero__cta .btn,.nav__actions .btn'),function(b){b.classList.add('dodge');return{b:b,x:0,y:0,n:0,t:0}}),mx=0,my=0,raf=0;function tick(){raf=0;var now=Date.now();els.forEach(function(o){if(o.n>=MAX)return;var r=o.b.getBoundingClientRect();if(!(mx>r.left-40&&mx<r.right+40&&my>r.top-40&&my<r.bottom+40)||now-o.t<300)return;var dx=(r.left+r.width/2-mx)||1,dy=r.top+r.height/2-my,l=Math.hypot(dx,dy)||1,sx=dx/l*(r.width+70),sy=dy/l*(r.height+60);if(r.left+sx<10||r.right+sx>innerWidth-10)sx=-sx;if(r.top+sy<80||r.bottom+sy>innerHeight-10)sy=-sy;o.x+=sx;o.y+=sy;o.n++;o.t=now;if(o.n>=MAX){o.x=0;o.y=0}o.b.style.translate=o.x+'px '+o.y+'px'})}document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;if(!raf)raf=requestAnimationFrame(tick)},{passive:true})})();</script>
+<script>(function(){var g=document.querySelector('.projects-grid');if(!g||!matchMedia('(min-width:900px)').matches)return;var w=document.createElement('div');w.className='projects-marquee';g.parentNode.insertBefore(w,g);w.appendChild(g);Array.from(g.children).forEach(function(c){var k=c.cloneNode(true);k.setAttribute('aria-hidden','true');k.classList.remove('reveal');k.querySelectorAll('a').forEach(function(a){a.tabIndex=-1});g.appendChild(k)});g.classList.add('is-marquee')})();</script>
 <script>(function(){var l=0,ev=['scroll','pointerdown','keydown','touchstart'];function go(){if(l)return;l=1;ev.forEach(function(e){removeEventListener(e,go)});window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','G-4TF4FLN5Q1');dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});['https://www.googletagmanager.com/gtm.js?id=GTM-KWVVZ4HT','https://www.googletagmanager.com/gtag/js?id=G-4TF4FLN5Q1'].forEach(function(u){var s=document.createElement('script');s.async=1;s.src=u;document.head.appendChild(s)})}ev.forEach(function(e){addEventListener(e,go,{passive:true,once:true})});addEventListener('load',function(){setTimeout(go,4000)})})();</script>
 </body>
 </html>
