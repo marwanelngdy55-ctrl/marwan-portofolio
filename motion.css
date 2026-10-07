@@ -1,0 +1,91 @@
+/* ===== Motion layer — marwan portfolio ===== */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:.3s ease both vtOut}
+::view-transition-new(root){animation:.5s var(--ease) both vtIn}
+@keyframes vtOut{to{opacity:0}}@keyframes vtIn{from{opacity:0}}
+::selection{background:var(--accent);color:#fff}
+
+/* 01 hero entrance */
+@keyframes mRise{from{opacity:0;transform:translateY(26px)}}
+@keyframes mMask{from{opacity:0;transform:translateY(40px);clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 -20% 0)}}
+@keyframes mSide{from{opacity:0;transform:translateX(-50px) scale(.94)}}
+.hero__top>*,.hero__bottom>*,.page-hero__inner>*,.blog-hero__inner>*,.article-hero__inner>*{animation:mRise .9s var(--ease) backwards}
+.hero__top>*:nth-child(1),.page-hero__inner>*:nth-child(1),.blog-hero__inner>*:nth-child(1),.article-hero__inner>*:nth-child(1){animation-delay:.05s}
+.hero__top>*:nth-child(2),.page-hero__inner>*:nth-child(2),.blog-hero__inner>*:nth-child(2),.article-hero__inner>*:nth-child(2){animation-delay:.15s}
+.hero__top>*:nth-child(3),.page-hero__inner>*:nth-child(3),.blog-hero__inner>*:nth-child(3),.article-hero__inner>*:nth-child(3){animation-delay:.28s}
+.hero__top>*:nth-child(n+4),.page-hero__inner>*:nth-child(n+4){animation-delay:.4s}
+.hero__top>.hero__name,.page-hero__title,.article-title{animation-name:mMask;animation-duration:1s}
+.hero__bottom>*:nth-child(1){animation-delay:.5s}.hero__bottom>*:nth-child(2){animation-delay:.62s}.hero__bottom>*:nth-child(3){animation-delay:.75s}
+.hero__visual{animation:mSide 1.1s var(--ease) .35s backwards}
+.hero__stat{animation:mRise .8s var(--ease) backwards}
+.hero__stat:nth-child(1){animation-delay:.8s}.hero__stat:nth-child(2){animation-delay:.9s}.hero__stat:nth-child(3){animation-delay:1s}.hero__stat:nth-child(4){animation-delay:1.1s}
+main{animation:mRise .6s var(--ease) backwards}
+
+/* 02 richer scroll reveal */
+.reveal{opacity:0;transform:translateY(38px) scale(.97);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+.reveal.is-visible{opacity:1;transform:none;filter:none}
+
+/* 03 spotlight cards */
+.spot{position:relative;isolation:isolate}
+.spot::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),var(--accent-soft),transparent 70%);opacity:0;transition:opacity .35s}
+.spot:hover::before{opacity:1}
+.spot:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--border-strong))}
+
+/* 04 nav sliding pill + dropdown stagger */
+.nav__links{position:relative}
+.nav__pill{position:absolute;z-index:0;border-radius:100px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);opacity:0;pointer-events:none;transition:left .5s var(--ease),width .5s var(--ease),top .5s var(--ease),height .5s var(--ease),opacity .3s}
+.nav__pill.on{opacity:1}
+.nav__links .nav__link,.nav__links li{position:relative;z-index:1}
+.has-pill .nav__link::after{display:none}
+.nav__dropdown a{opacity:0;transform:translateX(10px);transition:background .2s,color .2s,opacity .35s var(--ease),transform .35s var(--ease)}
+.nav__item--dropdown:hover .nav__dropdown a,.nav__item--dropdown:focus-within .nav__dropdown a{opacity:1;transform:none}
+.nav__dropdown li:nth-child(2) a{transition-delay:0s,0s,.04s,.04s}.nav__dropdown li:nth-child(3) a{transition-delay:0s,0s,.08s,.08s}.nav__dropdown li:nth-child(4) a{transition-delay:0s,0s,.12s,.12s}.nav__dropdown li:nth-child(5) a{transition-delay:0s,0s,.16s,.16s}.nav__dropdown li:nth-child(6) a{transition-delay:0s,0s,.2s,.2s}
+.nav__dropdown{transform-origin:top right;transform:translateY(8px) scale(.98)}
+.nav__item--dropdown:hover>.nav__dropdown,.nav__item--dropdown:focus-within>.nav__dropdown{transform:none}
+@media (max-width:900px){.nav__pill{display:none}.nav.is-open .nav__dropdown a{opacity:1;transform:none}}
+
+/* 05 buttons & links */
+.btn:active{scale:.96}
+.btn .rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:mRip .65s ease-out forwards;pointer-events:none;z-index:2}
+@keyframes mRip{to{transform:scale(4);opacity:0}}
+.project-card__link,.post-card__link,.home-blog-card__link{display:inline-block;transition:transform .35s var(--ease)}
+.project-card:hover .project-card__link,.post-card:hover .post-card__link{transform:translateX(-6px)}
+.footer__links a,.footer__meta a{position:relative}
+.footer__links a::after{content:"";position:absolute;inset-inline:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.footer__links a:hover::after{transform:scaleX(1);transform-origin:left}
+
+/* 06 aurora */
+.hero,.page-hero,.blog-hero{position:relative}
+.orb-field{overflow:hidden}
+.orb-field .orb{will-change:transform}
+
+/* 07 skeletons */
+.skel-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.skel-card .sk-img{aspect-ratio:16/9}.skel-card .sk-body{padding:20px}
+.sk{border-radius:8px;background:linear-gradient(100deg,var(--bg-elevated-2) 30%,color-mix(in srgb,var(--text) 10%,var(--bg-elevated-2)) 50%,var(--bg-elevated-2) 70%);background-size:200% 100%;animation:mSk 1.4s linear infinite}
+.sk-img.sk{border-radius:0}.sk-line{height:14px;margin:10px 0}
+@keyframes mSk{to{background-position:-200% 0}}
+.post-card,.home-blog-card{animation:mRise .7s var(--ease) backwards}
+.post-card__cover img,.home-blog-card__cover img{transition:transform .8s var(--ease)}
+.post-card:hover .post-card__cover img,.home-blog-card:hover .home-blog-card__cover img{transform:scale(1.06)}
+
+@media (prefers-reduced-motion:reduce){
+.hero__top>*,.hero__bottom>*,.page-hero__inner>*,.blog-hero__inner>*,.article-hero__inner>*,.hero__visual,.hero__stat,main,.post-card,.home-blog-card{animation:none!important}
+.reveal{opacity:1!important;transform:none!important;filter:none!important}
+.orb{animation:none!important}::view-transition-old(root),::view-transition-new(root){animation:none}}
+
+/* ===== Client logos motion + links ===== */
+@keyframes logoIn{from{opacity:0;transform:translateY(22px) scale(.88)}}
+@keyframes logoFloat{50%{transform:translateY(-5px)}}
+.trusted-by__label{animation:mRise .8s var(--ease) backwards}
+.logo-marquee__item{animation:logoIn .8s var(--ease) backwards}
+.logo-marquee__item:nth-child(1){animation-delay:.1s}.logo-marquee__item:nth-child(2){animation-delay:.18s}.logo-marquee__item:nth-child(3){animation-delay:.26s}.logo-marquee__item:nth-child(4){animation-delay:.34s}.logo-marquee__item:nth-child(5){animation-delay:.42s}.logo-marquee__item:nth-child(n+6){animation-delay:.5s}
+.logo-marquee__item img{animation:logoFloat 4.5s ease-in-out infinite;transition:filter .3s var(--ease),transform .4s var(--ease)}
+.logo-marquee__item:nth-child(2n) img{animation-delay:-1.5s}.logo-marquee__item:nth-child(3n) img{animation-delay:-3s}
+.logo-marquee__item:hover{transform:translateY(-6px) scale(1.05);box-shadow:0 16px 36px -10px rgba(59,125,250,.4)}
+.logo-marquee__item:hover img{animation-play-state:paused;transform:scale(1.08)}
+.logo-link{display:flex;align-items:center;justify-content:center;width:100%;height:100%;cursor:pointer;outline-offset:4px;border-radius:inherit}
+.logo-marquee__item--link{position:relative}
+.logo-marquee__item--link::after{content:"↗";position:absolute;top:8px;inset-inline-start:10px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5) rotate(-45deg);transition:opacity .3s var(--ease),transform .4s var(--ease);pointer-events:none}
+.logo-marquee__item--link:hover::after{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.logo-marquee__item,.logo-marquee__item img,.trusted-by__label{animation:none!important}}
