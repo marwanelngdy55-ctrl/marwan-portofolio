@@ -2,3 +2,12 @@
 /* المشاريع: ثابتة وظاهرة دايمًا من غير أنيميشن أو حركة */
 .project-card{opacity:1!important;transform:none!important;transition:border-color .35s var(--ease),box-shadow .35s var(--ease)!important}
 .project-card:hover{transform:none!important}
+
+/* شريط الشركات: ثابت وظاهر بالكامل على الكمبيوتر */
+@media (min-width:901px){
+.trusted-by{opacity:1!important;transform:none!important}
+.logo-marquee{overflow:visible}
+.logo-marquee::before,.logo-marquee::after{display:none}
+.logo-marquee__track{animation:none!important;transform:none!important;width:auto;flex-wrap:wrap;justify-content:center;gap:18px}
+.logo-marquee__item[aria-hidden="true"]{display:none}
+}
