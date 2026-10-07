@@ -33,3 +33,38 @@
 .wa-float:hover{background:#0E6B34;transform:translateY(-2px)}
 .wa-float:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media (max-width:720px){.wa-float{width:56px;height:56px;padding:0;justify-content:center}.wa-float span{display:none}}
+
+/* ===== الصفحات الداخلية: هيرو، فتات الخبز، بطاقات الأسعار ===== */
+.page-hero{padding:calc(var(--nav-h) + 56px) 0 48px}
+.page-hero__inner{max-width:var(--container);margin:0 auto;padding:0 32px}
+.page-hero__title{font-family:var(--font-display);font-size:clamp(28px,4.6vw,46px);font-weight:800;line-height:1.35;margin:14px 0 14px;max-width:880px}
+.page-hero__lead{color:var(--text-muted);font-size:17px;line-height:1.9;max-width:760px;margin-bottom:26px}
+.breadcrumbs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13.5px;color:var(--text-faint);margin-bottom:18px}
+.breadcrumbs a{color:var(--text-muted);text-decoration:none}
+.breadcrumbs a:hover{color:var(--link)}
+.breadcrumbs__sep{opacity:.5}
+.breadcrumbs [aria-current]{color:var(--text)}
+.cta-band{text-align:center;padding:48px 28px;border:1px solid var(--border-strong);border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--accent-soft),transparent 70%),var(--bg-elevated)}
+.cta-band__title{font-family:var(--font-display);font-size:clamp(22px,3.4vw,32px);font-weight:800;margin-bottom:10px}
+.cta-band__text{color:var(--text-muted);max-width:620px;margin:0 auto 22px;line-height:1.9}
+.cta-band .hero__cta{justify-content:center}
+.link-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;max-width:980px;margin:0 auto}
+.link-card{display:flex;flex-direction:column;gap:6px;padding:20px 22px;border:1px solid var(--border-strong);border-radius:var(--radius-md);background:var(--bg);text-decoration:none;color:var(--text);transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
+.link-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md)}
+.link-card strong{font-family:var(--font-display);font-size:17px}
+.link-card span{color:var(--text-muted);font-size:14px}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px;max-width:1040px;margin:0 auto}
+.price-card{position:relative;display:flex;flex-direction:column;gap:12px;padding:30px 26px;border:1px solid var(--border-strong);border-radius:var(--radius-lg);background:var(--bg-elevated)}
+.price-card--featured{border-color:var(--accent);box-shadow:var(--shadow-md),0 0 0 4px var(--accent-soft)}
+.price-card__badge{position:absolute;top:-13px;inset-inline-start:24px;background:var(--btn);color:#fff;font-size:12.5px;font-weight:700;padding:4px 14px;border-radius:999px}
+.price-card__title{font-family:var(--font-display);font-size:22px;font-weight:800}
+.price-card__sub{color:var(--text-muted);font-size:14.5px;line-height:1.8}
+.price-card__list{list-style:none;padding:0;margin:4px 0 8px;display:flex;flex-direction:column;gap:10px;flex:1}
+.price-card__list li{position:relative;padding-inline-start:22px;font-size:14.5px;line-height:1.7}
+.price-card__list li::before{content:"";position:absolute;inset-inline-start:0;top:.55em;width:8px;height:8px;border-radius:2px;background:var(--gold)}
+.price-card__price{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);padding-top:12px;border-top:1px solid var(--border)}
+.pricing-note{text-align:center;color:var(--text-faint);font-size:13.5px;margin-top:22px}
+.skill-card__more{display:inline-block;margin-top:16px;color:var(--link);font-weight:700;font-size:14px;text-decoration:none}
+.skill-card__more:hover{color:var(--link-strong);text-decoration:underline}
+@media (max-width:720px){.page-hero{padding:calc(var(--nav-h) + 36px) 0 32px}}
+@media (max-width:480px){.page-hero__inner{padding:0 20px}}
