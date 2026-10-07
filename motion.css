@@ -89,3 +89,10 @@ main{animation:mRise .6s var(--ease) backwards}
 .logo-marquee__item--link::after{content:"↗";position:absolute;top:8px;inset-inline-start:10px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5) rotate(-45deg);transition:opacity .3s var(--ease),transform .4s var(--ease);pointer-events:none}
 .logo-marquee__item--link:hover::after{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.logo-marquee__item,.logo-marquee__item img,.trusted-by__label{animation:none!important}}
+
+/* marquee: seamless loop to the left, pause while hovering */
+.trusted-by{opacity:1}
+.logo-marquee__track{padding-right:18px;will-change:transform}
+.logo-marquee:hover .logo-marquee__track,.logo-marquee:focus-within .logo-marquee__track{animation-play-state:paused}
+@media (max-width:720px){.logo-marquee__track{padding-right:14px}}
+@media (prefers-reduced-motion:reduce){.logo-marquee__track{animation:none!important}.logo-marquee{overflow-x:auto}}

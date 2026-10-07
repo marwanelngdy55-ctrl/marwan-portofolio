@@ -3,15 +3,6 @@
 .project-card{opacity:1!important;transform:none!important;transition:border-color .35s var(--ease),box-shadow .35s var(--ease)!important}
 .project-card:hover{transform:none!important}
 
-/* شريط الشركات: ثابت وظاهر بالكامل على الكمبيوتر */
-@media (min-width:901px){
-.trusted-by{opacity:1!important;transform:none!important}
-.logo-marquee{overflow:visible}
-.logo-marquee::before,.logo-marquee::after{display:none}
-.logo-marquee__track{animation:none!important;transform:none!important;width:auto;flex-wrap:wrap;justify-content:center;gap:18px}
-.logo-marquee__item[aria-hidden="true"]{display:none}
-}
-
 /* ===== تحسين الألوان: تباين أعلى للأزرار (AA) ===== */
 :root{--btn:#275FDB;--btn-hover:#1F4FB8}
 [data-theme=light]{--btn:#1D54D6;--btn-hover:#143E9E}
