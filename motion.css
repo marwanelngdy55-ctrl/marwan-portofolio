@@ -22,8 +22,8 @@
 main{animation:mRise .6s var(--ease) backwards}
 
 /* 02 richer scroll reveal */
-.reveal{opacity:0;transform:translateY(38px) scale(.97);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
-.reveal.is-visible{opacity:1;transform:none;filter:none}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.is-visible{opacity:1;transform:none}
 
 /* 03 spotlight cards */
 .spot{position:relative;isolation:isolate}
@@ -33,8 +33,7 @@ main{animation:mRise .6s var(--ease) backwards}
 
 /* 04 nav sliding pill + dropdown stagger */
 .nav__links{position:relative}
-.nav__pill{position:absolute;z-index:0;border-radius:100px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);opacity:0;pointer-events:none;transition:left .5s var(--ease),width .5s var(--ease),top .5s var(--ease),height .5s var(--ease),opacity .3s}
-.nav__pill.on{opacity:1}
+.nav__pill{position:absolute;z-index:0;border-radius:100px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);opacity:0;pointer-events:none;transition:opacity .3s,left .5s var(--ease),width .5s var(--ease),top .5s var(--ease),height .5s var(--ease)}
 .nav__links .nav__link,.nav__links li{position:relative;z-index:1}
 .has-pill .nav__link::after{display:none}
 .nav__dropdown a{opacity:0;transform:translateX(10px);transition:background .2s,color .2s,opacity .35s var(--ease),transform .35s var(--ease)}
@@ -57,7 +56,7 @@ main{animation:mRise .6s var(--ease) backwards}
 /* 06 aurora */
 .hero,.page-hero,.blog-hero{position:relative}
 .orb-field{overflow:hidden}
-.orb-field .orb{will-change:transform}
+.orb-field .orb{filter:blur(48px);opacity:.4}
 
 /* 07 skeletons */
 .skel-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
@@ -78,9 +77,10 @@ main{animation:mRise .6s var(--ease) backwards}
 @keyframes logoIn{from{opacity:0;transform:translateY(22px) scale(.88)}}
 @keyframes logoFloat{50%{transform:translateY(-5px)}}
 .trusted-by__label{animation:mRise .8s var(--ease) backwards}
-.logo-marquee__item{animation:logoIn .8s var(--ease) backwards}
+.logo-marquee__item:not([aria-hidden]){animation:logoIn .8s var(--ease) backwards}
 .logo-marquee__item:nth-child(1){animation-delay:.1s}.logo-marquee__item:nth-child(2){animation-delay:.18s}.logo-marquee__item:nth-child(3){animation-delay:.26s}.logo-marquee__item:nth-child(4){animation-delay:.34s}.logo-marquee__item:nth-child(5){animation-delay:.42s}.logo-marquee__item:nth-child(n+6){animation-delay:.5s}
-.logo-marquee__item img{animation:logoFloat 4.5s ease-in-out infinite;transition:filter .3s var(--ease),transform .4s var(--ease)}
+.logo-marquee__item:not([aria-hidden]) img{animation:logoFloat 4.5s ease-in-out infinite}
+.logo-marquee__item img{transition:filter .3s var(--ease),transform .4s var(--ease)}
 .logo-marquee__item:nth-child(2n) img{animation-delay:-1.5s}.logo-marquee__item:nth-child(3n) img{animation-delay:-3s}
 .logo-marquee__item:hover{transform:translateY(-6px) scale(1.05);box-shadow:0 16px 36px -10px rgba(59,125,250,.4)}
 .logo-marquee__item:hover img{animation-play-state:paused;transform:scale(1.08)}
